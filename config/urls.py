@@ -1,4 +1,4 @@
-"""URL routing principal — cogny (vault de notas Markdown)."""
+"""URL routing principal — L-notes (vault de notas Markdown)."""
 from django.urls import include, path
 
 from apps.core import views as core_views

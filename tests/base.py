@@ -25,7 +25,7 @@ class VaultTestCase(TestCase):
 
     def setUp(self):
         super().setUp()
-        self.tmp_root = Path(tempfile.mkdtemp(prefix="cogny-test-"))
+        self.tmp_root = Path(tempfile.mkdtemp(prefix="lnotes-test-"))
         self.addCleanup(shutil.rmtree, self.tmp_root, True)
         self.vault_dir = self.tmp_root / "vault"
         self.vault_dir.mkdir()

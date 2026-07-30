@@ -43,8 +43,8 @@ def service_worker(request):
 def manifest(request):
     v = settings.ASSET_VERSION
     return JsonResponse({
-        "name": "Cogny",
-        "short_name": "Cogny",
+        "name": "L-notes",
+        "short_name": "L-notes",
         "start_url": "/",
         "scope": "/",
         "display": "standalone",

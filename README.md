@@ -1,19 +1,19 @@
 <p align="center">
-  <img src="assets/logo.png" width="120" alt="Cogny">
+  <img src="assets/logo.png" width="120" alt="L-notes">
 </p>
 
-<h1 align="center">Cogny</h1>
+<h1 align="center">L-notes</h1>
 <p align="center">Bóveda de notas en Markdown, autoalojada y minimalista.</p>
 <p align="center"><a href="https://maalfer.github.io/cogny/">maalfer.github.io/cogny</a></p>
 <p align="center">
-  <a href="https://github.com/Maalfer/cogny/releases/tag/v1.0.0"><img src="https://img.shields.io/github/v/tag/Maalfer/cogny?label=versi%C3%B3n&color=06b6d4" alt="Versión"></a>
+  <a href="https://github.com/Maalfer/cogny/releases"><img src="https://img.shields.io/badge/versi%C3%B3n-0.1.0-06b6d4" alt="Versión"></a>
 </p>
 
 <p align="center"><img src="assets/screenshots/demo1.png" width="850" alt="Bóveda de notas"></p>
 
 ## Descripción
 
-Cogny es una aplicación web de notas al estilo Obsidian construida con Django. Las notas viven como archivos Markdown en disco, organizadas en carpetas, sin depender de una base de datos para el contenido. Incluye editor con resaltado de código, fórmulas, diagramas, adjuntos y exportación a PDF con fidelidad completa.
+L-notes es una aplicación web de notas al estilo Obsidian construida con Django. Las notas viven como archivos Markdown en disco, organizadas en carpetas, sin depender de una base de datos para el contenido. Incluye editor con resaltado de código, fórmulas, diagramas, adjuntos y exportación a PDF con fidelidad completa.
 
 ## Capturas
 
@@ -60,7 +60,7 @@ python manage.py runserver
 docker compose up --build
 ```
 
-Levanta Cogny en `http://localhost:8000`. Las notas, avatares y la base de datos
+Levanta L-notes en `http://localhost:8000`. Las notas, avatares y la base de datos
 se persisten en `./data`. Para crear el primer usuario:
 
 ```bash
@@ -69,4 +69,4 @@ docker compose exec web python manage.py createsuperuser
 
 ## Despliegue
 
-`scripts/cogny.service` es la referencia de la unidad systemd usada en producción (gunicorn detrás de un proxy inverso con TLS). Tras cualquier cambio en los estáticos, ejecuta `collectstatic`, sube `ASSET_VERSION` en `.env` y reinicia el servicio para invalidar la caché.
+`scripts/l-notes.service` es la referencia de la unidad systemd usada en producción (gunicorn detrás de un proxy inverso con TLS). Tras cualquier cambio en los estáticos, ejecuta `collectstatic`, sube `ASSET_VERSION` en `.env` y reinicia el servicio para invalidar la caché.

@@ -9,7 +9,7 @@ aquí: `/api/docs/` es la única documentación de la API.
 """
 
 _DESCRIPTION = """
-Control total de la bóveda de notas **Cogny** desde fuera del navegador: curl,
+Control total de la bóveda de notas **L-notes** desde fuera del navegador: curl,
 scripts, o un agente de IA (Claude, ChatGPT…).
 
 ### Autenticación
@@ -107,7 +107,7 @@ def build_spec(request) -> dict:
     return {
         "openapi": "3.1.0",
         "info": {
-            "title": "Cogny API",
+            "title": "L-notes API",
             "version": "1",
             "description": _DESCRIPTION,
         },

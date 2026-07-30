@@ -6,7 +6,7 @@
    instalara después, las primeras peticiones de la página (el árbol del vault,
    por ejemplo) saldrían sin token. */
 (function () {
-  const csrf = (window.COGNY && window.COGNY.csrf) || '';
+  const csrf = (window.LNOTES && window.LNOTES.csrf) || '';
   if (!csrf || !window.fetch) return;
   const origFetch = window.fetch.bind(window);
   window.fetch = function (input, init) {

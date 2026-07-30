@@ -3,43 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>API de Cogny · Documentación</title>
+<title>API de L-notes · Documentación</title>
 <link rel="icon" href="/static/favicon.ico?v={{ ASSET_VERSION }}" type="image/x-icon">
 {# Swagger UI autoalojado: sin CDN, la página funciona igual sin salida a internet. #}
 <link rel="stylesheet" href="{% static 'vendor/swagger/swagger-ui.css' %}">
 <style>
-  :root{ --cg-bg:#0a0a0f; --cg-bg2:#181818; --cg-border:#2a2a2a; --cg-text:#e6e6e6; --cg-cyan:#06b6d4; }
-  body{ margin:0; background:var(--cg-bg); }
-  .cg-topbar{
+  :root{ --ln-bg:#0a0a0f; --ln-bg2:#181818; --ln-border:#2a2a2a; --ln-text:#e6e6e6; --ln-cyan:#06b6d4; }
+  body{ margin:0; background:var(--ln-bg); }
+  .ln-topbar{
     display:flex; align-items:center; gap:.9rem; flex-wrap:wrap;
-    padding:.8rem 1.1rem; background:var(--cg-bg2);
-    border-bottom:1px solid var(--cg-border); font:600 .92rem/1.2 system-ui,sans-serif;
-    color:var(--cg-text);
+    padding:.8rem 1.1rem; background:var(--ln-bg2);
+    border-bottom:1px solid var(--ln-border); font:600 .92rem/1.2 system-ui,sans-serif;
+    color:var(--ln-text);
   }
-  .cg-topbar a{ color:var(--cg-text); text-decoration:none; display:flex; align-items:center; gap:.45rem; }
-  .cg-topbar a:hover{ color:var(--cg-cyan); }
-  .cg-topbar svg{ width:18px; height:18px; }
-  .cg-brand{ font-weight:800; letter-spacing:.01em; }
-  .cg-spacer{ flex:1; }
-  .cg-pill{
-    background:rgba(6,182,212,.12); border:1px solid var(--cg-cyan); color:var(--cg-cyan);
+  .ln-topbar a{ color:var(--ln-text); text-decoration:none; display:flex; align-items:center; gap:.45rem; }
+  .ln-topbar a:hover{ color:var(--ln-cyan); }
+  .ln-topbar svg{ width:18px; height:18px; }
+  .ln-brand{ font-weight:800; letter-spacing:.01em; }
+  .ln-spacer{ flex:1; }
+  .ln-pill{
+    background:rgba(6,182,212,.12); border:1px solid var(--ln-cyan); color:var(--ln-cyan);
     border-radius:999px; padding:.25rem .7rem; font-size:.78rem; font-weight:700;
   }
   /* Swagger UI trae su propio tema claro; lo dejamos así (es el que mejor lee
-     en pantallas grandes) y sólo enmarcamos la página con la identidad de Cogny. */
+     en pantallas grandes) y sólo enmarcamos la página con la identidad de L-notes. */
   #swagger-ui{ background:#fff; }
   .swagger-ui .topbar{ display:none; }
   .swagger-ui .info{ margin:2rem 0 1.5rem; }
 </style>
 </head>
 <body>
-<div class="cg-topbar">
-  <a href="/" class="cg-brand">
+<div class="ln-topbar">
+  <a href="/" class="ln-brand">
     <img src="/static/icons/icon-192.png?v={{ ASSET_VERSION }}" alt="" width="22" height="22">
-    <span>Cogny</span>
+    <span>L-notes</span>
   </a>
-  <span class="cg-pill">API v1</span>
-  <div class="cg-spacer"></div>
+  <span class="ln-pill">API v1</span>
+  <div class="ln-spacer"></div>
   <a href="/api/v1/openapi.json" target="_blank" rel="noopener">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm2 18H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
     <span>openapi.json</span>

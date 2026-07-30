@@ -1,12 +1,12 @@
-/* Editor del vault de notas (cogny). Extraído de notes.html a fichero
+/* Editor del vault de notas (L-notes). Extraído de notes.html a fichero
    estático: se lintea/versiona como código y no lo re-parsea el motor de
-   plantillas en cada render. Los valores de servidor llegan por window.COGNY
+   plantillas en cada render. Los valores de servidor llegan por window.LNOTES
    (definido inline en la plantilla). */
-const CSRF = window.COGNY.csrf;
+const CSRF = window.LNOTES.csrf;
 // Las subidas grandes (import de bóvedas) van por un subdominio DNS-only fuera de
 // Cloudflare, para esquivar su límite de 100 MB por request. El host lo inyecta el
 // servidor (UPLOAD_HOST en .env); si está vacío, se sube al mismo origen.
-const UPLOAD_HOST = window.COGNY.uploadHost;
+const UPLOAD_HOST = window.LNOTES.uploadHost;
 const UPLOAD_BASE = UPLOAD_HOST ? ('https://' + UPLOAD_HOST) : '';
 let TREE = [];
 let FLAT = [];             // flattened list of notes+files for name lookup
@@ -28,7 +28,7 @@ const IMG_EXT = ['png','jpg','jpeg','gif','webp','svg','bmp','ico'];
 /* Permiso de escritura del acceso en curso. La UI se apaga en consecuencia
    (botones ocultos por CSS con .role-readonly, acciones cortadas aquí), pero
    quien manda es el servidor: cada endpoint que muta lleva @require_write. */
-const CAN_WRITE = window.COGNY.canWrite !== false;
+const CAN_WRITE = window.LNOTES.canWrite !== false;
 function guardWrite(){
   if(CAN_WRITE) return true;
   alert('Tu acceso a esta bóveda es de sólo lectura.');
@@ -232,7 +232,7 @@ async function renderMermaid(container){
   const nodes=container.querySelectorAll('.mermaid'); if(!nodes.length) return;
   if(!mermaidLoaded){
     await new Promise((res,rej)=>{const s=document.createElement('script');
-      s.src='/static/vendor/mermaid.min.js?v=' + window.COGNY.assetVersion; s.onload=res; s.onerror=rej; document.head.appendChild(s);}).catch(()=>{});
+      s.src='/static/vendor/mermaid.min.js?v=' + window.LNOTES.assetVersion; s.onload=res; s.onerror=rej; document.head.appendChild(s);}).catch(()=>{});
     if(window.mermaid){ mermaid.initialize({startOnLoad:false, theme:'dark'}); mermaidLoaded=true; }
   }
   try{ window.mermaid && await mermaid.run({nodes:[...nodes]}); }catch(e){}
@@ -801,7 +801,7 @@ async function saveNow(){
 /* ════════════ Modo lectura / edición ════════════ */
 /* 'read' = nota renderizada (bonita, sin editar) · 'edit' = editor CodeMirror.
    Por defecto las notas se abren en lectura; la preferencia se recuerda. */
-let viewMode = CAN_WRITE ? (localStorage.getItem('cogny-view-mode') || 'read') : 'read';
+let viewMode = CAN_WRITE ? (localStorage.getItem('lnotes-view-mode') || 'read') : 'read';
 function renderReader(){
   const rd=$('cm-reader'); if(!rd) return;
   const md=(current&&current.content)||'';
@@ -823,7 +823,7 @@ function toggleViewMode(){
   // Al salir de edición, sincroniza el contenido más reciente del editor antes de renderizar.
   if(viewMode==='edit' && ED && current) current.content = ED.getValue().replace(/\n+$/, '');
   viewMode = viewMode==='read' ? 'edit' : 'read';
-  localStorage.setItem('cogny-view-mode', viewMode);
+  localStorage.setItem('lnotes-view-mode', viewMode);
   applyViewMode();
 }
 

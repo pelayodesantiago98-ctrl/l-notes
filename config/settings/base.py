@@ -20,7 +20,7 @@ if ENV_FILE.exists():
         os.environ.setdefault(_k.strip(), _v.strip().strip('"').strip("'"))
 
 # ── Núcleo ───────────────────────────────────────────────────────────────────
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY") or "cogny-dev-secret-CHANGE-ME"
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY") or "lnotes-dev-secret-CHANGE-ME"
 
 # Versión de la app (fichero VERSION en la raíz del repo). Se muestra en el
 # header de la UI — súbela ahí en cada release, junto al tag de git.
@@ -69,7 +69,7 @@ TEMPLATES = [{
     "DIRS": [BASE_DIR / "templates"],
     "APP_DIRS": True,
     "OPTIONS": {
-        "builtins": ["apps.core.templatetags.cogny_tags"],
+        "builtins": ["apps.core.templatetags.lnotes_tags"],
         "context_processors": [
             "django.template.context_processors.debug",
             "django.template.context_processors.request",
@@ -138,9 +138,9 @@ CSRF_HEADER_NAME = "HTTP_X_CSRFTOKEN"
 SESSION_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_SAMESITE = "Lax"
 # Cookies con nombre propio: evita que la sesión de Pingu (mismo dominio padre)
-# y la de cogny se pisen entre sí en el navegador.
-SESSION_COOKIE_NAME = "cogny_sessionid"
-CSRF_COOKIE_NAME = "cogny_csrftoken"
+# y la de L-notes se pisen entre sí en el navegador.
+SESSION_COOKIE_NAME = "lnotes_sessionid"
+CSRF_COOKIE_NAME = "lnotes_csrftoken"
 
 # ── Logging ──────────────────────────────────────────────────────────────────
 LOGGING = {

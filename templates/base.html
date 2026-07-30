@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="view-transition" content="same-origin">
-<title>{% block title %}Cogny{% endblock %}</title>
+<title>{% block title %}L-notes{% endblock %}</title>
 <link rel="icon" href="/static/favicon.ico?v={{ ASSET_VERSION }}" type="image/x-icon">
 <link rel="shortcut icon" href="/static/favicon.ico?v={{ ASSET_VERSION }}">
 <link rel="apple-touch-icon" sizes="180x180" href="/static/icons/icon-180.png?v={{ ASSET_VERSION }}">
@@ -23,7 +23,7 @@
   contarle al cliente viaja en este objeto, y nada más.
   (Ojo: {# #} NO admite varias líneas — se colaría como texto en la página.)
 {% endcomment %}
-<script>window.COGNY = {
+<script>window.LNOTES = {
   csrf: "{{ csrf_token|default:'' }}",
   assetVersion: "{{ ASSET_VERSION }}",
   uploadHost: "{{ UPLOAD_HOST|default:'' }}",
@@ -40,9 +40,9 @@
 <header class="bh-header">
   <div class="bh-header-left">
     {% block header_left %}
-    <a href="/" class="bh-brand" aria-label="Inicio Cogny">
+    <a href="/" class="bh-brand" aria-label="Inicio L-notes">
       <img src="/static/icons/icon-192.png?v={{ ASSET_VERSION }}" alt="" width="24" height="24" class="bh-brand-icon">
-      <span>Cogny</span>
+      <span>L-notes</span>
       <span class="bh-version">v{{ APP_VERSION }}</span>
     </a>
     {% endblock %}

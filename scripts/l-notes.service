@@ -1,18 +1,18 @@
 [Unit]
-Description=cogny (vault de notas — Django + gunicorn WSGI)
+Description=L-notes (vault de notas — Django + gunicorn WSGI)
 After=network.target
 
 [Service]
 Type=simple
 User=www-data
 Group=www-data
-WorkingDirectory=/var/www/cogny/django_app
-EnvironmentFile=/var/www/cogny/django_app/.env
-Environment=HOME=/var/www/cogny
+WorkingDirectory=/var/www/l-notes/django_app
+EnvironmentFile=/var/www/l-notes/django_app/.env
+Environment=HOME=/var/www/l-notes
 Environment=DJANGO_SETTINGS_MODULE=config.settings.prod
 # WSGI puro: las vistas son síncronas, no hay nada async que justifique ASGI/uvicorn.
 # gthread aguanta bien el I/O de ficheros grandes (export ZIP, PDF) sin bloquear.
-ExecStart=/var/www/cogny/venv/bin/gunicorn \
+ExecStart=/var/www/l-notes/venv/bin/gunicorn \
     config.wsgi:application \
     --workers 2 \
     --threads 4 \
@@ -30,7 +30,7 @@ NoNewPrivileges=true
 ProtectSystem=full
 ProtectHome=read-only
 PrivateTmp=true
-ReadWritePaths=/var/www/cogny
+ReadWritePaths=/var/www/l-notes
 
 [Install]
 WantedBy=multi-user.target

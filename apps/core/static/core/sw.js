@@ -1,5 +1,5 @@
-/* cogny Service Worker (app-shell precaching + stale-while-revalidate) */
-const CACHE = 'cogny-v3';
+/* L-notes Service Worker (app-shell precaching + stale-while-revalidate) */
+const CACHE = 'lnotes-v4';
 const AV = '__ASSET_VERSION__'; // inyectado por Django service_worker view
 
 // App shell: activos críticos precacheados en install.
