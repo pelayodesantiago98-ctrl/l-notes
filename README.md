@@ -11,6 +11,11 @@
 
 <p align="center"><img src="assets/screenshots/demo1.png" width="850" alt="Bóveda de notas"></p>
 
+> **Despliegue en producción.** Esta instancia corre en `l-notes.lepayimio.es`
+> bajo gunicorn en `127.0.0.1:8002`, detrás de nginx y Cloudflare. La
+> configuración del servidor (vhost, unit de systemd, certificados) vive en el
+> repositorio privado `lepayimio-infra`, no aquí.
+
 ## Descripción
 
 L-notes es una aplicación web de notas al estilo Obsidian construida con Django. Las notas viven como archivos Markdown en disco, organizadas en carpetas, sin depender de una base de datos para el contenido. Incluye editor con resaltado de código, fórmulas, diagramas, adjuntos y exportación a PDF con fidelidad completa.
