@@ -28,6 +28,8 @@ class User(AbstractUser):
         ("dracula", "Drácula"),
         ("pink", "Rosa"),
         ("gold", "Dorado"),
+        ("cristal", "Cristal"),
+        ("dark-cristal", "Dark Cristal"),
     )
 
     ROLE_OWNER = "owner"
@@ -40,6 +42,11 @@ class User(AbstractUser):
     )
     # Roles que se pueden asignar a un acceso invitado (el de propietario no).
     GUEST_ROLES = (ROLE_EDITOR, ROLE_VIEWER)
+
+    # Identidad en lepayimio.es. Es lo que enlaza esta cuenta con la del
+    # portal, y no cambia aunque el usuario se renombre: por eso no se usa
+    # `username` para eso, que sí puede cambiar.
+    sso_id = models.CharField(max_length=32, unique=True, null=True, blank=True, db_index=True)
 
     theme = models.CharField(max_length=16, choices=THEME_CHOICES, default="dark")
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default=ROLE_VIEWER)

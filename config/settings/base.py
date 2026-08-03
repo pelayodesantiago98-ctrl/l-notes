@@ -55,6 +55,9 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    # Sincroniza la sesión con la del portal (lepayimio.es). Va aquí y no
+    # antes porque necesita que request.user ya esté resuelto.
+    "apps.core.sso_portal.SesionDelPortalMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "apps.core.middleware.GlobalContextMiddleware",
@@ -97,7 +100,14 @@ DATABASES = {
 
 # ── Auth ─────────────────────────────────────────────────────────────────────
 AUTH_USER_MODEL = "accounts.User"
-LOGIN_URL = "/"
+
+# El del portal primero; el de Django detrás para el admin y la consola.
+AUTHENTICATION_BACKENDS = [
+    "apps.core.sso_portal.BackendDelPortal",
+    "django.contrib.auth.backends.ModelBackend",
+]
+# El login vive en el portal, no aquí.
+LOGIN_URL = "https://lepayimio.es/login"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 

@@ -9,7 +9,7 @@ class GlobalContextMiddleware(MiddlewareMixin):
 
     def process_request(self, request):
         theme = request.COOKIES.get("bh_theme", "")
-        if theme not in ("dark", "light", "dracula", "pink", "gold"):
+        if theme not in ("dark", "light", "dracula", "pink", "gold", "cristal", "dark-cristal"):
             theme = ""
         # Si el usuario está autenticado y tiene un theme guardado, ese gana.
         if request.user.is_authenticated and getattr(request.user, "theme", None):
