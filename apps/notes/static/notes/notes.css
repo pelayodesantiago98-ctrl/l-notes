@@ -598,7 +598,7 @@
 .vault.side-plegada .vault-side:hover{background:rgba(255,255,255,.06)}
 
 /* La flecha del botón gira al plegar, para que apunte hacia donde va a salir. */
-#btn-plegar svg{transition:transform .2s ease}
+#btn-plegar svg{transition:transform .34s cubic-bezier(.32,.72,0,1)}
 .vault.side-plegada #btn-plegar svg{transform:rotate(180deg)}
 
 @media(max-width:760px){
@@ -614,4 +614,49 @@
   .vault.side-plegada .vault-side{width:22px;min-width:22px}
   .vault.side-plegada .vault-side::after{margin-left:-4px;border-width:0 2px 2px 0}
   /* asa-visible */
+}
+
+
+/* ── Animación del plegado ──────────────────────────────────────────────────
+   La curva es la de un panel de iOS: sale rápido y frena al final, que es lo
+   que hace que parezca que tiene peso en vez de aparecer y ya. */
+.vault-side{
+  transition:
+    width .44s cubic-bezier(.32,.72,0,1),
+    min-width .44s cubic-bezier(.32,.72,0,1),
+    margin-left .25s ease;
+}
+
+/* Al DESPLEGAR el contenido espera a que haya sitio: entra con retraso, cuando
+   la barra ya casi ha terminado de abrirse. */
+.vault-side > *{
+  transition: opacity .3s ease .22s;
+}
+
+/* Al PLEGAR se va primero y deprisa, sin esperar: si se desvaneciera a la vez
+   que se estrecha la barra, se vería el texto comprimiéndose contra el borde. */
+.vault.side-plegada .vault-side > *{
+  transition: opacity .2s ease;
+}
+
+/* La flecha del asa aparece cuando el borde ya está formado. */
+.vault-side::after{
+  opacity:0;
+  transition: opacity .26s ease .26s;
+}
+.vault.side-plegada .vault-side::after{opacity:.9}
+
+/* Nada de overflow:hidden permanente aquí: recortaría el menú de la tuerca,
+   que es absoluto y se despliega hacia abajo dentro de la barra. El recorte
+   solo hace falta mientras está plegada, y para eso ya está la regla de
+   .side-plegada de más arriba. Lo que evita ver el contenido aplastándose
+   contra el borde es que se desvanece antes de que la barra se estreche. */
+
+/* Quien pide menos movimiento no quiere ver paneles deslizándose: el cambio
+   sigue ocurriendo, pero de golpe. */
+@media(prefers-reduced-motion:reduce){
+  .vault-side,
+  .vault-side > *,
+  .vault-side::after,
+  #btn-plegar svg{transition:none}
 }

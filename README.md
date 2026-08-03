@@ -7,6 +7,7 @@
 <p align="center"><a href="https://maalfer.github.io/cogny/">maalfer.github.io/cogny</a></p>
 <p align="center">
   <a href="https://github.com/Maalfer/cogny/releases"><img src="https://img.shields.io/badge/versi%C3%B3n-0.1.0-06b6d4" alt="Versión"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/licencia-GPL--3.0-4c9a2a" alt="Licencia GPL-3.0"></a>
 </p>
 
 <p align="center"><img src="assets/screenshots/lnotes-boveda.png" width="850" alt="Bóveda de notas"></p>
@@ -92,3 +93,32 @@ todo este código. Gracias por publicarlo.
 Esta versión cambia la marca y añade, sobre aquella base, la entrada por SSO
 desde el portal, los temas cristal y algunos ajustes de interfaz. El diseño, la
 arquitectura y el grueso de la aplicación son suyos.
+
+## Licencia
+
+Este proyecto se distribuye bajo la **GNU General Public License v3.0**. El texto
+completo está en [LICENSE](LICENSE).
+
+    L-notes — bóveda de notas en Markdown, autoalojada
+    Copyright (C) 2026 Lepayo (@pelayodesantiago98-ctrl)
+    Basado en cogny, Copyright (C) Maalfer (github.com/Maalfer/cogny),
+    usado y redistribuido con su permiso.
+
+    Este programa es software libre: puedes redistribuirlo y/o modificarlo
+    bajo los términos de la GNU General Public License, en su versión 3,
+    tal y como la publica la Free Software Foundation.
+
+    Se distribuye con la esperanza de que resulte útil, pero SIN NINGUNA
+    GARANTÍA; ni siquiera la garantía implícita de COMERCIABILIDAD o
+    IDONEIDAD PARA UN PROPÓSITO PARTICULAR. Consulta la GNU General Public
+    License para más detalles.
+
+    Deberías haber recibido una copia de la GNU General Public License junto
+    a este programa. Si no es así, mírala en <https://www.gnu.org/licenses/>.
+
+Qué significa en la práctica: puedes usarlo, estudiarlo, modificarlo y
+redistribuirlo; si distribuyes una versión modificada, tienes que publicar su
+código con esta misma licencia.
+
+Las librerías de terceros de `static/vendor/` (KaTeX, Mermaid, highlight.js,
+marked, Swagger UI) mantienen cada una la suya.
