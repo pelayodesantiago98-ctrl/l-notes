@@ -6,7 +6,7 @@
 <p align="center">Bóveda de notas en Markdown, autoalojada y minimalista.</p>
 <p align="center"><a href="https://maalfer.github.io/cogny/">maalfer.github.io/cogny</a></p>
 <p align="center">
-  <a href="https://github.com/Maalfer/cogny/releases"><img src="https://img.shields.io/badge/versi%C3%B3n-0.1.0-06b6d4" alt="Versión"></a>
+  <a href="https://github.com/pelayodesantiago98-ctrl/l-notes/releases"><img src="https://img.shields.io/badge/versi%C3%B3n-0.2.0-06b6d4" alt="Versión"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/licencia-GPL--3.0-4c9a2a" alt="Licencia GPL-3.0"></a>
 </p>
 
@@ -22,6 +22,17 @@
 L-notes es una aplicación web de notas al estilo Obsidian construida con Django. Las notas viven como archivos Markdown en disco, organizadas en carpetas, sin depender de una base de datos para el contenido. Incluye editor con resaltado de código, fórmulas, diagramas, adjuntos y exportación a PDF con fidelidad completa.
 
 ## Capturas
+
+<table>
+<tr>
+<td width="50%"><img src="assets/screenshots/lnotes-subnotas.png" alt="Subnotas"><br><sub>Cada nota puede colgar de otra, sin límite de profundidad.</sub></td>
+<td width="50%"><img src="assets/screenshots/lnotes-cristal-claro.png" alt="Tema Cristal"><br><sub>Tema Cristal: superficies translúcidas sobre fondo azul.</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src="assets/screenshots/lnotes-dark-cristal.png" alt="Tema Dark Cristal"><br><sub>El mismo material, de noche.</sub></td>
+<td width="50%"><img src="assets/screenshots/lnotes-movil-plegada.png" alt="Bóveda plegada en móvil"><br><sub>En móvil la bóveda se pliega al abrir una nota y deja un asa.</sub></td>
+</tr>
+</table>
 
 <table>
 <tr>
@@ -43,6 +54,10 @@ L-notes es una aplicación web de notas al estilo Obsidian construida con Django
 ## Características
 
 - Notas en Markdown organizadas en carpetas, guardadas como archivos en disco.
+- **Notas anidadas**: cualquier nota puede tener subnotas, y estas las suyas, sin límite. Se crean desde el menú de la propia nota o arrastrando una encima de otra. Por dentro son carpetas con un `.md` del mismo nombre, así que la bóveda se sigue leyendo con cualquier editor.
+- **Entrada única (SSO)**: la sesión la emite el portal y este servicio solo comprueba su firma. No guarda contraseñas.
+- **Seis temas**, incluidos Cristal y Dark Cristal, con superficies translúcidas y desenfoque.
+- **Bóveda plegable**: se recoge a un borde que sirve de asa; en móvil se pliega sola al abrir una nota.
 - Editor con resaltado de sintaxis, fórmulas (KaTeX), diagramas (Mermaid) y callouts.
 - Exportación de notas a PDF, con imágenes y estilos incrustados.
 - Búsqueda instantánea por nombre y por contenido.
@@ -53,7 +68,8 @@ L-notes es una aplicación web de notas al estilo Obsidian construida con Django
 ## Stack
 
 - **Backend**: Django + gunicorn (WSGI).
-- **Datos**: SQLite para cuentas de usuario; las notas y adjuntos son archivos en disco.
+- **Datos**: SQLite para cuentas y metadatos; las notas y adjuntos son archivos en disco.
+- **Autenticación**: delegada en el portal por cookie firmada (HMAC-SHA256) del dominio padre. Cada cuenta guarda el identificador de esa sesión, no el nombre de usuario, de modo que renombrarse no desvincula nada.
 - **Frontend**: JavaScript nativo, sin framework ni paso de compilación.
 - **Exportación a PDF**: Chromium headless.
 
@@ -83,6 +99,18 @@ docker compose exec web python manage.py createsuperuser
 ## Despliegue
 
 `scripts/l-notes.service` es la referencia de la unidad systemd usada en producción (gunicorn detrás de un proxy inverso con TLS). Tras cualquier cambio en los estáticos, ejecuta `collectstatic`, sube `ASSET_VERSION` en `.env` y reinicia el servicio para invalidar la caché.
+
+## Novedades de la 0.2.0
+
+- **Notas anidadas** al estilo CherryTree, con creación desde el menú, arrastrar y soltar, y aviso antes de borrar una rama con subnotas.
+- **Entrada única** desde el portal: este servicio ya no tiene login ni contraseñas propias.
+- **Identidad por ID**: cada cuenta se enlaza con un identificador que no cambia, así que renombrarse ya no obliga a mover nada.
+- **Temas Cristal y Dark Cristal**.
+- **Bóveda plegable** con asa, automática en móvil.
+- Corregido un fallo por el que el token CSRF no llegaba y **no se podían crear notas**.
+
+> **Actualizar desde 0.1.0 no es directo**: el login propio ha desaparecido y hace
+> falta un portal que emita la sesión. Sin él, no se puede entrar.
 
 ## Créditos
 
