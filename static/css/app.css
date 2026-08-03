@@ -3184,3 +3184,16 @@ solo fade */
   background: rgba(77,163,255,0.18);
   border-color: rgba(77,163,255,0.42);
 }
+
+/* La foto que viene del portal: se dibuja encima del avatar propio, tapándolo,
+   y si no existe el propio guion la retira y vuelven las iniciales. */
+.bh-desk-avatar .avatar-portal,
+.hb-user-avatar .avatar-portal{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  z-index: 2;
+}
