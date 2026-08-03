@@ -565,3 +565,53 @@
   backdrop-filter: saturate(170%) blur(20px);
   -webkit-backdrop-filter: saturate(170%) blur(20px);
 }
+
+
+/* Casilla de "no volver a mostrar" del diálogo de confirmación. */
+.cd-casilla{display:flex;align-items:center;gap:.5rem;margin:.9rem 0 .2rem;font-size:.85rem;cursor:pointer;opacity:.85}
+.cd-casilla input{width:1rem;height:1rem;margin:0;cursor:pointer;accent-color:var(--vault-accent)}
+/* El mensaje puede traer párrafos: sin esto los saltos se comen y el aviso
+   queda en un bloque ilegible. */
+#cd-msg{white-space:pre-line}
+
+
+/* ── Bóveda plegada ─────────────────────────────────────────────────────────
+   Se queda un borde estrecho en lugar de desaparecer: es el asa para volver a
+   sacarla sin tener que buscar el botón de la cabecera, que en móvil queda
+   lejos del pulgar. El borde entero es pulsable. */
+.vault.side-plegada .vault-side{
+  width:18px;min-width:18px;overflow:hidden;cursor:pointer;
+  /* El contenido no se destruye, solo se esconde: al desplegar vuelve con el
+     mismo scroll y las mismas carpetas abiertas. */
+}
+.vault.side-plegada .vault-side > *{opacity:0;pointer-events:none}
+.vault.side-plegada .vault-resizer{display:none}
+
+/* La flecha del asa, centrada en el borde. */
+.vault.side-plegada .vault-side::after{
+  content:"";position:absolute;top:50%;left:50%;width:6px;height:6px;
+  margin:-3px 0 0 -5px;border-right:2px solid var(--vault-accent);
+  border-bottom:2px solid var(--vault-accent);transform:rotate(-45deg);
+  opacity:.9;pointer-events:none;
+}
+.vault.side-plegada .vault-side{position:relative}
+.vault.side-plegada .vault-side:hover{background:rgba(255,255,255,.06)}
+
+/* La flecha del botón gira al plegar, para que apunte hacia donde va a salir. */
+#btn-plegar svg{transition:transform .2s ease}
+.vault.side-plegada #btn-plegar svg{transform:rotate(180deg)}
+
+@media(max-width:760px){
+  /* En móvil la barra está superpuesta, así que plegada tiene que dejar el
+     borde pegado al canto y no empujar nada. */
+  .vault.side-plegada .vault-side{width:14px;min-width:14px;box-shadow:2px 0 10px rgba(0,0,0,.35)}
+}
+
+
+/* El asa, más ancha en móvil de lo que parecía necesario: 14 px es un objetivo
+   imposible para un dedo. Se le da tamaño de toque sin que ocupe pantalla. */
+@media(max-width:760px){
+  .vault.side-plegada .vault-side{width:22px;min-width:22px}
+  .vault.side-plegada .vault-side::after{margin-left:-4px;border-width:0 2px 2px 0}
+  /* asa-visible */
+}

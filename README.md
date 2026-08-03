@@ -9,7 +9,7 @@
   <a href="https://github.com/Maalfer/cogny/releases"><img src="https://img.shields.io/badge/versi%C3%B3n-0.1.0-06b6d4" alt="Versión"></a>
 </p>
 
-<p align="center"><img src="assets/screenshots/demo1.png" width="850" alt="Bóveda de notas"></p>
+<p align="center"><img src="assets/screenshots/lnotes-boveda.png" width="850" alt="Bóveda de notas"></p>
 
 > **Despliegue en producción.** Esta instancia corre en `l-notes.lepayimio.es`
 > bajo gunicorn en `127.0.0.1:8002`, detrás de nginx y Cloudflare. La
@@ -24,13 +24,20 @@ L-notes es una aplicación web de notas al estilo Obsidian construida con Django
 
 <table>
 <tr>
-<td width="50%"><img src="assets/screenshots/demo2.png" alt="Exportar a PDF"><br><sub>Exportar cualquier nota a PDF, en claro u oscuro.</sub></td>
-<td width="50%"><img src="assets/screenshots/demo3.png" alt="Búsqueda"><br><sub>Búsqueda instantánea por nombre y contenido.</sub></td>
+<td width="50%"><img src="assets/screenshots/lnotes-diagramas.png" alt="Diagramas"><br><sub>Los diagramas se escriben en texto y se dibujan solos.</sub></td>
+<td width="50%"><img src="assets/screenshots/lnotes-formulas.png" alt="Fórmulas"><br><sub>Fórmulas con KaTeX, en bloque y en línea.</sub></td>
 </tr>
 <tr>
-<td colspan="2"><img src="assets/screenshots/demo4.png" alt="Almacenamiento, optimización de imágenes y backups"><br><sub>Estadísticas de la bóveda, optimización de imágenes a WebP y backup en ZIP antes de aplicarla.</sub></td>
+<td><img src="assets/screenshots/lnotes-busqueda.png" alt="Búsqueda"><br><sub>Búsqueda instantánea por nombre y por contenido.</sub></td>
+<td><img src="assets/screenshots/lnotes-temas.png" alt="Temas"><br><sub>Siete temas; el elegido queda guardado en la cuenta.</sub></td>
+</tr>
+<tr>
+<td><img src="assets/screenshots/lnotes-cristal.png" alt="Tema cristal"><br><sub>El tema cristal, en claro.</sub></td>
+<td><img src="assets/screenshots/lnotes-movil.png" alt="En el móvil"><br><sub>En el móvil, instalable como aplicación.</sub></td>
 </tr>
 </table>
+
+<sub>Capturas de esta instancia, con una bóveda de ejemplo.</sub>
 
 ## Características
 

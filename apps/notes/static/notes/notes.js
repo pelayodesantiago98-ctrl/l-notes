@@ -240,7 +240,9 @@ async function renderMermaid(container){
 
 /* ════════════ Tree ════════════ */
 function flatten(items){ items.forEach(it=>{
-  if(it.type==='folder') flatten(it.children||[]);
+  // Las notas también pueden tener hijos: si solo se baja por las carpetas,
+  // las subnotas no aparecen en el buscador.
+  if(it.children && it.children.length) flatten(it.children);
   else {
     FLAT.push(it);
     BY_PATH.set(it.path.toLowerCase(), it);
@@ -315,13 +317,63 @@ function buildTreeDOM(items, container, depth, parentPath){
       if(!isAttach) wireRowDrop(kids, it.path);
     } else {
       const ico=it.type==='note'?iconNote:(IMG_EXT.includes(it.ext)?iconImg:iconFile);
-      row.innerHTML=`<span style="width:16px"></span>${ico}<span class="label">${esc(it.name)}</span><button class="row-menu" aria-label="Opciones de ${esc(it.name)}">${iconDots}</button>`;
+
+      /* Una nota puede tener subnotas. Cuando las tiene lleva flecha, como una
+         carpeta, pero sigue siendo una nota: el clic en el nombre la abre y el
+         clic en la flecha despliega. Son dos acciones en la misma fila, cosa
+         que a una carpeta no le pasa. */
+      const conHijos = it.type==='note' && it.children && it.children.length>0;
+      const abierta = conHijos && expanded.has(it.path);
+      if(conHijos && !abierta) row.classList.add('collapsed');
+
+      const twirl = conHijos
+        ? `<span class="twirl">${iconChev}</span>`
+        : '<span style="width:16px"></span>';
+      row.innerHTML=`${twirl}${ico}<span class="label">${esc(it.name)}</span><button class="row-menu" aria-label="Opciones de ${esc(it.name)}">${iconDots}</button>`;
       if(current && current.path===it.path) row.classList.add('active');
       row.setAttribute('tabindex','0');
       container.appendChild(row);
+
+      let kids=null;
+      if(conHijos){
+        kids=document.createElement('div');
+        kids.className='tree-children'+(abierta?'':' hidden');
+        kids._items=it.children; kids._depth=depth+1;
+        /* El padre de las subnotas es la CARPETA de la nota, no su .md: es la
+           ruta con la que hay que crear o soltar dentro. */
+        kids._parentPath=it.carpeta||it.path;
+        container.appendChild(kids);
+        if(abierta) buildChildren(kids);
+        row.setAttribute('aria-expanded', abierta.toString());
+        wireRowDrop(kids, it.carpeta||it.path);
+      }
+
+      function alternar(){
+        if(!kids) return;
+        const willOpen=kids.classList.contains('hidden');
+        if(willOpen) buildChildren(kids);
+        kids.classList.toggle('hidden', !willOpen);
+        row.classList.toggle('collapsed', !willOpen);
+        row.setAttribute('aria-expanded', willOpen.toString());
+        if(willOpen) expanded.add(it.path); else expanded.delete(it.path);
+        persistExpanded();
+      }
+
       row.addEventListener('click', e=>{ if(e.target.closest('.row-menu'))return;
+        /* La flecha despliega; el resto de la fila abre la nota. Sin esto,
+           abrir una nota con subnotas obligaría a plegarla y desplegarla sin
+           querer cada vez. */
+        if(conHijos && e.target.closest('.twirl')){ e.stopPropagation(); alternar(); return; }
         if(it.type==='note') openNote(it.path); else window.open(assetUrl(it.path),'_blank');});
       row.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();row.click();}
+        /* Derecha despliega, izquierda pliega: es lo que se espera de un árbol
+           y aquí hace falta porque Enter abre la nota, no la despliega. */
+        if(conHijos && (e.key==='ArrowRight'||e.key==='ArrowLeft')){
+          e.preventDefault();
+          const oculto=kids.classList.contains('hidden');
+          if((e.key==='ArrowRight')===oculto) alternar();
+          return;
+        }
         if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();
           const rows=[...document.querySelectorAll('#vault-tree .tree-row')].filter(r=>!r.closest('.tree-children.hidden'));
           const i=rows.indexOf(row);const next=rows[i+(e.key==='ArrowDown'?1:-1)];if(next)next.focus();}});
@@ -339,7 +391,7 @@ function parentPathOf(path){ const p=path.split('/'); p.pop(); return p.join('/'
 function findNode(items, path){
   for(const n of items){
     if(n.path===path) return n;
-    if(n.type==='folder'){ const f=findNode(n.children||[], path); if(f) return f; }
+    if(n.children && n.children.length){ const f=findNode(n.children, path); if(f) return f; }
   }
   return null;
 }
@@ -588,7 +640,11 @@ async function openNote(path, terms, opts){
   applyViewMode();   // respeta el modo elegido (lectura por defecto) al abrir la nota
   document.querySelectorAll('.tree-row.active').forEach(r=>r.classList.remove('active'));
   const row=document.querySelector(`.tree-row[data-path="${cssEsc(path)}"]`); if(row) row.classList.add('active');
-  if(window.innerWidth<760) $('vault').classList.add('side-hidden');
+  /* Antes esto la ocultaba del todo (side-hidden). Ahora se pliega dejando
+     el borde, que es el asa para devolverla; hacer las dos cosas a la vez
+     no dejaba ver el borde, porque el margen negativo se lleva la barra
+     fuera de la pantalla. */
+  if(esMovil()) plegarLista(true);
   if(ED) ED.view.scrollDOM.scrollTop=0;
   if(terms && terms.length) jumpToMatch(terms);   // venido de un resultado de búsqueda
   // Pestañas: actualizar la activa (o crear la primera) con esta ruta.
@@ -1009,10 +1065,27 @@ function showInputDialog(title, defaultVal, onOk, opts){
   okBtn.addEventListener('click',okH); cancelBtn.addEventListener('click',cancelH);
   field.addEventListener('keydown',keyH);
 }
-function showConfirmDialog(title, msg, okLabel, onOk, onCancel){
+function showConfirmDialog(title, msg, okLabel, onOk, onCancel, opciones){
   const dlg=$('confirm-dialog');
   $('cd-title').textContent=title; $('cd-msg').textContent=msg;
   $('cd-ok').textContent=okLabel||'Confirmar';
+
+  /* Casilla opcional ("no volver a mostrar"). Se monta al abrir y se quita al
+     cerrar: solo la usa un diálogo y dejarla fija en el HTML obligaría a
+     acordarse de ocultarla en todos los demás. */
+  let casilla=null;
+  const antigua=dlg.querySelector('.cd-casilla');
+  if(antigua) antigua.remove();
+  if(opciones && opciones.checkbox){
+    const lab=document.createElement('label');
+    lab.className='cd-casilla';
+    casilla=document.createElement('input');
+    casilla.type='checkbox';
+    lab.appendChild(casilla);
+    lab.appendChild(document.createTextNode(' '+opciones.checkbox));
+    $('cd-msg').insertAdjacentElement('afterend', lab);
+  }
+
   dlg.style.display=''; dlg.classList.add('show');
   const prev=document.activeElement;
   setTimeout(()=>$('cd-cancel').focus(),60);
@@ -1020,6 +1093,11 @@ function showConfirmDialog(title, msg, okLabel, onOk, onCancel){
     dlg.classList.remove('show'); dlg.style.display='none';
     okBtn.removeEventListener('click',okH); cancelBtn.removeEventListener('click',cancelH);
     dlg.removeEventListener('keydown',keyH);
+    /* La preferencia se guarda solo si se confirma: marcar la casilla y luego
+       cancelar no debería dejar callado un aviso que nunca se llegó a aceptar. */
+    if(ok && casilla && opciones && opciones.onCheckbox) opciones.onCheckbox(casilla.checked);
+    const lab=dlg.querySelector('.cd-casilla');
+    if(lab) lab.remove();
     if(ok) onOk(); else if(onCancel) onCancel();
     if(prev&&prev.focus) try{prev.focus();}catch(_){}
   }
@@ -1104,6 +1182,7 @@ async function deleteItem(it){
       'Al borrarla se borran también, y esto no se puede deshacer.',
       'Sí, borrar todo',
       ()=>{ hacerBorrado(it); },
+      null,
       {checkbox:'No volver a mostrar este aviso', onCheckbox:v=>{
         if(v) localStorage.setItem(AVISO_RAMA,'no'); else localStorage.removeItem(AVISO_RAMA);
       }}
@@ -1850,10 +1929,72 @@ $('vault-side').addEventListener('dragleave', e=>{
   if(dragSrc && !$('vault-side').contains(e.relatedTarget)) clearDropVisual();
 });
 $('btn-toggle-sidebar').addEventListener('click', ()=>{
+  // Ocultar del todo y plegar son excluyentes.
+  $('vault').classList.remove('side-plegada');
+  try{ localStorage.setItem('vault-side-plegada','0'); }catch(_){}
   const hidden=$('vault').classList.toggle('side-hidden');
   $('btn-toggle-sidebar').setAttribute('aria-expanded',(!hidden).toString());
   if(window.innerWidth>=760) localStorage.setItem('vault-side-hidden',hidden?'1':'0');
 });
+
+/* ════════════ Plegar la bóveda ════════════
+   Distinto de "ocultar" (side-hidden, el botón de la cabecera): aquí queda un
+   borde visible que sirve de asa. En móvil se pliega sola al abrir una nota,
+   porque la lista tapaba casi toda la pantalla y el usuario venía a leer. */
+const PLEGADA='vault-side-plegada';
+/* El mismo umbral que la media query del CSS: si aquí y allí no coinciden,
+   el JavaScript pliega en anchuras donde el CSS no lo dibuja, o al revés. */
+const esMovil = ()=>window.matchMedia('(max-width:760px)').matches;
+
+function plegarLista(plegar){
+  const v=$('vault');
+  v.classList.toggle('side-plegada', plegar);
+  /* Las dos clases juntas no tienen sentido: "oculta" se lleva la barra fuera
+     de la pantalla y taparía el borde que "plegada" quiere dejar a la vista. */
+  if(plegar) v.classList.remove('side-hidden');
+  const b=$('btn-plegar');
+  if(b){
+    b.title = plegar ? 'Desplegar la lista' : 'Plegar la lista';
+    b.setAttribute('aria-label', b.title);
+  }
+  /* Se recuerda en los dos tamaños: quien la pliega en el móvil espera
+     encontrársela plegada la próxima vez, igual que en el escritorio. */
+  try{ localStorage.setItem(PLEGADA, plegar?'1':'0'); }catch(_){}
+}
+
+const estaPlegada = ()=>$('vault').classList.contains('side-plegada');
+
+if($('btn-plegar')){
+  $('btn-plegar').addEventListener('click', e=>{ e.stopPropagation(); plegarLista(true); });
+}
+
+/* El borde plegado es el asa: pulsarlo la devuelve. Va en captura y sobre la
+   propia barra, porque sus hijos están desactivados mientras está plegada. */
+$('vault-side').addEventListener('click', e=>{
+  if(!estaPlegada()) return;
+  e.preventDefault(); e.stopPropagation();
+  plegarLista(false);
+}, true);
+
+
+/* Clic fuera: en móvil la barra se superpone al contenido, así que tocar la
+   nota de al lado la pliega. Es lo que hace cualquier panel superpuesto, y sin
+   esto había que apuntar al botón para quitarla de en medio.
+   En escritorio no: allí la barra no tapa nada y cerrarla al tocar el texto
+   sería una sorpresa desagradable. */
+document.addEventListener('pointerdown', e=>{
+  if(!esMovil() || estaPlegada()) return;
+  if(e.target.closest('#vault-side')) return;
+  /* Los botones que gobiernan la barra no cuentan como "fuera": si no, el de
+     la cabecera la plegaría y la desplegaría en el mismo gesto. */
+  if(e.target.closest('#btn-toggle-sidebar') || e.target.closest('#btn-plegar')) return;
+  /* Ni los menús flotantes, que viven fuera de la barra pero son suyos. */
+  if(e.target.closest('#ctx-menu') || e.target.closest('.modal-back')) return;
+  plegarLista(true);
+}, true);
+
+if(localStorage.getItem(PLEGADA)==='1') plegarLista(true);
+
 window.addEventListener('beforeunload', ()=>{ if(dirty) saveNow(); });
 document.addEventListener('visibilitychange', ()=>{ if(document.hidden&&dirty) saveNow(); });
 function flashSync(){ const d=$('sync-dot'); d.classList.add('visible'); setTimeout(()=>d.classList.remove('visible'),700); }
