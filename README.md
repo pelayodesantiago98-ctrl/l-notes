@@ -75,3 +75,13 @@ docker compose exec web python manage.py createsuperuser
 ## Despliegue
 
 `scripts/l-notes.service` es la referencia de la unidad systemd usada en producción (gunicorn detrás de un proxy inverso con TLS). Tras cualquier cambio en los estáticos, ejecuta `collectstatic`, sube `ASSET_VERSION` en `.env` y reinicia el servicio para invalidar la caché.
+
+## Créditos
+
+L-notes está basado en **[cogny](https://github.com/Maalfer/cogny)**, de
+**[Maalfer](https://github.com/Maalfer)** — el proyecto original del que parte
+todo este código. Gracias por publicarlo.
+
+Esta versión cambia la marca y añade, sobre aquella base, la entrada por SSO
+desde el portal, los temas cristal y algunos ajustes de interfaz. El diseño, la
+arquitectura y el grueso de la aplicación son suyos.
