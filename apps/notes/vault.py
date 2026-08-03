@@ -229,6 +229,53 @@ def drop_shares(rel_path: str, is_dir: bool) -> None:
         SharedNote.objects.filter(path__startswith=rel_path + "/").delete()
 
 
+# ── Subnotas ─────────────────────────────────────────────────────────────────
+
+def es_contenedor(base: Path, nota: Path) -> bool:
+    """¿Esta nota ya puede tener hijos?
+
+    Lo es cuando vive dentro de una carpeta que se llama como ella: entonces la
+    carpeta es su sitio y todo lo que haya al lado son sus subnotas.
+    """
+    return nota.parent.name == nota.stem and nota.parent != base
+
+
+def carpeta_de(base: Path, nota: Path) -> Path:
+    """Dónde van los hijos de esta nota, ya sea contenedor o no."""
+    if es_contenedor(base, nota):
+        return nota.parent
+    return nota.parent / nota.stem
+
+
+def convertir_en_contenedor(base: Path, nota: Path) -> Path:
+    """Prepara una nota para tener hijos y devuelve su nueva ruta.
+
+    De  Tema.md  pasa a  Tema/Tema.md.
+
+    Si ya lo era, no toca nada. El movimiento se hace con rename, que es atómico
+    dentro del mismo sistema de ficheros: o la nota está en su sitio viejo o en
+    el nuevo, nunca a medias ni duplicada.
+    """
+    if es_contenedor(base, nota):
+        return nota
+
+    carpeta = nota.parent / nota.stem
+    if carpeta.exists() and not carpeta.is_dir():
+        raise ValueError("Ya hay un archivo con ese nombre donde iría la carpeta")
+
+    carpeta.mkdir(parents=True, exist_ok=True)
+    destino = carpeta / nota.name
+    if destino.exists():
+        raise ValueError("Ya hay una nota con ese nombre dentro")
+
+    old_rel = rel_of(base, nota)
+    nota.rename(destino)
+    # Los enlaces públicos apuntan a una ruta: sin esto, compartir una nota y
+    # luego darle una subnota dejaría el enlace muerto.
+    move_shares(old_rel, rel_of(base, destino), False)
+    return destino
+
+
 # ── Árbol ────────────────────────────────────────────────────────────────────
 
 def build_tree(base: Path, directory: Path) -> list:
@@ -251,11 +298,34 @@ def build_tree(base: Path, directory: Path) -> list:
         except OSError:
             continue
         if is_dir:
-            items.append({
-                "type": "folder", "name": entry.name,
-                "path": rel_of(base, entry),
-                "children": build_tree(base, entry),
-            })
+            # Nota de carpeta: si dentro hay un .md que se llama igual que la
+            # carpeta, los dos son la misma cosa. Se emite un único nodo que es
+            # nota (tiene texto y se abre) y a la vez contenedor (tiene hijos),
+            # y el .md homónimo no vuelve a salir suelto entre los hijos.
+            propia = entry / (entry.name + ".md")
+            hijos = build_tree(base, entry)
+            if propia.is_file():
+                hijos = [h for h in hijos if h.get("path") != rel_of(base, propia)]
+                try:
+                    mtime_propia = int(propia.stat().st_mtime)
+                except OSError:
+                    mtime_propia = None
+                items.append({
+                    "type": "note", "name": entry.name,
+                    "path": rel_of(base, propia),
+                    "updated": mtime_propia,
+                    "children": hijos,
+                    # Para que el cliente sepa que soltar algo encima no tiene
+                    # que convertir nada: ya es contenedor.
+                    "contenedor": True,
+                    "carpeta": rel_of(base, entry),
+                })
+            else:
+                items.append({
+                    "type": "folder", "name": entry.name,
+                    "path": rel_of(base, entry),
+                    "children": hijos,
+                })
         elif entry.suffix.lower() == ".md":
             items.append({
                 "type": "note", "name": entry.stem,

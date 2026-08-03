@@ -38,6 +38,21 @@ def _resolve(root: Path, rel):
 
 # ════════════ Vault ════════════
 
+
+def _rama_de(root, ruta: Path) -> Path:
+    """La carpeta de una nota que tiene hijos; la propia ruta si no los tiene.
+
+    Una nota con subnotas vive en `X/X.md`, y lo que hay que mover, renombrar o
+    borrar es `X/` entera. Sin esto, mover la nota dejaba a sus hijos atrás.
+    """
+    try:
+        if ruta.is_file() and ruta.suffix.lower() == ".md" and vault.es_contenedor(root, ruta):
+            return ruta.parent
+    except (OSError, ValueError):
+        pass
+    return ruta
+
+
 @login_required
 def index(request):
     vault.root()  # asegura que el directorio existe
@@ -103,6 +118,16 @@ def create(request):
     parent_dir, err = _resolve(root, as_text(request.data.get("parent")).strip())
     if err:
         return err
+
+    # El padre puede ser una nota, no solo una carpeta: es lo que permite
+    # colgar una subnota de otra nota. Se convierte en contenedor al vuelo
+    # —pasa de Tema.md a Tema/Tema.md— y los hijos van dentro.
+    if parent_dir.is_file() and parent_dir.suffix.lower() == ".md":
+        try:
+            parent_dir = vault.convertir_en_contenedor(root, parent_dir).parent
+        except (ValueError, OSError) as exc:
+            return _err(str(exc) or "No he podido preparar la nota para tener subnotas")
+
     parent_dir.mkdir(parents=True, exist_ok=True)
 
     if request.data.get("type", "note") == "folder":
@@ -133,6 +158,38 @@ def rename(request):
         return err
     if not src.exists():
         return _err("No existe", 404)
+
+    # ── Nota con subnotas ───────────────────────────────────────────────────
+    # Hay dos cosas que se llaman igual —la carpeta y el .md de dentro— y las
+    # dos tienen que cambiar de nombre a la vez. Si solo cambiara el texto,
+    # dejaría de llamarse como su carpeta, la nota perdería la condición de
+    # contenedor y sus hijos aparecerían sueltos un nivel más arriba.
+    if src.is_file() and src.suffix.lower() == ".md" and vault.es_contenedor(root, src):
+        base = new_name[:-3] if new_name.endswith(".md") else new_name
+        carpeta = src.parent
+        nueva_carpeta = carpeta.parent / base
+
+        if nueva_carpeta.exists() and nueva_carpeta != carpeta:
+            return _err("Ya existe con ese nombre")
+
+        old_rel_carpeta = vault.rel_of(root, carpeta)
+        old_rel_nota = vault.rel_of(root, src)
+
+        # Primero la carpeta y luego el texto de dentro: al revés, el .md
+        # renombrado dejaría de coincidir con su carpeta durante un instante y
+        # cualquier lectura entre medias vería la nota rota.
+        carpeta.rename(nueva_carpeta)
+        dentro_viejo = nueva_carpeta / src.name
+        dentro_nuevo = nueva_carpeta / (base + ".md")
+        if dentro_viejo.exists():
+            dentro_viejo.rename(dentro_nuevo)
+
+        vault.rename_in_order(carpeta.parent, carpeta.name, nueva_carpeta.name)
+        # Los enlaces públicos: el de la propia nota y el de todo lo que cuelga.
+        vault.move_shares(old_rel_carpeta, vault.rel_of(root, nueva_carpeta), True)
+        vault.move_shares(old_rel_nota, vault.rel_of(root, dentro_nuevo), False)
+        return JsonResponse({"success": True, "path": vault.rel_of(root, dentro_nuevo)})
+
     if src.is_file() and src.suffix.lower() == ".md" and not new_name.endswith(".md"):
         new_name += ".md"
     dst = src.parent / new_name
@@ -164,6 +221,9 @@ def move(request):
     dst_dir, err = _resolve(root, as_text(request.data.get("target")).strip())
     if err:
         return err
+    # Si la nota tiene subnotas, lo que se mueve es su carpeta entera.
+    src = _rama_de(root, src)
+
     if not src.exists() or src == root:
         return _err("No existe", 404)
     if src == root / vault.ATTACHMENTS_DIR:
@@ -172,6 +232,22 @@ def move(request):
         # subida crearía una "Adjuntos" nueva y vacía en la raíz, duplicando la
         # carpeta. El frontend ya no deja arrastrarla; esto cierra el endpoint.
         return _err("La carpeta de adjuntos no se puede mover")
+    # Soltar sobre una nota la convierte en contenedor y mete dentro lo que se
+    # arrastró. Es lo que hace que el árbol se comporte como el de CherryTree:
+    # arrastras una nota encima de otra y queda anidada, sin tener que crear
+    # antes una carpeta a mano.
+    if dst_dir.is_file() and dst_dir.suffix.lower() == ".md":
+        if dst_dir == src:
+            return _err("Una nota no puede colgar de sí misma")
+        try:
+            dst_dir = vault.convertir_en_contenedor(root, dst_dir).parent
+        except (ValueError, OSError) as exc:
+            return _err(str(exc) or "No he podido preparar la nota de destino")
+        # La conversión mueve el .md destino, así que si lo que se arrastraba
+        # estaba dentro hay que volver a mirar dónde ha quedado.
+        if not src.exists():
+            src = dst_dir / src.name
+
     if not dst_dir.exists() or not dst_dir.is_dir():
         return _err("Carpeta destino no encontrada", 404)
     if src.is_dir():
@@ -221,6 +297,11 @@ def delete(request):
     target, err = _resolve(root, as_text(request.data.get("path")).strip())
     if err:
         return err
+    # Una nota con subnotas se borra entera, con su carpeta y su descendencia.
+    # El aviso de cuántas se van a llevar por delante lo da el cliente, que ya
+    # tiene el árbol y sabe contarlas sin preguntar.
+    target = _rama_de(root, target)
+
     if not target.exists() or target == root:
         return _err("No existe", 404)
     parent, name = target.parent, target.name

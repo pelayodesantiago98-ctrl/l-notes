@@ -367,7 +367,10 @@ function wireRowDrag(row, it, parentPath, isAttach){
   row.addEventListener('dragover', e=>{
     if(!dragSrc || dragSrc.path===it.path) return;
     const rect=row.getBoundingClientRect(); const y=e.clientY-rect.top, h=rect.height;
-    const canDropInto = it.type==='folder' && !isAttach;
+    // Una nota tambien admite que le suelten algo dentro: al hacerlo se
+    // convierte en contenedor y lo soltado pasa a ser subnota suya. Los
+    // adjuntos siguen fuera de esto.
+    const canDropInto = (it.type==='folder' || it.type==='note') && !isAttach;
     const mode = (canDropInto && y>h*0.25 && y<h*0.75) ? 'into' : (y<h/2 ? 'before' : 'after');
     // La carpeta destino EFECTIVA es esta misma (modo "into") o su padre (before/after,
     // reordenar como hermano). Si arrastramos una carpeta, ninguna de las dos puede ser
@@ -376,7 +379,11 @@ function wireRowDrag(row, it, parentPath, isAttach){
     // vive dentro de una subcarpeta de la carpeta arrastrada también sería un ciclo, porque
     // el padre de esa nota (el targetParent real) sigue siendo un descendiente.
     const targetParent = mode==='into' ? it.path : parentPath;
-    if(dragSrc.type==='folder' && (targetParent===dragSrc.path || targetParent.startsWith(dragSrc.path+'/'))) return;
+    // Para una nota que ya es contenedor, su "carpeta" es lo que cuenta al
+    // comprobar ciclos: su .md vive dentro de ella.
+    const ramaOrigen = dragSrc.carpeta || dragSrc.path;
+    if((dragSrc.type==='folder' || dragSrc.contenedor)
+       && (targetParent===ramaOrigen || targetParent.startsWith(ramaOrigen+'/'))) return;
     e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect='move';
     setDropVisual(row, mode);
   });
@@ -1062,10 +1069,55 @@ async function renameItem(it){
     if(wasOpen) openNote(res.path);
   },{okLabel:'Renombrar'});
 }
+// Cuenta la descendencia de un nodo del árbol: lo que se va a llevar por
+// delante un borrado. Se hace en el cliente porque el árbol ya está cargado y
+// preguntarlo al servidor sería un viaje para contar algo que ya tenemos.
+function contarDescendencia(it){
+  let notas=0, otros=0;
+  (function hondo(nodos){
+    for(const n of nodos||[]){
+      if(n.type==='note') notas++; else otros++;
+      hondo(n.children);
+    }
+  })(it.children);
+  return {notas, otros, total: notas+otros};
+}
+
+const AVISO_RAMA='lnotes_avisoBorrarRama';
+
 async function deleteItem(it){
   if(!guardWrite()) return;
+
+  const hijos=contarDescendencia(it);
+  const calladito=localStorage.getItem(AVISO_RAMA)==='no';
+
+  // Una nota con subnotas se lleva la rama entera. Es el único borrado de aquí
+  // que destruye algo que no se está mirando, así que se avisa aparte y con la
+  // cuenta por delante; quien ya lo tenga claro puede callarlo para siempre.
+  if(it.type==='note' && hijos.total>0 && !calladito){
+    const lista=[];
+    if(hijos.notas) lista.push(hijos.notas===1?'1 subnota':`${hijos.notas} subnotas`);
+    if(hijos.otros) lista.push(hijos.otros===1?'1 elemento más':`${hijos.otros} elementos más`);
+    showConfirmDialog(
+      'Borrar la nota y todo lo que cuelga de ella',
+      `«${it.name}» tiene ${lista.join(' y ')} dentro.\n\n` +
+      'Al borrarla se borran también, y esto no se puede deshacer.',
+      'Sí, borrar todo',
+      ()=>{ hacerBorrado(it); },
+      {checkbox:'No volver a mostrar este aviso', onCheckbox:v=>{
+        if(v) localStorage.setItem(AVISO_RAMA,'no'); else localStorage.removeItem(AVISO_RAMA);
+      }}
+    );
+    return;
+  }
+
   const what=it.type==='folder'?'la carpeta y todo su contenido':(it.type==='note'?'la nota':'el archivo');
-  showConfirmDialog('Borrar',`¿Borrar ${what} «${it.name}»?`,'Sí, borrar',async ()=>{
+  showConfirmDialog('Borrar',`¿Borrar ${what} «${it.name}»?`,'Sí, borrar',async ()=>{ hacerBorrado(it); });
+}
+
+// El borrado en sí, aparte para poder llamarlo desde el aviso normal y
+// desde el de rama sin duplicarlo.
+async function hacerBorrado(it){
     const res=await api('/api/notes/delete',{path:it.path}); if(res.error){alert(res.error);return;}
     const isHit = p => p===it.path || p.startsWith(it.path+'/');
     for(let i=tabs.length-1;i>=0;i--){
@@ -1084,8 +1136,7 @@ async function deleteItem(it){
     }
     renderTabs(); updateNavButtons();
     loadTree();
-  });
-}
+  }
 
 /* ════════════ Context menu ════════════ */
 function showCtxMenu(e,it){
@@ -1095,6 +1146,11 @@ function showCtxMenu(e,it){
     html+=`<button data-act="new-folder">${iconFolder(false).replace('ico','')}Nueva subcarpeta</button><div class="ctx-sep"></div>`;
   }
   if(it.type==='note'){
+    if(CAN_WRITE){
+      // Lo primero del menú: es la acción que convierte el árbol en un árbol
+      // de verdad, y se espera arriba, junto a las de crear.
+      html+=`<button data-act="new-subnote">${iconNote.replace('ico','')}Nueva subnota</button><div class="ctx-sep"></div>`;
+    }
     html+=`<button data-act="open-new-tab"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>Abrir en nueva pestaña</button><div class="ctx-sep"></div>`;
     const pdfIco=`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zM8 13h1.5a1.5 1.5 0 0 1 0 3H9v2H8v-5zm1.5 2a.5.5 0 0 0 0-1H9v1h.5zM12 13h1.5a1.5 1.5 0 0 1 1.5 1.5v2A1.5 1.5 0 0 1 13.5 18H12v-5zm1 4a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 0-.5-.5v3zm3-4h2v1h-1v1h1v1h-1v2h-1v-5z"/></svg>`;
     html+=`<button data-act="pdf">${pdfIco}Exportar a PDF</button>`;
@@ -1122,7 +1178,7 @@ function showCtxMenu(e,it){
       if(_ek.key==='Escape'){_ek.preventDefault();hideCtx();}
     });
     b.onclick=()=>{ hideCtx(); const a=b.dataset.act;
-      if(a==='new-note') newNote(it.path); else if(a==='new-folder') newFolder(it.path);
+      if(a==='new-note') newNote(it.path); else if(a==='new-subnote') newNote(it.path); else if(a==='new-folder') newFolder(it.path);
       else if(a==='open-new-tab') openInNewTab(it.path);
       else if(a==='pdf') exportNotePDF(it,false);
       else if(a==='pdf-dark') exportNotePDF(it,true);
