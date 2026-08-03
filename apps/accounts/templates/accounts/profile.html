@@ -16,19 +16,21 @@
   <!-- ════════ Cabecera ════════ -->
   <header class="pfx-hero">
     <div class="pfx-hero-id">
-      <button type="button" class="pfx-avatar-wrap" id="avatar-wrap"
-              aria-label="Cambiar foto de perfil" title="Cambiar foto de perfil">
+      <a href="https://lepayimio.es/" class="pfx-avatar-wrap" id="avatar-wrap"
+         aria-label="Cambiar la foto en lepayimio.es" title="La foto se cambia en lepayimio.es">
         <span class="pfx-avatar" id="avatar-display">
           {% avatar_url as av %}
           {% if av %}<img src="{{ av }}" alt="" id="avatar-img" decoding="async">{% endif %}
           <span id="avatar-letter"{% if av %} style="display:none"{% endif %}>{{ user.username|slice:":1"|upper }}</span>
+          {# La foto vive en el portal y es la misma en todos los servicios. #}
+          <img class="avatar-portal" src="https://lepayimio.es/perfil/foto" alt=""
+               decoding="async" onerror="this.remove()">
         </span>
         <span class="pfx-avatar-ring" id="avatar-ring" aria-hidden="true"></span>
         <span class="pfx-avatar-cam" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 15.2A3.2 3.2 0 1 0 12 8.8a3.2 3.2 0 0 0 0 6.4zm0-8.4a5.2 5.2 0 1 1 0 10.4 5.2 5.2 0 0 1 0-10.4zM3 4V1h2v3h3v2H5v3H3V6H0V4h3zm4 4V5h7l1.83 2H21c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V8h4z"/></svg>
         </span>
-      </button>
-      <input type="file" id="avatar-file-input" accept="image/*" hidden>
+      </a>
 
       <div class="pfx-hero-text">
         <h1 class="pfx-hero-name" id="hero-name">{{ user.username }}</h1>
@@ -37,7 +39,7 @@
           <span class="pfx-badge pfx-badge-{{ user.role }}">{{ user.get_role_display }}</span>
           <span class="pfx-badge pfx-badge-soft">
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 15.2A3.2 3.2 0 1 0 12 8.8a3.2 3.2 0 0 0 0 6.4zm0-8.4a5.2 5.2 0 1 1 0 10.4 5.2 5.2 0 0 1 0-10.4zM3 4V1h2v3h3v2H5v3H3V6H0V4h3zm4 4V5h7l1.83 2H21c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V8h4z"/></svg>
-            Pulsa la foto para cambiarla
+            La foto se cambia en lepayimio.es
           </span>
         </div>
       </div>
@@ -291,32 +293,8 @@ function fold(headId, cardId) {
   return sync;
 }
 
-document.getElementById('avatar-wrap').addEventListener('click', () => {
-  document.getElementById('avatar-file-input').click();
-});
-document.getElementById('avatar-file-input').addEventListener('change', async e => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const ring = document.getElementById('avatar-ring');
-  ring.classList.add('uploading');
-  toast('Subiendo foto…');
-  const fd = new FormData();
-  fd.append('file', file);
-  try {
-    const res = await fetch('/api/profile/upload-picture', {method:'POST', body:fd}).then(r=>r.json());
-    if (res.success) {
-      const display = document.getElementById('avatar-display');
-      let img = display.querySelector('img');
-      if (!img) { img = document.createElement('img'); img.id='avatar-img'; img.onerror=()=>img.remove(); img.alt=''; display.insertBefore(img, display.firstChild); }
-      img.src = res.url + '?v=' + Date.now();
-      const letter = document.getElementById('avatar-letter');
-      if (letter) letter.style.display = 'none';
-      toast('Foto actualizada');
-    } else { toast(res.error || 'Error', false); }
-  } catch { toast('Error de conexión', false); }
-  ring.classList.remove('uploading');
-  e.target.value = '';
-});
+/* La foto ya no se sube aquí: el avatar es un enlace al portal, que es donde
+   se gestiona para todos los servicios a la vez. */
 
 document.getElementById('btn-save-username').addEventListener('click', async () => {
   const username = document.getElementById('new-username').value.trim();
