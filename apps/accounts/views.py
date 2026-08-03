@@ -52,24 +52,8 @@ def profile(request):
 
 # ── Ajustes de la cuenta propia ──────────────────────────────────────────────
 
-@login_required
-@require_POST
-def upload_picture(request):
-    f = request.FILES.get("file")
-    if not f:
-        return _err("Falta archivo")
-    if f.size > services.MAX_AVATAR_BYTES:
-        return _err("Imagen demasiado grande (máx 4 MB)")
-    if not services.detect_image_kind(f.read(32)):
-        return _err("Sólo se permiten imágenes (jpg, png, webp, gif)")
-    target = services.avatar_path(request.user)
-    target.parent.mkdir(parents=True, exist_ok=True)
-    # OJO: f.chunks() hace seek(0) internamente, así que NO escribimos aparte los
-    # 32 bytes ya leídos (duplicarlos corrompería la imagen).
-    with open(target, "wb") as fp:
-        for chunk in f.chunks():
-            fp.write(chunk)
-    return JsonResponse({"success": True, "url": f"/static/avatars/{target.name}"})
+# La foto de perfil se sube en el portal (lepayimio.es), que la sirve a todos
+# los servicios. Aquí solo se lee la que hubiera de antes, como respaldo.
 
 
 @login_required

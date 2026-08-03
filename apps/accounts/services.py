@@ -14,9 +14,6 @@ from django.core.exceptions import ValidationError
 
 from .models import ApiKey, User
 
-MAX_AVATAR_BYTES = 4 * 1024 * 1024
-
-
 # ── Avatares ─────────────────────────────────────────────────────────────────
 
 def avatar_path(user) -> Path:
@@ -26,23 +23,6 @@ def avatar_path(user) -> Path:
     haría que el último en subir foto pisara la de todos los demás.
     """
     return settings.AVATARS_ROOT / f"avatar-{user.pk}.jpg"
-
-
-def detect_image_kind(head: bytes):
-    """Tipo de imagen según los bytes mágicos, o `None` si no lo es.
-
-    Se mira el contenido y no la extensión ni el `Content-Type`: los dos los
-    elige quien sube el archivo.
-    """
-    if head.startswith(b"\xff\xd8\xff"):
-        return "jpeg"
-    if head.startswith(b"\x89PNG\r\n\x1a\n"):
-        return "png"
-    if head.startswith(b"GIF87a") or head.startswith(b"GIF89a"):
-        return "gif"
-    if head.startswith(b"RIFF") and head[8:12] == b"WEBP":
-        return "webp"
-    return None
 
 
 # ── Serialización ────────────────────────────────────────────────────────────
