@@ -30,6 +30,7 @@ class User(AbstractUser):
         ("gold", "Dorado"),
         ("cristal", "Cristal"),
         ("dark-cristal", "Dark Cristal"),
+        ("cafe", "Café"),
     )
 
     ROLE_OWNER = "owner"

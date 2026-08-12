@@ -864,7 +864,7 @@ async function saveNow(){
 /* ════════════ Modo lectura / edición ════════════ */
 /* 'read' = nota renderizada (bonita, sin editar) · 'edit' = editor CodeMirror.
    Por defecto las notas se abren en lectura; la preferencia se recuerda. */
-let viewMode = CAN_WRITE ? (localStorage.getItem('lnotes-view-mode') || 'read') : 'read';
+let viewMode = CAN_WRITE ? (localStorage.getItem('lnotes-view-mode') || 'edit') : 'read';
 function renderReader(){
   const rd=$('cm-reader'); if(!rd) return;
   const md=(current&&current.content)||'';

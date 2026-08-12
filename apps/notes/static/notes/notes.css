@@ -660,3 +660,113 @@
   .vault-side::after,
   #btn-plegar svg{transition:none}
 }
+
+/* ════════════ TEMA CAFÉ ════════════
+   El cuerpo va en el marron claro del icono de l-notes (#c3b3a1 arriba en su
+   degradado), con el texto en marron oscuro. Las reglas de aqui abajo salen
+   de las del tema claro, que ya resolvian el caso de fondo claro, con los
+   grises azulados cambiados por marrones. Las de resaltado de sintaxis se
+   copian tal cual.
+   La cabecera se queda en cafe oscuro: es la barra de titulo y separa bien
+   del lienzo. */
+:root[data-theme="cafe"]{
+  --vault-bg:     #cbb9a3;   /* el lienzo: cafe con leche */
+  --vault-side:   #bba894;   /* la lateral, un punto por debajo, para separarse */
+  --vault-line:   #a58f76;
+  --vault-accent: #6b5340;   /* cafe tostado: sobre claro tiene que ser el que destaca */
+}
+/* Sobre el acento oscuro, el texto va en crema. */
+:root[data-theme="cafe"] .tree-row.active,
+:root[data-theme="cafe"] .vault-side-head button.on,
+:root[data-theme="cafe"] .seg button.active,
+:root[data-theme="cafe"] .format-bar button:hover{ color:#f6ebda }
+
+:root[data-theme="cafe"] .tab-bar{background:rgba(0,0,0,.04)}
+:root[data-theme="cafe"] .tab-item{background:rgba(0,0,0,.04);color:#574836}
+:root[data-theme="cafe"] .tab-item:hover{background:rgba(0,0,0,.08);color:#201a12}
+:root[data-theme="cafe"] .tab-item.active{background:var(--vault-bg);color:#201a12}
+:root[data-theme="cafe"] .tab-close:hover{background:rgba(0,0,0,.12)}
+:root[data-theme="cafe"] .zoom-pop{background:#dfd0bb;border-color:#a58f76;box-shadow:0 6px 24px rgba(0,0,0,.12)}
+:root[data-theme="cafe"] .zoom-pop button{background:rgba(0,0,0,.05);color:#2e2419}
+:root[data-theme="cafe"] .zoom-pop button:hover{background:rgba(0,0,0,.1);color:#201a12}
+:root[data-theme="cafe"] .format-bar{background:#dfd0bb;border-color:#a58f76;box-shadow:0 8px 28px rgba(0,0,0,.14)}
+:root[data-theme="cafe"] .format-bar button{background:rgba(0,0,0,.05);color:#2e2419}
+:root[data-theme="cafe"] .format-bar button:hover{background:var(--vault-accent);color:#dfd0bb}
+:root[data-theme="cafe"] .fmt-label{color:#6f5d48}
+:root[data-theme="cafe"] .cm-content{caret-color:#6b5340 !important}
+:root[data-theme="cafe"] .code-copy{background:rgba(255,255,255,.75);border-color:#a58f76;color:#5f5040}
+:root[data-theme="cafe"] .code-copy:hover{background:#dfd0bb;color:#2e2419}
+:root[data-theme="cafe"]{--vault-bg:#cbb9a3; --vault-side:#dfd0bb; --vault-line:#a58f76;
+  --vault-accent:var(--cyan,#6b5340);}
+:root[data-theme="cafe"] .vault-side-head{color:#7d6c56}
+:root[data-theme="cafe"] .vault-side-head button{color:#5f5040}
+:root[data-theme="cafe"] .vault-side-head button:hover{background:rgba(0,0,0,.06);color:#201a12}
+:root[data-theme="cafe"] .vault-side-top button{background:rgba(0,0,0,.05);color:#4a3d2e}
+:root[data-theme="cafe"] .vault-side-top button:hover{background:rgba(0,0,0,.09)}
+:root[data-theme="cafe"] .vault-search input{background:#dfd0bb;color:#2e2419}
+:root[data-theme="cafe"] .vault-search input::placeholder{color:#8a7862}
+:root[data-theme="cafe"] .vault-search-clear{color:#8a7862}
+:root[data-theme="cafe"] .vault-search-clear:hover{color:#2e2419;background:rgba(0,0,0,.08)}
+:root[data-theme="cafe"] .tree-row.search-hit .hit-snippet{color:#8a7862}
+:root[data-theme="cafe"] .tree-row{color:#4a3d2e}
+:root[data-theme="cafe"] .tree-row:hover{background:rgba(0,0,0,.05)}
+:root[data-theme="cafe"] .tree-row.is-file{color:#6f5d48}
+:root[data-theme="cafe"] .tree-row.active{color:#dfd0bb}
+:root[data-theme="cafe"] .tree-row .row-menu:hover{background:rgba(0,0,0,.1)}
+:root[data-theme="cafe"] .tree-empty{color:#8a7862}
+:root[data-theme="cafe"] .vault-title{color:#2e2419}
+:root[data-theme="cafe"] .vault-title .crumb{color:#8a7862}
+:root[data-theme="cafe"] .vault-title .crumb-link{text-decoration-color:rgba(0,0,0,.2)}
+:root[data-theme="cafe"] .vault-status{color:#8a7862}
+:root[data-theme="cafe"] .vault-tool-btn{background:rgba(0,0,0,.05);color:#574836}
+:root[data-theme="cafe"] .vault-tool-btn:hover{background:rgba(0,0,0,.1);color:#201a12}
+:root[data-theme="cafe"] .seg{background:rgba(0,0,0,.05)}
+:root[data-theme="cafe"] .seg button{color:#5f5040}
+:root[data-theme="cafe"] .seg button.active{color:#dfd0bb}
+:root[data-theme="cafe"] #md-editor{color:#2e2419}
+:root[data-theme="cafe"] .vault-hdr-btn{color:#574836}
+:root[data-theme="cafe"] .vault-hdr-btn:hover{background:rgba(0,0,0,.08)}
+:root[data-theme="cafe"] .vault-empty{color:#8a7862}
+:root[data-theme="cafe"] .vault-empty .empty-actions button{background:rgba(0,0,0,.06);color:#2e2419}
+:root[data-theme="cafe"] .markdown-body{color:#2e2419}
+:root[data-theme="cafe"] .markdown-body h4{color:#2e2419}
+:root[data-theme="cafe"] .markdown-body code{background:rgba(0,0,0,.06);color:#2e2419}
+:root[data-theme="cafe"] .markdown-body blockquote{color:#574836}
+:root[data-theme="cafe"] .markdown-body th{background:rgba(0,0,0,.04)}
+:root[data-theme="cafe"] .note-props th{color:#6f5d48}
+:root[data-theme="cafe"] .callout{background:rgba(0,0,0,.03)}
+:root[data-theme="cafe"] .tag-pill{background:rgba(8,145,178,.12);color:#6b5340}
+:root[data-theme="cafe"] .ctx-menu{background:#dfd0bb;box-shadow:0 10px 30px rgba(20,30,60,.18)}
+:root[data-theme="cafe"] .ctx-menu button{color:#2e2419}
+:root[data-theme="cafe"] .ctx-menu button:hover{background:rgba(0,0,0,.06)}
+:root[data-theme="cafe"] .modal{background:#dfd0bb}
+:root[data-theme="cafe"] .modal h3{color:#2e2419}
+:root[data-theme="cafe"] .imgdir-opt small{color:#6f5d48}
+:root[data-theme="cafe"] .imgdir-opt{background:rgba(0,0,0,.04);color:#2e2419}
+:root[data-theme="cafe"] .imgdir-opt:hover{background:rgba(0,0,0,.08)}
+:root[data-theme="cafe"] .btn-cancel{background:rgba(0,0,0,.07);color:#2e2419}
+:root[data-theme="cafe"] .modal-progress{background:rgba(0,0,0,.1)}
+:root[data-theme="cafe"] .modal::before{background:rgba(0,0,0,.18)}
+:root[data-theme="cafe"] .markdown-body pre{background:#d7c7b1;border-color:#a58f76}
+:root[data-theme="cafe"] .markdown-body .hljs{color:#2e2419;background:transparent}
+:root[data-theme="cafe"] .markdown-body .hljs-variable.language_{color:#d73a49}
+:root[data-theme="cafe"] .markdown-body .hljs-title.function_{color:#6f42c1}
+:root[data-theme="cafe"] .markdown-body .hljs-variable{color:#005cc5}
+:root[data-theme="cafe"] .markdown-body .hljs-string{color:#032f62}
+:root[data-theme="cafe"] .markdown-body .hljs-symbol{color:#e36209}
+:root[data-theme="cafe"] .markdown-body .hljs-formula{color:#6a737d}
+:root[data-theme="cafe"] .markdown-body .hljs-selector-tag{color:#22863a}
+:root[data-theme="cafe"] .markdown-body .hljs-subst{color:#2e2419}
+:root[data-theme="cafe"] .markdown-body .hljs-section{color:#005cc5}
+:root[data-theme="cafe"] .markdown-body .hljs-bullet{color:#735c0f}
+:root[data-theme="cafe"] .markdown-body .hljs-addition{color:#22863a;background-color:#f0fff4}
+:root[data-theme="cafe"] .markdown-body .hljs-deletion{color:#b31d28;background-color:#ffeef0}
+:root[data-theme="cafe"] .vault-input-field{background:#dfd0bb;color:#2e2419;border-color:#a58f76}
+:root[data-theme="cafe"] .vault-input-field::placeholder{color:#8a7862}
+
+/* Fila seleccionada del arbol: cuero claro con letra oscura. Sobre un cuerpo
+   en cafe con leche, la letra clara sobre el acento se leia como una mancha
+   blanca en medio de la lista. */
+:root[data-theme="cafe"] .tree-row.active{ background:#c3a077; color:#2b2118 }
+:root[data-theme="cafe"] .tree-row.active .row-menu{ color:#2b2118 }
+:root[data-theme="cafe"] .tree-row.active:focus-visible{ outline-color:rgba(43,33,24,.55) }

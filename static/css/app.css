@@ -3197,3 +3197,220 @@ solo fade */
   border-radius: 50%;
   z-index: 2;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Tema Café
+   La referencia es el icono de L-notes tal y como se ve en el portal: el
+   grimorio sobre un cuadrado de cuero que va de #9c7f5e a #453629. Todo el
+   tema son tonos de ese cuero, del mas tostado al mas claro; nada de negro,
+   que es lo que tienen los otros temas oscuros y lo que este no quiere ser.
+   Cuatro superficies bien separadas para que se distinga lo que esta encima
+   de lo que esta debajo.
+   ══════════════════════════════════════════════════════════════════════════ */
+:root[data-theme="cafe"]{
+  --bg:  #33281e;           /* cuero tostado: el fondo de todo */
+  --bg2: #3e3125;           /* barras y tarjetas */
+  --bg3: #4a3b2c;           /* campos y elementos elevados */
+  --bg4: #5a4835;           /* lo de mas arriba: menus y estados activos */
+  --text:  #f6ebda;         /* pergamino de las paginas del libro */
+  --text2: #d9c4a7;
+  --text3: #bca387;
+  --border: #63503a;
+  --cyan: #d8b183;          /* acento cuero claro (nombre heredado del sistema) */
+  --cyan-hover: #f0d3aa;
+  --cyan-dim: rgba(216,177,131,0.16);
+  --cyan-border: rgba(216,177,131,0.42);
+  --red: #e0806a;           /* terracota: destaca sin salirse de la gama */
+}
+:root[data-theme="cafe"] body{ background: var(--bg); color: var(--text); }
+:root[data-theme="cafe"] body.subapp-body{ background: var(--bg); }
+:root[data-theme="cafe"] ::-webkit-scrollbar-thumb{ background: #5a4835; }
+:root[data-theme="cafe"] ::-webkit-scrollbar-thumb:hover{ background: #705b44; }
+:root[data-theme="cafe"] ::selection{ background: rgba(216,177,131,.32); color: #2a2018; }
+/* Barra lateral: arriba el cuero oscuro del icono, disolviendose en el fondo */
+:root[data-theme="cafe"] #sidebar{
+  background: linear-gradient(180deg, #453629 0%, var(--bg) 300px);
+  border-right: 1px solid var(--border);
+}
+:root[data-theme="cafe"] .app-card{
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0,0,0,.35);
+}
+:root[data-theme="cafe"] .app-card:hover{
+  background: var(--bg3);
+  border-color: var(--cyan-border);
+  box-shadow: 0 8px 26px -14px rgba(216,177,131,.28);
+}
+:root[data-theme="cafe"] #bottom-nav{
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+}
+:root[data-theme="cafe"] input,
+:root[data-theme="cafe"] textarea,
+:root[data-theme="cafe"] select{
+  background: var(--bg3);
+  color: var(--text);
+  border-color: var(--border);
+}
+:root[data-theme="cafe"] input::placeholder,
+:root[data-theme="cafe"] textarea::placeholder{ color: var(--text3); }
+:root[data-theme="cafe"] input:focus,
+:root[data-theme="cafe"] textarea:focus,
+:root[data-theme="cafe"] select:focus{
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px var(--cyan-dim);
+  outline: none;
+}
+:root[data-theme="cafe"] .cal-day.today{ color: #2a2018; }
+:root[data-theme="cafe"] .cal-day.today.selected{
+  box-shadow: 0 0 0 3px var(--bg2), 0 0 0 5px var(--cyan);
+}
+:root[data-theme="cafe"] .btn-primary{ color: #2a2018; font-weight: 700; }
+:root[data-theme="cafe"] .btn-secondary{
+  background: var(--bg3);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+:root[data-theme="cafe"] .btn-secondary:hover{ background: var(--bg4); }
+:root[data-theme="cafe"] .chat-bubble.me{ background: var(--cyan); color: #2a2018; }
+:root[data-theme="cafe"] .chat-bubble.them{ background: var(--bg3); color: var(--text); }
+:root[data-theme="cafe"] .pf-toast{
+  background: var(--bg2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 24px rgba(0,0,0,.45);
+}
+:root[data-theme="cafe"] .bh-header{ border-bottom-color: var(--border); }
+:root[data-theme="cafe"] .bh-brand:hover{ background: rgba(246,235,218,.10); }
+:root[data-theme="cafe"] .bh-version{
+  color: var(--cyan);
+  background: rgba(216,177,131,0.14);
+  border-color: rgba(216,177,131,0.34);
+}
+/* Muestra del selector: los dos extremos del degradado del propio icono */
+.pf-theme-cafe{
+  background: linear-gradient(135deg, #453629 50%, #9c7f5e 50%);
+  color: #2a2018;
+  border: 1px solid #63503a;
+}
+
+/* ── Controles de Ajustes ──────────────────────────────────────────────────
+   Controles de Ajustes en cafe: los que llevan el cian escrito a pelo y no
+   siguen a --cyan, mas las marcas de verificacion, que van en negro fijo. */
+:root[data-theme="cafe"] .pf-theme-check{ color:#2a2018 }
+:root[data-theme="cafe"] .settings-title-link:hover{ background:rgba(216,177,131,.20) }
+:root[data-theme="cafe"] .apikey-new{ background:rgba(216,177,131,.12) }
+:root[data-theme="cafe"] .form-msg.ok{ background:rgba(216,177,131,.16) }
+:root[data-theme="cafe"] .pf-msg.ok{ background:rgba(216,177,131,.14) }
+:root[data-theme="cafe"] .acc-perm-btn.active{ background:rgba(216,177,131,.12) }
+:root[data-theme="cafe"] .storage-check input:focus-visible + .storage-check-box{
+  box-shadow:0 0 0 3px rgba(216,177,131,.28) }
+:root[data-theme="cafe"] .year-tab.active{
+  background:rgba(216,177,131,.14); border-color:rgba(216,177,131,.38) }
+:root[data-theme="cafe"] .imgdir-info{ background:rgba(216,177,131,.12) }
+:root[data-theme="cafe"] .song-item.playing{ background:rgba(216,177,131,.12) }
+
+/* ── Letras de Ajustes ─────────────────────────────────────────────────────
+   Letras de Ajustes en cafe: lo que llevaba color propio de otra paleta. */
+:root[data-theme="cafe"] .pf-icon-theme{
+  background:rgba(216,177,131,.16); color:var(--cyan) }
+:root[data-theme="cafe"] .storage-check-box svg{ color:#2a2018 }
+:root[data-theme="cafe"] .storage-card-icon{ background:rgba(246,235,218,.09) }
+
+/* Peligro y error: del rojo de serie al terracota del tema. Sigue siendo el
+   color mas caliente de la pantalla, que es lo que tiene que ser. */
+:root[data-theme="cafe"] .btn-danger,
+:root[data-theme="cafe"] .hb-item.hb-danger,
+:root[data-theme="cafe"] .hb-item.hb-danger svg,
+:root[data-theme="cafe"] .md-ctxmenu-danger,
+:root[data-theme="cafe"] .form-msg.err,
+:root[data-theme="cafe"] .pf-msg.err,
+:root[data-theme="cafe"] .pf-upload-msg.err,
+:root[data-theme="cafe"] .pf-toast.err,
+:root[data-theme="cafe"] .storage-error{ color:var(--red) }
+:root[data-theme="cafe"] .btn-danger:hover{
+  background:rgba(224,128,106,.14); color:var(--text) }
+:root[data-theme="cafe"] .hb-item.hb-danger:hover,
+:root[data-theme="cafe"] .md-ctxmenu-danger:focus-visible{
+  background:rgba(224,128,106,.13); color:var(--red) }
+:root[data-theme="cafe"] .form-msg.err,
+:root[data-theme="cafe"] .pf-msg.err,
+:root[data-theme="cafe"] .storage-error{ background:rgba(224,128,106,.14) }
+:root[data-theme="cafe"] .sli-actions button.sli-revoke:hover,
+:root[data-theme="cafe"] .acc-btn.acc-del:hover{ background:rgba(224,128,106,.22) }
+
+/* ── Panel de Ajustes ──────────────────────────────────────────────────────
+   Panel de Ajustes sobre fondo claro. El panel es el mismo .modal que usa la
+   boveda, y con el cuerpo en cafe con leche le toca fondo claro; aqui se le
+   da la vuelta a la escala de color solo dentro de el, para que el contenido
+   —que cuelga de estas mismas variables— se adapte de una vez.
+   La escala invertida: los fondos suben, los textos bajan y el acento pasa a
+   ser el cafe tostado, que sobre claro es el que destaca. */
+:root[data-theme="cafe"] .modal-back .modal{
+  --bg2:   #dfd0bb;
+  --bg3:   #d3c1a9;
+  --bg4:   #c5b09a;
+  --text:  #2e2419;
+  --text2: #574836;
+  --text3: #6f5d48;
+  --border:#a58f76;
+  --cyan:       #6b5340;
+  --cyan-hover: #54402f;
+  --cyan-dim:   rgba(107,83,64,.14);
+  --cyan-border:rgba(107,83,64,.45);
+  --red:   #a8452f;
+  background: #dfd0bb;
+  color: var(--text);
+}
+
+/* Sobre el acento, que aqui es oscuro, el texto y las marcas van en crema. */
+:root[data-theme="cafe"] .modal-back .modal .pf-theme-check{ color:#f6ebda }
+:root[data-theme="cafe"] .modal-back .modal .btn-primary{ color:#f6ebda }
+:root[data-theme="cafe"] .modal-back .modal .storage-check-box svg{ color:#f6ebda }
+
+/* Los avisos que llevaban el cian a pelo: dentro del panel, en cafe tostado. */
+:root[data-theme="cafe"] .modal-back .modal .pf-icon-theme{
+  background:rgba(107,83,64,.14); color:var(--cyan) }
+:root[data-theme="cafe"] .modal-back .modal .settings-title-link{
+  background:rgba(107,83,64,.12) }
+:root[data-theme="cafe"] .modal-back .modal .settings-title-link:hover{
+  background:rgba(107,83,64,.20) }
+:root[data-theme="cafe"] .modal-back .modal .imgdir-info,
+:root[data-theme="cafe"] .modal-back .modal .apikey-new,
+:root[data-theme="cafe"] .modal-back .modal .acc-perm-btn.active,
+:root[data-theme="cafe"] .modal-back .modal .form-msg.ok,
+:root[data-theme="cafe"] .modal-back .modal .pf-msg.ok{
+  background:rgba(107,83,64,.12) }
+:root[data-theme="cafe"] .modal-back .modal .form-msg.err,
+:root[data-theme="cafe"] .modal-back .modal .pf-msg.err,
+:root[data-theme="cafe"] .modal-back .modal .storage-error{
+  background:rgba(168,69,47,.13) }
+:root[data-theme="cafe"] .modal-back .modal .storage-card-icon{
+  background:rgba(46,36,25,.08) }
+
+/* Texto seleccionado: fondo solido en vez de un velo. El velo se veia sobre
+   el cuerpo claro y desaparecia sobre la cabecera oscura; asi vale en las dos.
+   Va al final para ganarle a la regla de mas arriba. */
+:root[data-theme="cafe"] ::selection{ background:#c7a077; color:#2a2018 }
+
+/* ── Remates ───────────────────────────────────────────────────────────────
+   Avisos vacios de Ajustes y marca de verificacion, con el color escrito a
+   pelo. Van por id y al final del fichero a proposito: estos dos avisos
+   heredaban el color del panel, y notes.css vuelve a declarar .imgdir-info
+   mas tarde, asi que la herencia no era de fiar. */
+:root[data-theme="cafe"] #shared-links-empty,
+:root[data-theme="cafe"] #apikeys-empty{
+  background:rgba(107,83,64,.10);
+  border:1px solid #8a6f56;
+  color:#2e2419;
+}
+:root[data-theme="cafe"] #shared-links-empty svg,
+:root[data-theme="cafe"] #apikeys-empty svg{ fill:#6b5340; opacity:1 }
+:root[data-theme="cafe"] #shared-links-empty span,
+:root[data-theme="cafe"] #apikeys-empty span{ color:#2e2419 }
+
+/* La marca del tema activo: circulo cafe tostado y tick crema. */
+:root[data-theme="cafe"] .pf-theme-check{ background:#6b5340; color:#f6ebda }
+:root[data-theme="cafe"] .modal-back .modal .pf-theme-check{
+  background:#6b5340; color:#f6ebda }

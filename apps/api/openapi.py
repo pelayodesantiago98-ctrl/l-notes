@@ -722,7 +722,7 @@ def _paths() -> dict:
                 "summary": "Cambiar nombre de usuario o tema",
                 "requestBody": _json_body({
                     "username": {"type": "string"},
-                    "theme": {"type": "string", "enum": ["dark", "light", "dracula", "pink", "gold", "cristal", "dark-cristal"]},
+                    "theme": {"type": "string", "enum": ["dark", "light", "dracula", "pink", "gold", "cristal", "dark-cristal", "cafe"]},
                 }, example={"theme": "dracula"}),
                 "responses": {
                     "200": _resp("Actualizado", {"type": "object", "properties": {
