@@ -2278,7 +2278,7 @@ solo fade */
 }
 
 /* =============================================
-   CRISTAL — el lenguaje visual del portal dentro de l-notes.
+   CRYSTAL — el lenguaje visual del portal dentro de l-notes.
 
    Mismo patrón que los demás temas: se redefinen las variables y se retocan
    los componentes que no salen bien solo con ellas. No cambia ni una etiqueta
@@ -2293,7 +2293,7 @@ solo fade */
    Dos intentos antes de este: uno negro, indistinguible del tema por defecto,
    y otro casi blanco, que perdía el azul y dejaba la cabecera desentonando.
    ============================================= */
-:root[data-theme="cristal"]{
+:root[data-theme="crystal"]{
   /* El azul de fondo. Es el tono del wallpaper del portal, subido de luz para
      que aguante texto oscuro encima. */
   --bg:  #c7dcf2;
@@ -2326,8 +2326,8 @@ solo fade */
 
 /* El degradado va en el body y fijo, para que al desplazarse el fondo se quede
    quieto y las superficies parezcan flotar sobre él. */
-:root[data-theme="cristal"] body,
-:root[data-theme="cristal"] body.subapp-body{
+:root[data-theme="crystal"] body,
+:root[data-theme="crystal"] body.subapp-body{
   background:
     radial-gradient(1200px 700px at 12% -5%, #e2eefb 0%, transparent 60%),
     radial-gradient(900px 600px at 95% 8%, #d6e7fa 0%, transparent 55%),
@@ -2340,41 +2340,41 @@ solo fade */
   letter-spacing: -0.01em;
 }
 
-:root[data-theme="cristal"] ::selection{ background: rgba(0,96,223,.20); }
-:root[data-theme="cristal"] ::-webkit-scrollbar-thumb{
+:root[data-theme="crystal"] ::selection{ background: rgba(0,96,223,.20); }
+:root[data-theme="crystal"] ::-webkit-scrollbar-thumb{
   background: rgba(13,36,64,.22);
   border-radius: 999px;
 }
-:root[data-theme="cristal"] ::-webkit-scrollbar-thumb:hover{ background: rgba(13,36,64,.34); }
+:root[data-theme="crystal"] ::-webkit-scrollbar-thumb:hover{ background: rgba(13,36,64,.34); }
 
 /* ── Barras fijas ───────────────────────────────────────────────────────── */
 /* Tintadas de azul, no blancas: el blanco cortaba la pantalla en dos. Con el
    desenfoque, lo que se ve a través es el propio fondo. */
 
-:root[data-theme="cristal"] .bh-header{
+:root[data-theme="crystal"] .bh-header{
   background: rgba(199,220,242,0.62);
   border-bottom: 1px solid rgba(255,255,255,0.55);
   backdrop-filter: saturate(180%) blur(22px);
   -webkit-backdrop-filter: saturate(180%) blur(22px);
 }
 
-:root[data-theme="cristal"] #bottom-nav{
+:root[data-theme="crystal"] #bottom-nav{
   background: rgba(199,220,242,0.75);
   border-top: 1px solid rgba(255,255,255,0.55);
   backdrop-filter: saturate(180%) blur(22px);
   -webkit-backdrop-filter: saturate(180%) blur(22px);
 }
 
-:root[data-theme="cristal"] #sidebar{
+:root[data-theme="crystal"] #sidebar{
   background: rgba(255,255,255,0.34);
   border-right: 1px solid rgba(255,255,255,0.55);
   backdrop-filter: saturate(160%) blur(18px);
   -webkit-backdrop-filter: saturate(160%) blur(18px);
 }
 
-:root[data-theme="cristal"] .bh-brand:hover{ background: rgba(255,255,255,.45); }
+:root[data-theme="crystal"] .bh-brand:hover{ background: rgba(255,255,255,.45); }
 
-:root[data-theme="cristal"] .bh-version{
+:root[data-theme="crystal"] .bh-version{
   color: var(--cyan);
   background: rgba(255,255,255,0.6);
   border-color: rgba(0,96,223,0.28);
@@ -2383,7 +2383,7 @@ solo fade */
 
 /* ── Tarjetas ───────────────────────────────────────────────────────────── */
 
-:root[data-theme="cristal"] .app-card{
+:root[data-theme="crystal"] .app-card{
   background: rgba(255,255,255,0.66);
   border: 1px solid rgba(255,255,255,0.7);
   border-radius: var(--radius);
@@ -2391,7 +2391,7 @@ solo fade */
   -webkit-backdrop-filter: blur(14px);
   box-shadow: 0 2px 10px rgba(13,36,64,.07);
 }
-:root[data-theme="cristal"] .app-card:hover{
+:root[data-theme="crystal"] .app-card:hover{
   background: rgba(255,255,255,0.86);
   border-color: #fff;
   box-shadow: 0 8px 24px rgba(13,36,64,.13);
@@ -2401,9 +2401,9 @@ solo fade */
 /* Los campos sí van casi opacos: escribir sobre algo que transparenta lo que
    hay detrás cansa la vista. */
 
-:root[data-theme="cristal"] input,
-:root[data-theme="cristal"] textarea,
-:root[data-theme="cristal"] select{
+:root[data-theme="crystal"] input,
+:root[data-theme="crystal"] textarea,
+:root[data-theme="crystal"] select{
   background: rgba(255,255,255,0.85);
   color: var(--text);
   border: 1px solid rgba(255,255,255,0.9);
@@ -2411,12 +2411,12 @@ solo fade */
   /* 16px justos: por debajo, iOS hace zoom al enfocar el campo. */
   font-size: 16px;
 }
-:root[data-theme="cristal"] input::placeholder,
-:root[data-theme="cristal"] textarea::placeholder{ color: var(--text3); }
+:root[data-theme="crystal"] input::placeholder,
+:root[data-theme="crystal"] textarea::placeholder{ color: var(--text3); }
 
-:root[data-theme="cristal"] input:focus,
-:root[data-theme="cristal"] textarea:focus,
-:root[data-theme="cristal"] select:focus{
+:root[data-theme="crystal"] input:focus,
+:root[data-theme="crystal"] textarea:focus,
+:root[data-theme="crystal"] select:focus{
   outline: none;
   background: #fff;
   border-color: var(--cyan);
@@ -2425,7 +2425,7 @@ solo fade */
 
 /* ── Botones ────────────────────────────────────────────────────────────── */
 
-:root[data-theme="cristal"] .btn-primary{
+:root[data-theme="crystal"] .btn-primary{
   background: var(--cyan);
   color: #fff;
   border: 0;
@@ -2433,26 +2433,26 @@ solo fade */
   font-weight: 600;
   box-shadow: 0 2px 10px rgba(0,96,223,.28);
 }
-:root[data-theme="cristal"] .btn-primary:hover{ background: var(--cyan-hover); }
-:root[data-theme="cristal"] .btn-primary:active{ transform: scale(0.97); }
+:root[data-theme="crystal"] .btn-primary:hover{ background: var(--cyan-hover); }
+:root[data-theme="crystal"] .btn-primary:active{ transform: scale(0.97); }
 
-:root[data-theme="cristal"] .btn-secondary{
+:root[data-theme="crystal"] .btn-secondary{
   background: rgba(255,255,255,0.7);
   color: var(--cyan);
   border: 1px solid rgba(255,255,255,0.85);
   border-radius: 999px;
   font-weight: 600;
 }
-:root[data-theme="cristal"] .btn-secondary:hover{ background: #fff; }
+:root[data-theme="crystal"] .btn-secondary:hover{ background: #fff; }
 
 /* ── Chat ───────────────────────────────────────────────────────────────── */
 
-:root[data-theme="cristal"] .chat-bubble.me{
+:root[data-theme="crystal"] .chat-bubble.me{
   background: var(--cyan);
   color: #fff;
   border-radius: 18px;
 }
-:root[data-theme="cristal"] .chat-bubble.them{
+:root[data-theme="crystal"] .chat-bubble.them{
   background: rgba(255,255,255,0.8);
   color: var(--text);
   border-radius: 18px;
@@ -2462,8 +2462,8 @@ solo fade */
 
 /* Los flotantes llevan el cristal más marcado: aparecen encima de contenido y
    tienen que leerse sin ambigüedad, pero se sigue viendo lo que tapan. */
-:root[data-theme="cristal"] .pf-toast,
-:root[data-theme="cristal"] .vault-settings-menu{
+:root[data-theme="crystal"] .pf-toast,
+:root[data-theme="crystal"] .vault-settings-menu{
   background:
     linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.74) 45%, rgba(255,255,255,0.86) 100%);
   color: var(--text);
@@ -2475,16 +2475,16 @@ solo fade */
     inset 0 1px 0 rgba(255,255,255,1),
     0 14px 36px rgba(13,36,64,.20);
 }
-:root[data-theme="cristal"] .vsm-item{ color: var(--text); }
-:root[data-theme="cristal"] .vsm-item:hover{ background: rgba(0,96,223,.10); }
-:root[data-theme="cristal"] .vsm-sep{ background: rgba(13,36,64,.12); }
+:root[data-theme="crystal"] .vsm-item{ color: var(--text); }
+:root[data-theme="crystal"] .vsm-item:hover{ background: rgba(0,96,223,.10); }
+:root[data-theme="crystal"] .vsm-sep{ background: rgba(13,36,64,.12); }
 
-:root[data-theme="cristal"] .cal-day.today{ color: #fff; }
-:root[data-theme="cristal"] .cal-day.today.selected{
+:root[data-theme="crystal"] .cal-day.today{ color: #fff; }
+:root[data-theme="crystal"] .cal-day.today.selected{
   box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--cyan);
 }
 
-:root[data-theme="cristal"] .pf-theme-dark{ background: #161824; color: #c5cbe3; }
+:root[data-theme="crystal"] .pf-theme-dark{ background: #161824; color: #c5cbe3; }
 
 /* ── Letras e iconos ────────────────────────────────────────────────────── */
 /*
@@ -2498,56 +2498,56 @@ solo fade */
  * cabecera, barra inferior, bóveda y menús. No se toca el contenido de las
  * notas, que tiene su propio tratamiento más abajo.
  */
-:root[data-theme="cristal"] .bh-header,
-:root[data-theme="cristal"] .bh-header a,
-:root[data-theme="cristal"] .bh-header button,
-:root[data-theme="cristal"] #bottom-nav,
-:root[data-theme="cristal"] #bottom-nav a,
-:root[data-theme="cristal"] #bottom-nav button,
-:root[data-theme="cristal"] #sidebar,
-:root[data-theme="cristal"] #sidebar a,
-:root[data-theme="cristal"] .vault-side,
-:root[data-theme="cristal"] .vault-side-head,
-:root[data-theme="cristal"] .vault-side-top,
-:root[data-theme="cristal"] .vault-toolbar,
-:root[data-theme="cristal"] .vault-tree,
-:root[data-theme="cristal"] .vault-title,
-:root[data-theme="cristal"] .vault-status{
+:root[data-theme="crystal"] .bh-header,
+:root[data-theme="crystal"] .bh-header a,
+:root[data-theme="crystal"] .bh-header button,
+:root[data-theme="crystal"] #bottom-nav,
+:root[data-theme="crystal"] #bottom-nav a,
+:root[data-theme="crystal"] #bottom-nav button,
+:root[data-theme="crystal"] #sidebar,
+:root[data-theme="crystal"] #sidebar a,
+:root[data-theme="crystal"] .vault-side,
+:root[data-theme="crystal"] .vault-side-head,
+:root[data-theme="crystal"] .vault-side-top,
+:root[data-theme="crystal"] .vault-toolbar,
+:root[data-theme="crystal"] .vault-tree,
+:root[data-theme="crystal"] .vault-title,
+:root[data-theme="crystal"] .vault-status{
   color: var(--text);
 }
 
 /* Los iconos, en gris: al ir a currentColor basta con darles su propio color
    en el elemento que los envuelve. */
-:root[data-theme="cristal"] .bh-header svg,
-:root[data-theme="cristal"] #bottom-nav svg,
-:root[data-theme="cristal"] #sidebar svg,
-:root[data-theme="cristal"] .vault-side svg,
-:root[data-theme="cristal"] .vault-toolbar svg,
-:root[data-theme="cristal"] .vault-tree svg,
-:root[data-theme="cristal"] .vault-hdr-btn svg,
-:root[data-theme="cristal"] .vault-tool-btn svg,
-:root[data-theme="cristal"] .vsm-item svg{
+:root[data-theme="crystal"] .bh-header svg,
+:root[data-theme="crystal"] #bottom-nav svg,
+:root[data-theme="crystal"] #sidebar svg,
+:root[data-theme="crystal"] .vault-side svg,
+:root[data-theme="crystal"] .vault-toolbar svg,
+:root[data-theme="crystal"] .vault-tree svg,
+:root[data-theme="crystal"] .vault-hdr-btn svg,
+:root[data-theme="crystal"] .vault-tool-btn svg,
+:root[data-theme="crystal"] .vsm-item svg{
   fill: var(--icono);
 }
 
 /* Al pasar por encima o al estar activo, azul: es la señal de "esto responde". */
-:root[data-theme="cristal"] .bh-header button:hover svg,
-:root[data-theme="cristal"] #bottom-nav a:hover svg,
-:root[data-theme="cristal"] .vault-hdr-btn:hover svg,
-:root[data-theme="cristal"] .vault-tool-btn:hover svg,
-:root[data-theme="cristal"] .vault-tool-btn.active svg,
-:root[data-theme="cristal"] #bottom-nav a.activo svg,
-:root[data-theme="cristal"] #bottom-nav a.active svg{
+:root[data-theme="crystal"] .bh-header button:hover svg,
+:root[data-theme="crystal"] #bottom-nav a:hover svg,
+:root[data-theme="crystal"] .vault-hdr-btn:hover svg,
+:root[data-theme="crystal"] .vault-tool-btn:hover svg,
+:root[data-theme="crystal"] .vault-tool-btn.active svg,
+:root[data-theme="crystal"] #bottom-nav a.activo svg,
+:root[data-theme="crystal"] #bottom-nav a.active svg{
   fill: var(--cyan);
 }
 
 /* El menú de la bóveda ponía el texto en blanco al pasar el ratón —correcto
    sobre el menú oscuro original, ilegible sobre este—. */
-:root[data-theme="cristal"] .vsm-item,
-:root[data-theme="cristal"] .vsm-item:hover{
+:root[data-theme="crystal"] .vsm-item,
+:root[data-theme="crystal"] .vsm-item:hover{
   color: var(--text);
 }
-:root[data-theme="cristal"] .vsm-item:hover svg{ fill: var(--cyan); }
+:root[data-theme="crystal"] .vsm-item:hover svg{ fill: var(--cyan); }
 
 /* ── La bóveda, bajo cristal ────────────────────────────────────────────── */
 /*
@@ -2563,9 +2563,9 @@ solo fade */
  * solo necesitan color.
  */
 
-:root[data-theme="cristal"] .vault{ background: transparent; }
+:root[data-theme="crystal"] .vault{ background: transparent; }
 
-:root[data-theme="cristal"] .vault-side{
+:root[data-theme="crystal"] .vault-side{
   background:
     linear-gradient(135deg, rgba(255,255,255,0.58) 0%, rgba(255,255,255,0.22) 42%, rgba(255,255,255,0.36) 100%);
   border: 1px solid rgba(255,255,255,0.6);
@@ -2578,7 +2578,7 @@ solo fade */
   overflow: hidden;   /* el redondeo tiene que recortar el árbol de dentro */
 }
 
-:root[data-theme="cristal"] .vault-main{
+:root[data-theme="crystal"] .vault-main{
   background:
     linear-gradient(135deg, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.52) 45%, rgba(255,255,255,0.64) 100%);
   border: 1px solid rgba(255,255,255,0.65);
@@ -2591,42 +2591,42 @@ solo fade */
   overflow: hidden;
 }
 
-:root[data-theme="cristal"] .vault-side-head,
-:root[data-theme="cristal"] .vault-side-top,
-:root[data-theme="cristal"] .vault-toolbar{
+:root[data-theme="crystal"] .vault-side-head,
+:root[data-theme="crystal"] .vault-side-top,
+:root[data-theme="crystal"] .vault-toolbar{
   background: rgba(255,255,255,0.34);
   border-color: rgba(255,255,255,0.6);
 }
 
-:root[data-theme="cristal"] .vault-tree{ background: transparent; }
+:root[data-theme="crystal"] .vault-tree{ background: transparent; }
 
 /* Los elementos del árbol: sin desenfoque propio, que ya lo pone el panel. */
-:root[data-theme="cristal"] .vault-tree .row:hover,
-:root[data-theme="cristal"] .vault-tree .item:hover,
-:root[data-theme="cristal"] .vault-tree li:hover{
+:root[data-theme="crystal"] .vault-tree .row:hover,
+:root[data-theme="crystal"] .vault-tree .item:hover,
+:root[data-theme="crystal"] .vault-tree li:hover{
   background: rgba(255,255,255,0.55);
   border-radius: var(--radius-sm);
 }
-:root[data-theme="cristal"] .vault-tree .row.active,
-:root[data-theme="cristal"] .vault-tree .item.active,
-:root[data-theme="cristal"] .vault-tree .active{
+:root[data-theme="crystal"] .vault-tree .row.active,
+:root[data-theme="crystal"] .vault-tree .item.active,
+:root[data-theme="crystal"] .vault-tree .active{
   background: rgba(0,96,223,0.13);
   border-radius: var(--radius-sm);
 }
 
-:root[data-theme="cristal"] .vault-search input,
-:root[data-theme="cristal"] #vault-search-input{
+:root[data-theme="crystal"] .vault-search input,
+:root[data-theme="crystal"] #vault-search-input{
   background: rgba(255,255,255,0.72);
   border: 1px solid rgba(255,255,255,0.85);
   border-radius: 999px;
 }
 
-:root[data-theme="cristal"] .vault-resizer{ background: transparent; }
-:root[data-theme="cristal"] .vault-resizer:hover{ background: rgba(0,96,223,.22); }
+:root[data-theme="crystal"] .vault-resizer{ background: transparent; }
+:root[data-theme="crystal"] .vault-resizer:hover{ background: rgba(0,96,223,.22); }
 
 /* Botones de la bóveda: pastilla de cristal con su brillo arriba. */
-:root[data-theme="cristal"] .vault-tool-btn,
-:root[data-theme="cristal"] .vault-hdr-btn{
+:root[data-theme="crystal"] .vault-tool-btn,
+:root[data-theme="crystal"] .vault-hdr-btn{
   background:
     linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.5) 100%);
   color: var(--text);
@@ -2634,12 +2634,12 @@ solo fade */
   border-radius: var(--radius-sm);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.95);
 }
-:root[data-theme="cristal"] .vault-tool-btn:hover,
-:root[data-theme="cristal"] .vault-hdr-btn:hover{
+:root[data-theme="crystal"] .vault-tool-btn:hover,
+:root[data-theme="crystal"] .vault-hdr-btn:hover{
   background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.72) 100%);
   color: var(--cyan);
 }
-:root[data-theme="cristal"] .vault-tool-btn.active{
+:root[data-theme="crystal"] .vault-tool-btn.active{
   background: linear-gradient(180deg, rgba(0,96,223,0.20) 0%, rgba(0,96,223,0.12) 100%);
   color: var(--cyan);
   border-color: rgba(0,96,223,0.35);
@@ -2651,7 +2651,7 @@ solo fade */
  * estos botones ya llevan un icono en su pseudoelemento y pisarlo los dejaría
  * sin él.
  */
-:root[data-theme="cristal"] .btn-primary{
+:root[data-theme="crystal"] .btn-primary{
   background:
     linear-gradient(180deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0) 52%),
     var(--cyan);
@@ -2660,13 +2660,13 @@ solo fade */
     inset 0 -1px 0 rgba(0,0,0,0.10),
     0 2px 10px rgba(0,96,223,.30);
 }
-:root[data-theme="cristal"] .btn-primary:hover{
+:root[data-theme="crystal"] .btn-primary:hover{
   background:
     linear-gradient(180deg, rgba(255,255,255,0.34) 0%, rgba(255,255,255,0) 52%),
     var(--cyan-hover);
 }
 
-:root[data-theme="cristal"] .btn-secondary{
+:root[data-theme="crystal"] .btn-secondary{
   background:
     linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.58) 100%);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.95);
@@ -2676,7 +2676,7 @@ solo fade */
 /* La nota va sobre blanco casi opaco: es texto largo y ahí el cristal estorba.
    Los valores siguen a los que el proyecto ya usaba en sus temas claros. */
 
-:root[data-theme="cristal"]{
+:root[data-theme="crystal"]{
   --note-line-strong: #0d2440;
   --note-line-soft: #b9cee6;
   --note-code-bg: #eef4fb;
@@ -2684,69 +2684,69 @@ solo fade */
   --note-quote-bg: #f2f7fd;
 }
 
-:root[data-theme="cristal"] .cm-lp-block.markdown-body table,
-:root[data-theme="cristal"] .cm-lp-block.markdown-body th,
-:root[data-theme="cristal"] .cm-lp-block.markdown-body td{
+:root[data-theme="crystal"] .cm-lp-block.markdown-body table,
+:root[data-theme="crystal"] .cm-lp-block.markdown-body th,
+:root[data-theme="crystal"] .cm-lp-block.markdown-body td{
   border: 1px solid var(--note-line-strong) !important;
 }
-:root[data-theme="cristal"] .cm-lp-block.markdown-body th{
+:root[data-theme="crystal"] .cm-lp-block.markdown-body th{
   background: #e3edf9;
   color: var(--note-line-strong);
   font-weight: 700;
 }
-:root[data-theme="cristal"] .cm-lp-block.markdown-body td{ color: var(--text); }
-:root[data-theme="cristal"] .cm-lp-block.markdown-body hr{
+:root[data-theme="crystal"] .cm-lp-block.markdown-body td{ color: var(--text); }
+:root[data-theme="crystal"] .cm-lp-block.markdown-body hr{
   border: 0;
   border-top: 2px solid var(--note-line-strong);
   margin: 1.2em 0;
 }
-:root[data-theme="cristal"] .cm-lp-block.markdown-body code{
+:root[data-theme="crystal"] .cm-lp-block.markdown-body code{
   background: var(--note-code-bg);
   border: 1px solid var(--note-code-border);
   color: #0b1a2e;
   padding: .12em .35em;
   border-radius: 6px;
 }
-:root[data-theme="cristal"] .cm-lp-block.markdown-body pre{
+:root[data-theme="crystal"] .cm-lp-block.markdown-body pre{
   background: var(--note-code-bg);
   border: 1px solid var(--note-code-border);
   border-radius: var(--radius-sm);
 }
-:root[data-theme="cristal"] .cm-lp-block.markdown-body pre code{
+:root[data-theme="crystal"] .cm-lp-block.markdown-body pre code{
   background: transparent;
   border: 0;
 }
-:root[data-theme="cristal"] .cm-lp-block.markdown-body blockquote{
+:root[data-theme="crystal"] .cm-lp-block.markdown-body blockquote{
   border-left: 4px solid var(--cyan);
   background: var(--note-quote-bg);
   color: var(--text);
   padding: .35em .9em;
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
-:root[data-theme="cristal"] .cm-lp-block.markdown-body h1,
-:root[data-theme="cristal"] .cm-lp-block.markdown-body h2{
+:root[data-theme="crystal"] .cm-lp-block.markdown-body h1,
+:root[data-theme="crystal"] .cm-lp-block.markdown-body h2{
   border-bottom: 1px solid var(--note-line-soft);
   padding-bottom: .2em;
 }
-:root[data-theme="cristal"] .md-ctxmenu kbd{
+:root[data-theme="crystal"] .md-ctxmenu kbd{
   background: #fff;
   color: var(--text);
   border-color: var(--note-line-soft);
 }
 
-:root[data-theme="cristal"] .storage-stack{ background: rgba(13,36,64,.10); }
-:root[data-theme="cristal"] .storage-card-icon{ background: rgba(255,255,255,.55); }
+:root[data-theme="crystal"] .storage-stack{ background: rgba(13,36,64,.10); }
+:root[data-theme="crystal"] .storage-card-icon{ background: rgba(255,255,255,.55); }
 
 /* Muestra del tema en el selector: el azul del fondo, para distinguirlo de un
    vistazo del tema "Claro", que es gris. */
-.pf-theme-cristal{
+.pf-theme-crystal{
   background: linear-gradient(140deg, #eaf3fd 0%, #a9c9ea 100%);
   color: #0060df;
   border: 1px solid rgba(255,255,255,0.8);
 }
 
 /* =============================================
-   DARK CRISTAL — la versión de noche de Cristal.
+   DARK CRYSTAL — la versión de noche de Crystal.
 
    Mismo material: fondo con degradado, superficies translúcidas con
    desenfoque, reflejo en el canto superior y esquinas generosas. Lo único que
@@ -2761,7 +2761,7 @@ solo fade */
    Aquí no hace falta tocar notes.css más allá de las variables: sus reglas de
    partida ya están escritas para fondo oscuro.
    ============================================= */
-:root[data-theme="dark-cristal"]{
+:root[data-theme="dark-crystal"]{
   /* Gris azulado, no negro: el azul es lo que emparenta el tema con el portal
      y con su hermano claro. */
   --bg:  #131a24;
@@ -2789,8 +2789,8 @@ solo fade */
   --radius-sm: 10px;
 }
 
-:root[data-theme="dark-cristal"] body,
-:root[data-theme="dark-cristal"] body.subapp-body{
+:root[data-theme="dark-crystal"] body,
+:root[data-theme="dark-crystal"] body.subapp-body{
   background:
     radial-gradient(1200px 700px at 12% -5%, #1e2c40 0%, transparent 60%),
     radial-gradient(900px 600px at 95% 8%, #1a2b45 0%, transparent 55%),
@@ -2803,39 +2803,39 @@ solo fade */
   letter-spacing: -0.01em;
 }
 
-:root[data-theme="dark-cristal"] ::selection{ background: rgba(77,163,255,.30); }
-:root[data-theme="dark-cristal"] ::-webkit-scrollbar-thumb{
+:root[data-theme="dark-crystal"] ::selection{ background: rgba(77,163,255,.30); }
+:root[data-theme="dark-crystal"] ::-webkit-scrollbar-thumb{
   background: rgba(255,255,255,.18);
   border-radius: 999px;
 }
-:root[data-theme="dark-cristal"] ::-webkit-scrollbar-thumb:hover{ background: rgba(255,255,255,.28); }
+:root[data-theme="dark-crystal"] ::-webkit-scrollbar-thumb:hover{ background: rgba(255,255,255,.28); }
 
 /* ── Barras fijas ───────────────────────────────────────────────────────── */
 
-:root[data-theme="dark-cristal"] .bh-header{
+:root[data-theme="dark-crystal"] .bh-header{
   background: rgba(19,26,36,0.66);
   border-bottom: 1px solid rgba(255,255,255,0.10);
   backdrop-filter: saturate(180%) blur(22px);
   -webkit-backdrop-filter: saturate(180%) blur(22px);
 }
 
-:root[data-theme="dark-cristal"] #bottom-nav{
+:root[data-theme="dark-crystal"] #bottom-nav{
   background: rgba(19,26,36,0.78);
   border-top: 1px solid rgba(255,255,255,0.10);
   backdrop-filter: saturate(180%) blur(22px);
   -webkit-backdrop-filter: saturate(180%) blur(22px);
 }
 
-:root[data-theme="dark-cristal"] #sidebar{
+:root[data-theme="dark-crystal"] #sidebar{
   background: rgba(255,255,255,0.04);
   border-right: 1px solid rgba(255,255,255,0.10);
   backdrop-filter: saturate(160%) blur(18px);
   -webkit-backdrop-filter: saturate(160%) blur(18px);
 }
 
-:root[data-theme="dark-cristal"] .bh-brand:hover{ background: rgba(255,255,255,.10); }
+:root[data-theme="dark-crystal"] .bh-brand:hover{ background: rgba(255,255,255,.10); }
 
-:root[data-theme="dark-cristal"] .bh-version{
+:root[data-theme="dark-crystal"] .bh-version{
   color: var(--cyan);
   background: rgba(77,163,255,0.16);
   border-color: rgba(77,163,255,0.34);
@@ -2846,38 +2846,38 @@ solo fade */
 /* Como en el tema claro: los SVG van a currentColor y heredan de su contenedor,
    así que el color se fija en las zonas de interfaz. */
 
-:root[data-theme="dark-cristal"] .bh-header,
-:root[data-theme="dark-cristal"] .bh-header a,
-:root[data-theme="dark-cristal"] .bh-header button,
-:root[data-theme="dark-cristal"] #bottom-nav,
-:root[data-theme="dark-cristal"] #bottom-nav a,
-:root[data-theme="dark-cristal"] #sidebar,
-:root[data-theme="dark-cristal"] .vault-side,
-:root[data-theme="dark-cristal"] .vault-toolbar,
-:root[data-theme="dark-cristal"] .vault-title{
+:root[data-theme="dark-crystal"] .bh-header,
+:root[data-theme="dark-crystal"] .bh-header a,
+:root[data-theme="dark-crystal"] .bh-header button,
+:root[data-theme="dark-crystal"] #bottom-nav,
+:root[data-theme="dark-crystal"] #bottom-nav a,
+:root[data-theme="dark-crystal"] #sidebar,
+:root[data-theme="dark-crystal"] .vault-side,
+:root[data-theme="dark-crystal"] .vault-toolbar,
+:root[data-theme="dark-crystal"] .vault-title{
   color: var(--text);
 }
 
-:root[data-theme="dark-cristal"] .bh-header svg,
-:root[data-theme="dark-cristal"] #bottom-nav svg,
-:root[data-theme="dark-cristal"] #sidebar svg,
-:root[data-theme="dark-cristal"] .vault-side svg,
-:root[data-theme="dark-cristal"] .vault-toolbar svg,
-:root[data-theme="dark-cristal"] .vault-hdr-btn svg,
-:root[data-theme="dark-cristal"] .vault-tool-btn svg{
+:root[data-theme="dark-crystal"] .bh-header svg,
+:root[data-theme="dark-crystal"] #bottom-nav svg,
+:root[data-theme="dark-crystal"] #sidebar svg,
+:root[data-theme="dark-crystal"] .vault-side svg,
+:root[data-theme="dark-crystal"] .vault-toolbar svg,
+:root[data-theme="dark-crystal"] .vault-hdr-btn svg,
+:root[data-theme="dark-crystal"] .vault-tool-btn svg{
   fill: var(--icono);
 }
 
-:root[data-theme="dark-cristal"] .bh-header button:hover svg,
-:root[data-theme="dark-cristal"] .vault-hdr-btn:hover svg,
-:root[data-theme="dark-cristal"] .vault-tool-btn:hover svg,
-:root[data-theme="dark-cristal"] .vault-tool-btn.active svg{
+:root[data-theme="dark-crystal"] .bh-header button:hover svg,
+:root[data-theme="dark-crystal"] .vault-hdr-btn:hover svg,
+:root[data-theme="dark-crystal"] .vault-tool-btn:hover svg,
+:root[data-theme="dark-crystal"] .vault-tool-btn.active svg{
   fill: var(--cyan);
 }
 
 /* ── Tarjetas y paneles ─────────────────────────────────────────────────── */
 
-:root[data-theme="dark-cristal"] .app-card{
+:root[data-theme="dark-crystal"] .app-card{
   background:
     linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 45%, rgba(255,255,255,0.07) 100%);
   border: 1px solid rgba(255,255,255,0.12);
@@ -2888,7 +2888,7 @@ solo fade */
     inset 0 1px 0 rgba(255,255,255,0.16),
     0 6px 22px rgba(0,0,0,.32);
 }
-:root[data-theme="dark-cristal"] .app-card:hover{
+:root[data-theme="dark-crystal"] .app-card:hover{
   background:
     linear-gradient(135deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.08) 45%, rgba(255,255,255,0.12) 100%);
   border-color: rgba(255,255,255,0.20);
@@ -2897,8 +2897,8 @@ solo fade */
     0 10px 30px rgba(0,0,0,.40);
 }
 
-:root[data-theme="dark-cristal"] .vault-side,
-:root[data-theme="dark-cristal"] .vault-main{
+:root[data-theme="dark-crystal"] .vault-side,
+:root[data-theme="dark-crystal"] .vault-main{
   background:
     linear-gradient(135deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.035) 45%, rgba(255,255,255,0.06) 100%);
   border: 1px solid rgba(255,255,255,0.12);
@@ -2911,15 +2911,15 @@ solo fade */
   overflow: hidden;
 }
 
-:root[data-theme="dark-cristal"] .vault-side-head,
-:root[data-theme="dark-cristal"] .vault-side-top,
-:root[data-theme="dark-cristal"] .vault-toolbar{
+:root[data-theme="dark-crystal"] .vault-side-head,
+:root[data-theme="dark-crystal"] .vault-side-top,
+:root[data-theme="dark-crystal"] .vault-toolbar{
   background: rgba(255,255,255,0.05);
   border-color: rgba(255,255,255,0.10);
 }
 
-:root[data-theme="dark-cristal"] .tree-row:hover{ background: rgba(255,255,255,0.09); }
-:root[data-theme="dark-cristal"] .tree-row.active{
+:root[data-theme="dark-crystal"] .tree-row:hover{ background: rgba(255,255,255,0.09); }
+:root[data-theme="dark-crystal"] .tree-row.active{
   background: rgba(77,163,255,0.22);
   color: #eaf3ff;
   font-weight: 600;
@@ -2927,10 +2927,10 @@ solo fade */
 
 /* ── Formularios ────────────────────────────────────────────────────────── */
 
-:root[data-theme="dark-cristal"] input,
-:root[data-theme="dark-cristal"] textarea,
-:root[data-theme="dark-cristal"] select,
-:root[data-theme="dark-cristal"] .vault-search input{
+:root[data-theme="dark-crystal"] input,
+:root[data-theme="dark-crystal"] textarea,
+:root[data-theme="dark-crystal"] select,
+:root[data-theme="dark-crystal"] .vault-search input{
   background: rgba(255,255,255,0.08);
   color: var(--text);
   border: 1px solid rgba(255,255,255,0.14);
@@ -2938,14 +2938,14 @@ solo fade */
   /* 16px justos: por debajo, iOS hace zoom al enfocar el campo. */
   font-size: 16px;
 }
-:root[data-theme="dark-cristal"] .vault-search input{ border-radius: 999px; }
+:root[data-theme="dark-crystal"] .vault-search input{ border-radius: 999px; }
 
-:root[data-theme="dark-cristal"] input::placeholder,
-:root[data-theme="dark-cristal"] textarea::placeholder{ color: var(--text3); }
+:root[data-theme="dark-crystal"] input::placeholder,
+:root[data-theme="dark-crystal"] textarea::placeholder{ color: var(--text3); }
 
-:root[data-theme="dark-cristal"] input:focus,
-:root[data-theme="dark-cristal"] textarea:focus,
-:root[data-theme="dark-cristal"] select:focus{
+:root[data-theme="dark-crystal"] input:focus,
+:root[data-theme="dark-crystal"] textarea:focus,
+:root[data-theme="dark-crystal"] select:focus{
   outline: none;
   background: rgba(255,255,255,0.12);
   border-color: var(--cyan);
@@ -2954,7 +2954,7 @@ solo fade */
 
 /* ── Botones ────────────────────────────────────────────────────────────── */
 
-:root[data-theme="dark-cristal"] .btn-primary{
+:root[data-theme="dark-crystal"] .btn-primary{
   background:
     linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 52%),
     var(--cyan);
@@ -2966,14 +2966,14 @@ solo fade */
     inset 0 1px 0 rgba(255,255,255,0.40),
     0 2px 12px rgba(77,163,255,.30);
 }
-:root[data-theme="dark-cristal"] .btn-primary:hover{
+:root[data-theme="dark-crystal"] .btn-primary:hover{
   background:
     linear-gradient(180deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0) 52%),
     var(--cyan-hover);
 }
-:root[data-theme="dark-cristal"] .btn-primary:active{ transform: scale(0.97); }
+:root[data-theme="dark-crystal"] .btn-primary:active{ transform: scale(0.97); }
 
-:root[data-theme="dark-cristal"] .btn-secondary{
+:root[data-theme="dark-crystal"] .btn-secondary{
   background:
     linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.06) 100%);
   color: var(--cyan);
@@ -2982,37 +2982,37 @@ solo fade */
   font-weight: 600;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.18);
 }
-:root[data-theme="dark-cristal"] .btn-secondary:hover{ background: rgba(255,255,255,0.18); }
+:root[data-theme="dark-crystal"] .btn-secondary:hover{ background: rgba(255,255,255,0.18); }
 
-:root[data-theme="dark-cristal"] .vault-tool-btn,
-:root[data-theme="dark-cristal"] .vault-hdr-btn{
+:root[data-theme="dark-crystal"] .vault-tool-btn,
+:root[data-theme="dark-crystal"] .vault-hdr-btn{
   background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.05) 100%);
   color: var(--text);
   border: 1px solid rgba(255,255,255,0.14);
   border-radius: var(--radius-sm);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.18);
 }
-:root[data-theme="dark-cristal"] .vault-tool-btn:hover,
-:root[data-theme="dark-cristal"] .vault-hdr-btn:hover{
+:root[data-theme="dark-crystal"] .vault-tool-btn:hover,
+:root[data-theme="dark-crystal"] .vault-hdr-btn:hover{
   background: rgba(255,255,255,0.18);
   color: var(--cyan);
 }
 
 /* ── Chat y flotantes ───────────────────────────────────────────────────── */
 
-:root[data-theme="dark-cristal"] .chat-bubble.me{
+:root[data-theme="dark-crystal"] .chat-bubble.me{
   background: var(--cyan);
   color: #08192b;
   border-radius: 18px;
 }
-:root[data-theme="dark-cristal"] .chat-bubble.them{
+:root[data-theme="dark-crystal"] .chat-bubble.them{
   background: rgba(255,255,255,0.10);
   color: var(--text);
   border-radius: 18px;
 }
 
-:root[data-theme="dark-cristal"] .pf-toast,
-:root[data-theme="dark-cristal"] .vault-settings-menu{
+:root[data-theme="dark-crystal"] .pf-toast,
+:root[data-theme="dark-crystal"] .vault-settings-menu{
   background:
     linear-gradient(135deg, rgba(38,50,66,0.94) 0%, rgba(28,38,52,0.90) 100%);
   color: var(--text);
@@ -3024,31 +3024,31 @@ solo fade */
     inset 0 1px 0 rgba(255,255,255,0.18),
     0 14px 36px rgba(0,0,0,.50);
 }
-:root[data-theme="dark-cristal"] .vsm-item{ color: var(--text); }
-:root[data-theme="dark-cristal"] .vsm-item:hover{
+:root[data-theme="dark-crystal"] .vsm-item{ color: var(--text); }
+:root[data-theme="dark-crystal"] .vsm-item:hover{
   background: rgba(77,163,255,.18);
   color: #fff;
 }
-:root[data-theme="dark-cristal"] .vsm-item svg{ fill: var(--icono); }
-:root[data-theme="dark-cristal"] .vsm-item:hover svg{ fill: var(--cyan); }
-:root[data-theme="dark-cristal"] .vsm-sep{ background: rgba(255,255,255,.12); }
+:root[data-theme="dark-crystal"] .vsm-item svg{ fill: var(--icono); }
+:root[data-theme="dark-crystal"] .vsm-item:hover svg{ fill: var(--cyan); }
+:root[data-theme="dark-crystal"] .vsm-sep{ background: rgba(255,255,255,.12); }
 
-:root[data-theme="dark-cristal"] .cal-day.today{ color: #08192b; }
-:root[data-theme="dark-cristal"] .cal-day.today.selected{
+:root[data-theme="dark-crystal"] .cal-day.today{ color: #08192b; }
+:root[data-theme="dark-crystal"] .cal-day.today.selected{
   box-shadow: 0 0 0 3px #131a24, 0 0 0 5px var(--cyan);
 }
 
-:root[data-theme="dark-cristal"] .pf-theme-dark{ background: #161824; color: #c5cbe3; }
+:root[data-theme="dark-crystal"] .pf-theme-dark{ background: #161824; color: #c5cbe3; }
 
 /* Muestra del tema en el selector: el gris azulado con su reflejo. */
-.pf-theme-dark-cristal{
+.pf-theme-dark-crystal{
   background: linear-gradient(140deg, #26364a 0%, #0d131b 100%);
   color: #4da3ff;
   border: 1px solid rgba(255,255,255,0.18);
 }
 
 /* =============================================
-   CRISTAL y DARK CRISTAL — la ventana de ajustes.
+   CRYSTAL y DARK CRYSTAL — la ventana de ajustes.
 
    Dos cosas que las variables no arreglaban solas:
 
@@ -3057,22 +3057,22 @@ solo fade */
       variable. Sobre un fondo claro ese cian al 10% es prácticamente blanco,
       así que el aviso desaparecía dentro de la ventana.
 
-   2. La ventana usa var(--bg2), que en Cristal es blanco al 72%. Sobre el velo
+   2. La ventana usa var(--bg2), que en Crystal es blanco al 72%. Sobre el velo
       oscuro del fondo eso da un blanco duro que no pega con el resto del tema,
       donde todas las superficies son azuladas.
    ============================================= */
 
-/* ── Cristal ────────────────────────────────────────────────────────────── */
+/* ── Crystal ────────────────────────────────────────────────────────────── */
 
 /* El velo, azul en vez de negro: enmarca la ventana sin apagar la pantalla. */
-:root[data-theme="cristal"] .modal-back{
+:root[data-theme="crystal"] .modal-back{
   background: rgba(16,35,60,0.42);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 }
 
 /* La ventana toma el mismo azul claro que los paneles de la bóveda. */
-:root[data-theme="cristal"] .modal-back .modal{
+:root[data-theme="crystal"] .modal-back .modal{
   background:
     linear-gradient(135deg, rgba(238,245,253,0.97) 0%, rgba(220,233,248,0.95) 45%, rgba(231,241,252,0.97) 100%);
   border: 1px solid rgba(255,255,255,0.85);
@@ -3085,56 +3085,56 @@ solo fade */
 }
 
 /* El aviso vacío: azul suave con su borde, en la misma familia. */
-:root[data-theme="cristal"] .imgdir-info{
+:root[data-theme="crystal"] .imgdir-info{
   background: rgba(0,96,223,0.08);
   border: 1px solid rgba(0,96,223,0.26);
   color: var(--text);
   border-radius: var(--radius-sm);
 }
-:root[data-theme="cristal"] .imgdir-info svg{ fill: var(--cyan); opacity: 1; }
+:root[data-theme="crystal"] .imgdir-info svg{ fill: var(--cyan); opacity: 1; }
 
 /* Y lo que lo rodea dentro de la ventana, para que no quede un blanco suelto. */
-:root[data-theme="cristal"] .shared-link-item,
-:root[data-theme="cristal"] .apikey-item,
-:root[data-theme="cristal"] .apikey-row,
-:root[data-theme="cristal"] .apikey-new-row{
+:root[data-theme="crystal"] .shared-link-item,
+:root[data-theme="crystal"] .apikey-item,
+:root[data-theme="crystal"] .apikey-row,
+:root[data-theme="crystal"] .apikey-new-row{
   background: rgba(255,255,255,0.62);
   border: 1px solid rgba(255,255,255,0.8);
   border-radius: var(--radius-sm);
 }
-:root[data-theme="cristal"] .sli-actions button{
+:root[data-theme="crystal"] .sli-actions button{
   background: rgba(255,255,255,0.7);
   color: var(--icono);
   border-radius: 8px;
 }
-:root[data-theme="cristal"] .sli-actions button:hover{
+:root[data-theme="crystal"] .sli-actions button:hover{
   background: #fff;
   color: var(--cyan);
 }
-:root[data-theme="cristal"] .sli-actions button svg{ fill: currentColor; }
+:root[data-theme="crystal"] .sli-actions button svg{ fill: currentColor; }
 
 /* Los botones del selector de tema, dentro de la misma ventana. */
-:root[data-theme="cristal"] .pf-theme-btn{
+:root[data-theme="crystal"] .pf-theme-btn{
   background: rgba(255,255,255,0.55);
   border: 1px solid rgba(255,255,255,0.8);
   border-radius: var(--radius-sm);
   color: var(--text);
 }
-:root[data-theme="cristal"] .pf-theme-btn:hover{ background: rgba(255,255,255,0.85); }
-:root[data-theme="cristal"] .pf-theme-btn.active{
+:root[data-theme="crystal"] .pf-theme-btn:hover{ background: rgba(255,255,255,0.85); }
+:root[data-theme="crystal"] .pf-theme-btn.active{
   background: rgba(0,96,223,0.12);
   border-color: rgba(0,96,223,0.38);
 }
 
-/* ── Dark Cristal ───────────────────────────────────────────────────────── */
+/* ── Dark Crystal ───────────────────────────────────────────────────────── */
 
-:root[data-theme="dark-cristal"] .modal-back{
+:root[data-theme="dark-crystal"] .modal-back{
   background: rgba(6,11,18,0.62);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 }
 
-:root[data-theme="dark-cristal"] .modal-back .modal{
+:root[data-theme="dark-crystal"] .modal-back .modal{
   background:
     linear-gradient(135deg, rgba(35,47,63,0.96) 0%, rgba(24,33,45,0.94) 100%);
   border: 1px solid rgba(255,255,255,0.14);
@@ -3146,41 +3146,41 @@ solo fade */
     0 20px 50px rgba(0,0,0,.55);
 }
 
-:root[data-theme="dark-cristal"] .imgdir-info{
+:root[data-theme="dark-crystal"] .imgdir-info{
   background: rgba(77,163,255,0.13);
   border: 1px solid rgba(77,163,255,0.34);
   color: var(--text);
   border-radius: var(--radius-sm);
 }
-:root[data-theme="dark-cristal"] .imgdir-info svg{ fill: var(--cyan); opacity: 1; }
+:root[data-theme="dark-crystal"] .imgdir-info svg{ fill: var(--cyan); opacity: 1; }
 
-:root[data-theme="dark-cristal"] .shared-link-item,
-:root[data-theme="dark-cristal"] .apikey-item,
-:root[data-theme="dark-cristal"] .apikey-row,
-:root[data-theme="dark-cristal"] .apikey-new-row{
+:root[data-theme="dark-crystal"] .shared-link-item,
+:root[data-theme="dark-crystal"] .apikey-item,
+:root[data-theme="dark-crystal"] .apikey-row,
+:root[data-theme="dark-crystal"] .apikey-new-row{
   background: rgba(255,255,255,0.07);
   border: 1px solid rgba(255,255,255,0.13);
   border-radius: var(--radius-sm);
 }
-:root[data-theme="dark-cristal"] .sli-actions button{
+:root[data-theme="dark-crystal"] .sli-actions button{
   background: rgba(255,255,255,0.10);
   color: var(--icono);
   border-radius: 8px;
 }
-:root[data-theme="dark-cristal"] .sli-actions button:hover{
+:root[data-theme="dark-crystal"] .sli-actions button:hover{
   background: rgba(255,255,255,0.18);
   color: var(--cyan);
 }
-:root[data-theme="dark-cristal"] .sli-actions button svg{ fill: currentColor; }
+:root[data-theme="dark-crystal"] .sli-actions button svg{ fill: currentColor; }
 
-:root[data-theme="dark-cristal"] .pf-theme-btn{
+:root[data-theme="dark-crystal"] .pf-theme-btn{
   background: rgba(255,255,255,0.07);
   border: 1px solid rgba(255,255,255,0.13);
   border-radius: var(--radius-sm);
   color: var(--text);
 }
-:root[data-theme="dark-cristal"] .pf-theme-btn:hover{ background: rgba(255,255,255,0.14); }
-:root[data-theme="dark-cristal"] .pf-theme-btn.active{
+:root[data-theme="dark-crystal"] .pf-theme-btn:hover{ background: rgba(255,255,255,0.14); }
+:root[data-theme="dark-crystal"] .pf-theme-btn.active{
   background: rgba(77,163,255,0.18);
   border-color: rgba(77,163,255,0.42);
 }
@@ -3414,3 +3414,16 @@ solo fade */
 :root[data-theme="cafe"] .pf-theme-check{ background:#6b5340; color:#f6ebda }
 :root[data-theme="cafe"] .modal-back .modal .pf-theme-check{
   background:#6b5340; color:#f6ebda }
+
+/* ── Bóvedas compartidas ───────────────────────────────────────────────────
+   Dónde estás, a dónde puedes ir y qué has repartido. */
+.boveda-cual {
+  font-size: .88rem;
+  color: var(--text2);
+  padding: .55rem .7rem;
+  background: var(--bg3);
+  border-radius: 9px;
+  margin-bottom: .6rem;
+}
+.boveda-otras { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .7rem; }
+.boveda-botones { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .7rem; }

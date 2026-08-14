@@ -71,11 +71,25 @@ ATTACHMENTS_DIR = "Adjuntos"
 
 # ── Rutas ────────────────────────────────────────────────────────────────────
 
-def root() -> Path:
-    """Raíz de la bóveda, creada si aún no existe."""
-    vault_root = settings.VAULT_ROOT
-    vault_root.mkdir(parents=True, exist_ok=True)
-    return vault_root.resolve()
+def root(dueno=None) -> Path:
+    """Raíz de la bóveda de `dueno`, creada si aún no existe.
+
+    Cada cuenta tiene la suya en VAULT_ROOT/<id>/. `dueno` es el identificador
+    estable de la cuenta —el que le dio el portal—, nunca el nombre, que se
+    puede cambiar.
+
+    Sin `dueno` devuelve la carpeta madre, que es donde cuelgan todas. Solo lo
+    usan el arranque y las vistas de enlace público, que resuelven la nota por
+    la ruta guardada y no por quién pregunta.
+    """
+    base = settings.VAULT_ROOT
+    if dueno is None:
+        base.mkdir(parents=True, exist_ok=True)
+        return base.resolve()
+
+    propia = base / sanitize_name(str(dueno))
+    propia.mkdir(parents=True, exist_ok=True)
+    return propia.resolve()
 
 
 def safe_path(base: Path, rel) -> Path:

@@ -1,5 +1,6 @@
 """Variables globales para todas las plantillas."""
 from django.conf import settings
+from apps.core import boveda as _boveda
 
 
 def global_context(request):
@@ -14,7 +15,10 @@ def global_context(request):
         # Rol del acceso en curso: la plantilla esconde lo que no toca (el
         # permiso de verdad lo aplican los decoradores del servidor).
         "user_role": user.role if user and user.is_authenticated else "",
-        "can_write": bool(user and user.is_authenticated and user.can_write),
+        # El permiso es sobre la bóveda que se está mirando, no sobre la
+        # cuenta: en la tuya escribes siempre, en la de otro depende.
+        "can_write": bool(user and user.is_authenticated
+                          and _boveda.puede_escribir(request)),
         "is_owner": bool(user and user.is_authenticated and user.is_owner),
         # Host DNS-only para subidas grandes (import de bóvedas > 100 MB).
         "UPLOAD_HOST": getattr(settings, "UPLOAD_HOST", ""),

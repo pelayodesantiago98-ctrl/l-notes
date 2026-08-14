@@ -4,6 +4,10 @@ from . import views
 app_name = "notes_api"
 
 urlpatterns = [
+    path("boveda/estado", views.boveda_estado, name="boveda_estado"),
+    path("boveda/invitar", views.boveda_invitar, name="boveda_invitar"),
+    path("boveda/revocar", views.boveda_revocar, name="boveda_revocar"),
+    path("boveda/cambiar", views.boveda_cambiar, name="boveda_cambiar"),
     path("tree", views.tree, name="tree"),
     path("file", views.file_get, name="file_get"),
     path("save", views.file_save, name="file_save"),

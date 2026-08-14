@@ -16,7 +16,7 @@
 <link rel="manifest" href="/manifest.json">
 {# Prefetch al backend en cuanto se hace el TLS handshake — acelera el primer fetch JSON #}
 <link rel="preconnect" href="//{{ request.get_host }}">
-<script>(function(){var m=document.cookie.match(/(?:^|; )bh_theme=([^;]+)/);document.documentElement.dataset.theme=(m&&m[1])||"dark";})();</script>
+<script>(function(){var m=document.cookie.match(/(?:^|; )bh_theme=([^;]+)/);var t=(m&&m[1])||"dark";/* Cookies anteriores al renombrado: sin esto el atributo se quedaba en el nombre viejo y no casaba ninguna regla. */if(t==="cristal")t="crystal";else if(t==="dark-cristal")t="dark-crystal";document.documentElement.dataset.theme=t;})();</script>
 <link rel="stylesheet" href="/static/css/app.css?v={{ ASSET_VERSION }}">
 {% comment %}
   Único puente plantilla → JS estático: todo lo que el servidor tiene que
@@ -174,18 +174,18 @@
           <span class="pf-theme-name">Dorado</span>
           <span class="pf-theme-check"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </button>
-        <button type="button" class="pf-theme-btn {% if bh_theme == 'cristal' %}active{% endif %}" data-theme="cristal">
-          <span class="pf-theme-swatch pf-theme-cristal">
+        <button type="button" class="pf-theme-btn {% if bh_theme == 'crystal' %}active{% endif %}" data-theme="crystal">
+          <span class="pf-theme-swatch pf-theme-crystal">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 5-9 5-9-5 9-5zm0 12.2l7.1-3.95L21 12l-9 5-9-5 1.9-1.05L12 15.2z"/></svg>
           </span>
-          <span class="pf-theme-name">Cristal</span>
+          <span class="pf-theme-name">Crystal</span>
           <span class="pf-theme-check"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </button>
-        <button type="button" class="pf-theme-btn {% if bh_theme == 'dark-cristal' %}active{% endif %}" data-theme="dark-cristal">
-          <span class="pf-theme-swatch pf-theme-dark-cristal">
+        <button type="button" class="pf-theme-btn {% if bh_theme == 'dark-crystal' %}active{% endif %}" data-theme="dark-crystal">
+          <span class="pf-theme-swatch pf-theme-dark-crystal">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 5-9 5-9-5 9-5zm0 12.2l7.1-3.95L21 12l-9 5-9-5 1.9-1.05L12 15.2z" opacity=".55"/><path d="M20.5 14.7A9 9 0 019.3 3.5a9 9 0 1011.2 11.2z" opacity="0"/></svg>
           </span>
-          <span class="pf-theme-name">Dark Cristal</span>
+          <span class="pf-theme-name">Dark Crystal</span>
           <span class="pf-theme-check"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </button>
         <button type="button" class="pf-theme-btn {% if bh_theme == 'cafe' %}active{% endif %}" data-theme="cafe">
@@ -196,6 +196,25 @@
           <span class="pf-theme-check"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
         </button>
       </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">Bóvedas</div>
+      <p>Tus notas son tuyas. Puedes dar acceso a otra cuenta con un enlace, para
+         que la lea o para que también escriba.</p>
+
+      <div id="boveda-cual" class="boveda-cual"></div>
+      <div id="boveda-otras" class="boveda-otras"></div>
+
+      <div class="fila boveda-botones">
+        <button type="button" class="btn-secondary" id="boveda-enlace-viewer">Enlace de lectura</button>
+        <button type="button" class="btn-secondary" id="boveda-enlace-editor">Enlace de edición</button>
+      </div>
+
+      <div id="boveda-repartidos" class="shared-links-list"></div>
+      <p class="imgdir-info" id="boveda-vacio" style="display:none">
+        <span>Todavía no has dado acceso a nadie.</span>
+      </p>
     </div>
 
     <div class="settings-section">

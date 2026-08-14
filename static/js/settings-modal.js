@@ -172,10 +172,113 @@
   }
 
   /* ---- Abrir / cerrar modal ---- */
+
+  /* ---- Bóvedas ---- */
+
+  /* En cuál estoy, a cuáles puedo ir y qué he repartido. Todo sale de una
+     llamada: son tres listas cortas de la misma pregunta. */
+  async function loadBovedas() {
+    let d;
+    try { d = await api('/api/notes/boveda/estado'); } catch (_) { return; }
+    if (!d || !d.success) return;
+
+    const cual = $('boveda-cual');
+    if (cual) {
+      cual.textContent = d.activa.propia
+        ? 'Estás en tu bóveda.'
+        : 'Estás en la bóveda de ' + d.activa.nombre +
+          (d.activa.permiso === 'editor' ? ', con permiso para escribir.' : ', de sólo lectura.');
+    }
+
+    // Las demás, para saltar de una a otra.
+    const otras = $('boveda-otras');
+    if (otras) {
+      otras.innerHTML = '';
+      if (d.disponibles.length > 1) {
+        d.disponibles.forEach(b => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'acc-perm-btn' + (b.id === d.activa.id ? ' active' : '');
+          btn.textContent = b.propia ? 'La mía' : b.nombre;
+          btn.addEventListener('click', async () => {
+            await api('/api/notes/boveda/cambiar', { boveda: b.propia ? '' : b.id });
+            location.reload();   // el árbol entero cambia: se recarga y punto
+          });
+          otras.append(btn);
+        });
+      }
+    }
+
+    // Lo repartido.
+    const lista = $('boveda-repartidos'), vacio = $('boveda-vacio');
+    if (!lista) return;
+    lista.innerHTML = '';
+    if (!d.repartidos.length) { if (vacio) vacio.style.display = 'flex'; return; }
+    if (vacio) vacio.style.display = 'none';
+
+    d.repartidos.forEach(a => {
+      const fila = document.createElement('div');
+      fila.className = 'shared-link-item';
+
+      const info = document.createElement('div');
+      info.className = 'sli-info';
+      const quien = document.createElement('div');
+      quien.className = 'sli-name';
+      quien.textContent = a.invitado || 'Enlace sin usar';
+      const meta = document.createElement('div');
+      meta.className = 'sli-meta';
+      meta.textContent = a.permiso === 'editor' ? 'Puede escribir' : 'Sólo lectura';
+      info.append(quien, meta);
+
+      const acciones = document.createElement('div');
+      acciones.className = 'sli-actions';
+      if (a.url) {
+        const copiar = document.createElement('button');
+        copiar.className = 'sli-copy';
+        copiar.title = 'Copiar el enlace';
+        copiar.innerHTML = iconCopyLink;
+        copiar.addEventListener('click', async () => {
+          await navigator.clipboard.writeText(a.url);
+          copiar.innerHTML = iconCheck;
+          copiar.classList.add('copied');
+          setTimeout(() => { copiar.innerHTML = iconCopyLink; copiar.classList.remove('copied'); }, 1400);
+        });
+        acciones.append(copiar);
+      }
+      const quitar = document.createElement('button');
+      quitar.className = 'sli-revoke';
+      quitar.title = 'Retirar el acceso';
+      quitar.innerHTML = iconTrash;
+      quitar.addEventListener('click', async () => {
+        await api('/api/notes/boveda/revocar', { id: a.id });
+        loadBovedas();
+      });
+      acciones.append(quitar);
+
+      fila.append(info, acciones);
+      lista.append(fila);
+    });
+  }
+
+  ['viewer', 'editor'].forEach(permiso => {
+    const btn = $('boveda-enlace-' + permiso);
+    if (!btn) return;
+    btn.addEventListener('click', async () => {
+      const r = await api('/api/notes/boveda/invitar', { permiso });
+      if (!r || !r.success) return;
+      try { await navigator.clipboard.writeText(r.url); } catch (_) { /* sin portapapeles */ }
+      const antes = btn.textContent;
+      btn.textContent = 'Enlace copiado';
+      setTimeout(() => { btn.textContent = antes; }, 1600);
+      loadBovedas();
+    });
+  });
+
   function openSettingsModal() {
     $('settings-modal').classList.add('show');
     loadSharedLinks();
     loadApiKeys();
+    loadBovedas();
     // La clave recién creada no sobrevive a cerrar el modal: si el usuario no
     // la copió, ya no hay forma de recuperarla y dejarla ahí sólo confunde.
     const fresh = $('apikey-new');

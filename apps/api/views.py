@@ -25,6 +25,7 @@ from django.views.decorators.csrf import csrf_exempt
 from apps.accounts import services as accounts
 from apps.accounts.models import ApiKey, User
 from apps.core.api import as_int, as_optional_text, as_text
+from apps.core import boveda
 from apps.notes import vault
 from apps.notes.models import SharedNote
 from apps.notes.vault import VaultError
@@ -146,7 +147,7 @@ def docs_redirect(request):
 @api_view(methods=("GET",))
 def tree(request):
     """Árbol completo de la bóveda (carpetas + notas + archivos)."""
-    root = vault.root()
+    root = boveda.raiz(request)
     rel = request.GET.get("path", "")
     start = root
     if rel:
@@ -162,7 +163,7 @@ def tree(request):
 @api_view(methods=("GET", "POST", "DELETE"))
 def notes(request):
     """GET: lista plana de notas · POST: crear · DELETE: borrar."""
-    root = vault.root()
+    root = boveda.raiz(request)
 
     if request.method == "GET":
         folder = (request.GET.get("folder") or "").strip()
@@ -225,7 +226,7 @@ def notes(request):
 @api_view(methods=("GET", "PUT", "POST", "PATCH"))
 def note_content(request):
     """GET: leer el Markdown · PUT/POST: sobrescribir · PATCH: editar parcialmente."""
-    root = vault.root()
+    root = boveda.raiz(request)
 
     if request.method == "GET":
         rel = request.GET.get("path", "")
@@ -304,7 +305,7 @@ def note_content(request):
 @api_view(methods=("POST",))
 def note_rename(request):
     """Renombra una nota (o cualquier elemento) manteniéndola en su carpeta."""
-    root = vault.root()
+    root = boveda.raiz(request)
     rel = as_text(body_or_query(request, "path")).strip()
     new_name = vault.sanitize_name(body_or_query(request, "name"))
     if not new_name:
@@ -330,7 +331,7 @@ def note_rename(request):
 @api_view(methods=("POST",))
 def note_move(request):
     """Mueve una nota/carpeta/archivo a otra carpeta."""
-    root = vault.root()
+    root = boveda.raiz(request)
     rel = as_text(body_or_query(request, "path")).strip()
     target_rel = as_text(body_or_query(request, "target")).strip()
     src, err = _resolve(root, rel)
@@ -368,7 +369,7 @@ def note_move(request):
 @api_view(methods=("POST",))
 def note_duplicate(request):
     """Copia una nota junto a la original (con nombre nuevo o ' 2' automático)."""
-    root = vault.root()
+    root = boveda.raiz(request)
     rel = as_text(body_or_query(request, "path")).strip()
     src, err = _resolve(root, rel)
     if err:
@@ -392,7 +393,7 @@ def note_duplicate(request):
 @api_view(methods=("GET",))
 def search(request):
     """Busca notas que contengan TODOS los términos (case-insensitive)."""
-    root = vault.root()
+    root = boveda.raiz(request)
     q = (request.GET.get("q") or "").strip()
     terms = [t.lower() for t in q.split() if t]
     if not terms:
@@ -424,7 +425,7 @@ def search(request):
 @api_view(methods=("GET", "POST", "DELETE"))
 def folders(request):
     """GET: lista de carpetas · POST: crear · DELETE: borrar (recursivo)."""
-    root = vault.root()
+    root = boveda.raiz(request)
 
     if request.method == "GET":
         out = []
@@ -480,7 +481,7 @@ def folders(request):
 @api_view(methods=("POST",))
 def folder_reorder(request):
     """Fija el orden manual de los hijos directos de una carpeta."""
-    root = vault.root()
+    root = boveda.raiz(request)
     folder_rel = as_text(body_or_query(request, "folder")).strip()
     order = body_or_query(request, "order")
     if not isinstance(order, list) or not all(isinstance(n, str) for n in order):
@@ -502,7 +503,7 @@ _MAX_UPLOAD_BYTES = 200 * 1024 * 1024
 @api_view(methods=("GET", "POST", "DELETE"))
 def files(request):
     """GET: lista de adjuntos · POST: subir · DELETE: borrar."""
-    root = vault.root()
+    root = boveda.raiz(request)
 
     if request.method == "GET":
         base = root
@@ -583,7 +584,7 @@ def files(request):
 @api_view(methods=("GET",))
 def file_content(request):
     """Descarga el binario de un adjunto."""
-    root = vault.root()
+    root = boveda.raiz(request)
     rel = request.GET.get("path", "")
     target, err = _resolve(root, rel)
     if err:
@@ -599,7 +600,7 @@ def file_content(request):
 @api_view(methods=("GET", "POST", "DELETE"))
 def shares(request):
     """GET: enlaces públicos activos · POST: compartir · DELETE: revocar."""
-    root = vault.root()
+    root = boveda.raiz(request)
 
     if request.method == "GET":
         return JsonResponse({"shares": [{
@@ -654,13 +655,13 @@ def shares(request):
 @api_view(methods=("GET",))
 def vault_stats(request):
     """Tamaño y conteos de la bóveda."""
-    return JsonResponse({"success": True, **vault.stats(vault.root())})
+    return JsonResponse({"success": True, **vault.stats(boveda.raiz(request))})
 
 
 @api_view(methods=("GET",))
 def vault_export(request):
     """Descarga la bóveda entera como ZIP."""
-    tmp, size = vault.export_zip(vault.root())
+    tmp, size = vault.export_zip(boveda.raiz(request))
     name = vault.sanitize_name(request.user.username) or "vault"
     resp = FileResponse(tmp, content_type="application/zip")
     resp["Content-Disposition"] = f'attachment; filename="vault-{name}.zip"'
@@ -675,7 +676,7 @@ def vault_import(request):
     if not upload:
         return json_error("Sube el ZIP como fichero multipart en el campo 'file'")
     try:
-        vault.import_zip(vault.root(), upload, request.POST.get("mode", "merge"))
+        vault.import_zip(boveda.raiz(request), upload, request.POST.get("mode", "merge"))
     except VaultError as exc:
         return json_error(str(exc), exc.status)
     return JsonResponse({"success": True})
@@ -690,7 +691,7 @@ def vault_optimize_images(request):
     entero y devolvemos ese.
     """
     last = {}
-    for event in vault.optimize_images(vault.root()):
+    for event in vault.optimize_images(boveda.raiz(request)):
         if event.get("phase") in ("done", "error"):
             last = event
     if last.get("phase") == "error":

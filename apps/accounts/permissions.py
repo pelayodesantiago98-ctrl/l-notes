@@ -20,11 +20,15 @@ def _deny(request, msg: str, status: int):
 
 
 def require_write(view):
-    """Rechaza a los accesos de sólo lectura."""
+    """Rechaza a los accesos de sólo lectura.
+
+    Mira el permiso sobre la bóveda que se está tocando, no el rol de la
+    cuenta: la misma persona puede escribir en la suya y solo mirar la de otro.
+    """
     @functools.wraps(view)
     def wrapper(request, *args, **kwargs):
-        user = request.user
-        if not user.is_authenticated or not user.can_write:
+        from apps.core import boveda
+        if not request.user.is_authenticated or not boveda.puede_escribir(request):
             return _deny(request, "Tu acceso es de sólo lectura", 403)
         return view(request, *args, **kwargs)
     return wrapper

@@ -17,10 +17,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import check_password, make_password
 from django.core import signing
 from django.http import FileResponse, Http404, HttpResponse, JsonResponse, StreamingHttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 
+from apps.accounts.models import AccesoBoveda
 from apps.accounts.permissions import require_write
+from apps.core import boveda
 from apps.core.api import as_text, error_response as _err, json_body
 
 from . import pdf, vault
@@ -55,21 +58,21 @@ def _rama_de(root, ruta: Path) -> Path:
 
 @login_required
 def index(request):
-    vault.root()  # asegura que el directorio existe
+    boveda.raiz(request)  # crea su bóveda la primera vez que entra
     return render(request, "notes/notes.html", {})
 
 
 @login_required
 @require_GET
 def tree(request):
-    root = vault.root()
+    root = boveda.raiz(request)
     return JsonResponse({"tree": vault.build_tree(root, root)})
 
 
 @login_required
 @require_GET
 def file_get(request):
-    root = vault.root()
+    root = boveda.raiz(request)
     target, err = _resolve(root, request.GET.get("path", ""))
     if err:
         return err
@@ -87,7 +90,7 @@ def file_get(request):
 @require_POST
 @json_body
 def file_save(request):
-    root = vault.root()
+    root = boveda.raiz(request)
     content = request.data.get("content")
     if content is None:
         content = ""
@@ -111,7 +114,7 @@ def file_save(request):
 @require_POST
 @json_body
 def create(request):
-    root = vault.root()
+    root = boveda.raiz(request)
     name = vault.sanitize_name(request.data.get("name"))
     if not name:
         return _err("Nombre inválido")
@@ -149,7 +152,7 @@ def create(request):
 @require_POST
 @json_body
 def rename(request):
-    root = vault.root()
+    root = boveda.raiz(request)
     new_name = vault.sanitize_name(request.data.get("name"))
     if not new_name:
         return _err("Nombre inválido")
@@ -214,7 +217,7 @@ def move(request):
     fija el frontend con una llamada aparte a `reorder` (conoce la posición
     exacta donde se soltó, cosa que este endpoint no necesita saber).
     """
-    root = vault.root()
+    root = boveda.raiz(request)
     src, err = _resolve(root, as_text(request.data.get("path")).strip())
     if err:
         return err
@@ -275,7 +278,7 @@ def move(request):
 @json_body
 def reorder(request):
     """Fija el orden manual de los hijos directos de una carpeta."""
-    root = vault.root()
+    root = boveda.raiz(request)
     order = request.data.get("order")
     if not isinstance(order, list) or not all(isinstance(n, str) for n in order):
         return _err("Orden inválido")
@@ -293,7 +296,7 @@ def reorder(request):
 @require_POST
 @json_body
 def delete(request):
-    root = vault.root()
+    root = boveda.raiz(request)
     target, err = _resolve(root, as_text(request.data.get("path")).strip())
     if err:
         return err
@@ -318,7 +321,7 @@ def delete(request):
 @login_required
 @require_GET
 def search(request):
-    root = vault.root()
+    root = boveda.raiz(request)
     terms = [t.lower() for t in (request.GET.get("q") or "").split() if t]
     if not terms:
         return JsonResponse({"results": []})
@@ -334,7 +337,7 @@ def search(request):
 @require_GET
 def storage(request):
     """Estadísticas de la bóveda: total, desglose por tipo y conteos."""
-    return JsonResponse({"success": True, **vault.stats(vault.root())})
+    return JsonResponse({"success": True, **vault.stats(boveda.raiz(request))})
 
 
 @login_required
@@ -347,7 +350,7 @@ def optimize_images(request):
     barra de progreso en tiempo real. Los eventos los define `vault.optimize_images`.
     """
     def stream():
-        for event in vault.optimize_images(vault.root()):
+        for event in vault.optimize_images(boveda.raiz(request)):
             yield (json.dumps(event, ensure_ascii=False) + "\n").encode("utf-8")
 
     resp = StreamingHttpResponse(stream(), content_type="application/x-ndjson")
@@ -366,7 +369,7 @@ def upload(request):
     f = request.FILES.get("file")
     if not f:
         return _err("Falta archivo")
-    root = vault.root()
+    root = boveda.raiz(request)
     target = vault.save_upload(root, f)
     return JsonResponse({"success": True, "name": target.name,
                          "path": vault.rel_of(root, target)})
@@ -375,7 +378,7 @@ def upload(request):
 @login_required
 @require_GET
 def asset(request):
-    root = vault.root()
+    root = boveda.raiz(request)
     try:
         target = vault.safe_path(root, request.GET.get("path", ""))
     except VaultError:
@@ -390,7 +393,7 @@ def asset(request):
 @login_required
 @require_GET
 def export_vault(request):
-    tmp, size = vault.export_zip(vault.root())
+    tmp, size = vault.export_zip(boveda.raiz(request))
     resp = FileResponse(tmp, content_type="application/zip")
     fname = vault.sanitize_name(request.user.username) or "vault"
     resp["Content-Disposition"] = f'attachment; filename="vault-{fname}.zip"'
@@ -406,7 +409,7 @@ def import_vault(request):
     if not f:
         return _err("Falta archivo")
     try:
-        vault.import_zip(vault.root(), f, request.POST.get("mode", "merge"))
+        vault.import_zip(boveda.raiz(request), f, request.POST.get("mode", "merge"))
     except VaultError as exc:
         return _err(str(exc), exc.status)
     return JsonResponse({"success": True})
@@ -446,7 +449,7 @@ def share_create(request):
     que el enlace no cambie cada vez que se reabre el modal de "Compartir".
     `password` vacío/ausente quita la contraseña; con valor, la (re)establece.
     """
-    root = vault.root()
+    root = boveda.raiz(request)
     password = request.data.get("password") or ""
     if not isinstance(password, str):
         return _err("'password' debe ser texto")
@@ -455,8 +458,10 @@ def share_create(request):
         return err
     if not target.exists() or target.suffix.lower() != ".md":
         return _err("Nota no encontrada", 404)
+    # Relativo a la carpeta madre y no a la bóveda: con una bóveda por
+    # cuenta, «Historia.md» a secas ya no identifica una nota.
     share, _created = SharedNote.objects.get_or_create(
-        path=vault.rel_of(root, target),
+        path=vault.rel_of(vault.root(), target),
         defaults={"token": secrets.token_urlsafe(16)},
     )
     share.password_hash = make_password(password) if password else ""
@@ -472,11 +477,11 @@ def share_create(request):
 @require_GET
 def share_status(request):
     """Estado actual del enlace público de una nota (o `shared: false`)."""
-    root = vault.root()
+    root = boveda.raiz(request)
     target, err = _resolve(root, request.GET.get("path", ""))
     if err:
         return err
-    share = SharedNote.objects.filter(path=vault.rel_of(root, target)).first()
+    share = SharedNote.objects.filter(path=vault.rel_of(vault.root(), target)).first()
     if not share:
         return JsonResponse({"shared": False})
     return JsonResponse({
@@ -508,11 +513,11 @@ def share_list(request):
 @json_body
 def share_revoke(request):
     """Deja de compartir una nota (borra el enlace público)."""
-    root = vault.root()
+    root = boveda.raiz(request)
     target, err = _resolve(root, as_text(request.data.get("path")).strip())
     if err:
         return err
-    SharedNote.objects.filter(path=vault.rel_of(root, target)).delete()
+    SharedNote.objects.filter(path=vault.rel_of(vault.root(), target)).delete()
     return JsonResponse({"success": True})
 
 
@@ -635,3 +640,125 @@ def shared_note_asset(request, token):
     if not target.exists() or target.is_dir():
         raise Http404
     return FileResponse(open(target, "rb"))
+
+
+# ── Bóvedas compartidas ──────────────────────────────────────────────────────
+
+def _ficha_boveda(usuario, propia, permiso):
+    return {"id": str(usuario.sso_id or usuario.pk), "nombre": usuario.username,
+            "propia": propia, "permiso": permiso}
+
+
+@login_required
+@require_GET
+def boveda_estado(request):
+    """Qué bóveda se está mirando, cuáles hay a mano y qué se ha repartido."""
+    dueno, propia, escribir = boveda.activa(request)
+
+    disponibles = [_ficha_boveda(
+        request.user, True,
+        "editor" if getattr(request.user, "can_write", False) else "viewer")]
+    for a in (AccesoBoveda.objects.filter(invitado=request.user)
+              .select_related("dueno")):
+        disponibles.append(_ficha_boveda(a.dueno, False, a.permiso))
+
+    repartidos = [{
+        "id": a.pk,
+        "invitado": a.invitado.username if a.invitado else None,
+        "permiso": a.permiso,
+        "url": request.build_absolute_uri("/b/%s" % a.token) if not a.invitado else None,
+    } for a in (AccesoBoveda.objects.filter(dueno=request.user)
+                .select_related("invitado").order_by("-creado"))]
+
+    return JsonResponse({
+        "success": True,
+        "activa": _ficha_boveda(dueno, propia, "editor" if escribir else "viewer"),
+        "disponibles": disponibles,
+        "repartidos": repartidos,
+    })
+
+
+@login_required
+@require_POST
+@json_body
+def boveda_invitar(request):
+    """Un enlace que da acceso a mi bóveda. Sirve para quien lo abra."""
+    permiso = (request.data.get("permiso") or "").strip()
+    if permiso not in (AccesoBoveda.EDITOR, AccesoBoveda.VIEWER):
+        return _err("El permiso es 'editor' o 'viewer'")
+
+    # Una invitación abierta por permiso: repartir dos enlaces del mismo tipo
+    # no aporta nada y luego no se sabe cuál revocar.
+    invitacion, _ = AccesoBoveda.objects.get_or_create(
+        dueno=request.user, invitado=None, permiso=permiso,
+        defaults={"token": secrets.token_urlsafe(16)[:32]},
+    )
+    return JsonResponse({
+        "success": True, "permiso": permiso,
+        "url": request.build_absolute_uri("/b/%s" % invitacion.token),
+    })
+
+
+@login_required
+@require_POST
+@json_body
+def boveda_revocar(request):
+    """Retira un acceso concedido o una invitación sin usar."""
+    try:
+        cual = int(request.data.get("id") or 0)
+    except (TypeError, ValueError):
+        return _err("Identificador inválido")
+
+    borrados, _ = AccesoBoveda.objects.filter(pk=cual, dueno=request.user).delete()
+    if not borrados:
+        return _err("No existe ese acceso", 404)
+    return JsonResponse({"success": True})
+
+
+@login_required
+@require_POST
+@json_body
+def boveda_cambiar(request):
+    """Cambia de bóveda. Se guarda en la sesión, no en la URL."""
+    cual = (request.data.get("boveda") or "").strip()
+    mia = str(request.user.sso_id or request.user.pk)
+
+    if not cual or cual == mia:
+        request.session.pop(boveda.CLAVE, None)
+        return JsonResponse({"success": True, "activa": mia})
+
+    if not AccesoBoveda.objects.filter(invitado=request.user,
+                                       dueno__sso_id=cual).exists():
+        return _err("No tienes acceso a esa bóveda", 403)
+
+    request.session[boveda.CLAVE] = cual
+    return JsonResponse({"success": True, "activa": cual})
+
+
+@login_required
+def boveda_aceptar(request, token):
+    """Abrir el enlace de una invitación: te la quedas y entras en esa bóveda.
+
+    La invitación no se gasta: sigue valiendo para el siguiente. Lo que se
+    crea es tu acceso, que ya es tuyo y solo lo quita el dueño.
+    """
+    invitacion = AccesoBoveda.objects.filter(
+        token=token, invitado__isnull=True).select_related("dueno").first()
+    if invitacion is None or invitacion.dueno_id == request.user.pk:
+        return redirect("/")
+
+    acceso, creado = AccesoBoveda.objects.get_or_create(
+        dueno=invitacion.dueno, invitado=request.user,
+        defaults={"permiso": invitacion.permiso,
+                  "token": secrets.token_urlsafe(16)[:32]},
+    )
+    if not creado and acceso.permiso != invitacion.permiso:
+        # Si el dueño reparte ahora un enlace con más permiso, manda el nuevo.
+        acceso.permiso = invitacion.permiso
+        acceso.save(update_fields=["permiso"])
+
+    invitacion.usado = timezone.now()
+    invitacion.save(update_fields=["usado"])
+
+    request.session[boveda.CLAVE] = str(invitacion.dueno.sso_id or invitacion.dueno.pk)
+    return redirect("/")

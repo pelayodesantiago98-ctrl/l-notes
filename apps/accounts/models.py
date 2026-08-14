@@ -28,8 +28,8 @@ class User(AbstractUser):
         ("dracula", "Drácula"),
         ("pink", "Rosa"),
         ("gold", "Dorado"),
-        ("cristal", "Cristal"),
-        ("dark-cristal", "Dark Cristal"),
+        ("crystal", "Crystal"),
+        ("dark-crystal", "Dark Crystal"),
         ("cafe", "Café"),
     )
 
@@ -148,3 +148,44 @@ class ApiKey(models.Model):
     @property
     def masked(self) -> str:
         return f"{_KEY_NAMESPACE}_{self.prefix}_{'•' * 12}"
+
+
+class AccesoBoveda(models.Model):
+    """Permiso de una cuenta sobre la bóveda de otra.
+
+    Con `invitado` a nulo es una invitación abierta: el enlace que se reparte.
+    Quien lo abre estando dentro se lleva una fila con su nombre y el permiso
+    que dijera la invitación, y la invitación sigue viva para el siguiente.
+
+    El permiso es de la pareja (dueño, invitado), no de la cuenta: la misma
+    persona puede escribir en una bóveda ajena y solo mirar otra.
+    """
+
+    EDITOR = "editor"
+    VIEWER = "viewer"
+    PERMISOS = ((EDITOR, "Lectura y escritura"), (VIEWER, "Sólo lectura"))
+
+    dueno = models.ForeignKey("accounts.User", on_delete=models.CASCADE,
+                              related_name="accesos_dados")
+    invitado = models.ForeignKey("accounts.User", on_delete=models.CASCADE,
+                                 related_name="accesos_recibidos",
+                                 null=True, blank=True)
+    permiso = models.CharField(max_length=10, choices=PERMISOS, default=VIEWER)
+    token = models.CharField(max_length=32, unique=True, db_index=True)
+    creado = models.DateTimeField(auto_now_add=True)
+    usado = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = "accesos_boveda"
+        constraints = [
+            models.UniqueConstraint(fields=["dueno", "invitado"],
+                                    name="un_acceso_por_pareja"),
+        ]
+
+    def __str__(self):
+        quien = self.invitado.username if self.invitado else "(invitación)"
+        return f"{self.dueno.username} -> {quien} ({self.permiso})"
+
+    @property
+    def puede_escribir(self) -> bool:
+        return self.permiso == self.EDITOR

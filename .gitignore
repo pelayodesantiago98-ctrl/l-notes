@@ -73,3 +73,9 @@ __MACOSX/
 .idea/
 .vscode/
 *.swp
+
+# Copias que se dejan al tocar un fichero a mano (server.js.antes-algo-20260813).
+# Sirven para volver atras en el momento, no son el proyecto.
+*.antes-*
+*.pre-*
+*.pre-*.bak

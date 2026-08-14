@@ -9,7 +9,12 @@ class GlobalContextMiddleware(MiddlewareMixin):
 
     def process_request(self, request):
         theme = request.COOKIES.get("bh_theme", "")
-        if theme not in ("dark", "light", "dracula", "pink", "gold", "cristal", "dark-cristal", "cafe"):
+        # Las cookies escritas antes del renombrado traen el nombre viejo. Se
+        # traducen en vez de descartarse: si no, a quien tuviera el tema puesto
+        # se le quedaría en blanco al desplegar, sin explicación y sin que él
+        # hubiera tocado nada.
+        theme = {"cristal": "crystal", "dark-cristal": "dark-crystal"}.get(theme, theme)
+        if theme not in ("dark", "light", "dracula", "pink", "gold", "crystal", "dark-crystal", "cafe"):
             theme = ""
         # Si el usuario está autenticado y tiene un theme guardado, ese gana.
         if request.user.is_authenticated and getattr(request.user, "theme", None):

@@ -26,6 +26,9 @@ log = logging.getLogger(__name__)
 
 COOKIE = "lepayimio_sesion"
 CLAVE_FILE = os.environ.get("SSO_KEY_FILE", "/etc/lepayimio/sso.key")
+# Épocas publicadas por el portal: id -> número. Sirven para revocar sesiones
+# sin tocar la clave ni esperar a que caduque el token.
+EPOCAS_FILE = os.environ.get("SSO_EPOCH_FILE", "/var/lib/lepayimio/epocas.json")
 
 _clave = None
 
@@ -36,6 +39,20 @@ def _clave_de_firma():
         with open(CLAVE_FILE, "rb") as f:
             _clave = f.read()
     return _clave
+
+
+def _epocas():
+    """Épocas vigentes. No se cachea: retrasaría el efecto de revocar.
+
+    Si el fichero falta o está roto se devuelve vacío y no se corta ninguna
+    sesión: perder la revocación es malo, pero dejar el vault sin entrar por
+    un fichero de treinta bytes lo es más.
+    """
+    try:
+        with open(EPOCAS_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return {}
 
 
 def _b64url(dato: str) -> bytes:
@@ -68,6 +85,14 @@ def verificar(token):
     exp = datos.get("exp")
     if not exp or time.time() * 1000 > exp:
         return None
+
+    # Revocación: la época del token debe ser la vigente. Un token sin ella es
+    # anterior a que esto existiera y cuenta como la 1.
+    quien = str(datos.get("id") or datos.get("u") or "")
+    vigente = _epocas().get(quien)
+    if vigente is not None and int(datos.get("e") or 1) != int(vigente):
+        return None
+
     return datos
 
 

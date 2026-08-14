@@ -17,6 +17,8 @@ urlpatterns = [
     path("s/<str:token>/asset", notes_views.shared_note_asset, name="shared_note_asset"),
 
     # APIs JSON internas (sesión + CSRF) — las consume el frontend.
+    # El enlace que se reparte para dar acceso a una bóveda.
+    path("b/<str:token>", notes_views.boveda_aceptar, name="boveda_aceptar"),
     path("api/notes/", include("apps.notes.api_urls")),
 
     # API pública v1 (clave de API) + Swagger en /api/docs/.
