@@ -74,19 +74,19 @@
 .tab-name{overflow:hidden;text-overflow:ellipsis;max-width:160px}
 .tab-close{opacity:.55;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;border-radius:4px;font-size:1.1rem;line-height:1;flex-shrink:0}
 .tab-close:hover{opacity:1;background:rgba(255,255,255,.18)}
-:root:is([data-theme="light"],[data-theme="crystal"]) .tab-bar{background:rgba(0,0,0,.04)}
-:root:is([data-theme="light"],[data-theme="crystal"]) .tab-item{background:rgba(0,0,0,.04);color:#4d5566}
-:root:is([data-theme="light"],[data-theme="crystal"]) .tab-item:hover{background:rgba(0,0,0,.08);color:#111}
-:root:is([data-theme="light"],[data-theme="crystal"]) .tab-item.active{background:var(--vault-bg);color:#111}
-:root:is([data-theme="light"],[data-theme="crystal"]) .tab-close:hover{background:rgba(0,0,0,.12)}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .tab-bar{background:rgba(0,0,0,.04)}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .tab-item{background:rgba(0,0,0,.04);color:#4d5566}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .tab-item:hover{background:rgba(0,0,0,.08);color:#111}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .tab-item.active{background:var(--vault-bg);color:#111}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .tab-close:hover{background:rgba(0,0,0,.12)}
 .zoom-pop{position:absolute;top:calc(100% + 6px);right:.5rem;display:none;align-items:center;gap:.3rem;padding:.4rem;background:var(--vault-side);border:1px solid var(--vault-line);border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.35);z-index:30}
 .zoom-pop.open{display:flex}
 .zoom-pop button{background:rgba(255,255,255,.06);border:none;color:rgba(255,255,255,.85);cursor:pointer;padding:.35rem .6rem;border-radius:6px;font:600 .9rem/1 inherit;min-width:2.3rem}
 .zoom-pop button:hover{background:rgba(255,255,255,.14);color:#fff}
 #zoom-val{min-width:3.2rem}
-:root:is([data-theme="light"],[data-theme="crystal"]) .zoom-pop{background:#fff;border-color:#e2e8f0;box-shadow:0 6px 24px rgba(0,0,0,.12)}
-:root:is([data-theme="light"],[data-theme="crystal"]) .zoom-pop button{background:rgba(0,0,0,.05);color:#1f2533}
-:root:is([data-theme="light"],[data-theme="crystal"]) .zoom-pop button:hover{background:rgba(0,0,0,.1);color:#111}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .zoom-pop{background:#fff;border-color:#e2e8f0;box-shadow:0 6px 24px rgba(0,0,0,.12)}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .zoom-pop button{background:rgba(0,0,0,.05);color:#1f2533}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .zoom-pop button:hover{background:rgba(0,0,0,.1);color:#111}
 /* Barra de formato (estilo Word) */
 #btn-format .caret{width:12px;height:12px;margin-left:1px;opacity:.65}
 .format-bar{position:absolute;top:calc(100% + 6px);left:.5rem;right:.5rem;display:none;flex-wrap:wrap;align-items:center;gap:.35rem .4rem;padding:.55rem;background:var(--vault-side);border:1px solid var(--vault-line);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.4);z-index:31;max-height:70vh;overflow-y:auto}
@@ -98,10 +98,10 @@
 .format-bar button{background:rgba(255,255,255,.06);border:none;color:rgba(255,255,255,.85);cursor:pointer;padding:.38rem .55rem;border-radius:6px;font:600 .8rem/1 inherit;display:flex;align-items:center;gap:.3rem;white-space:nowrap}
 .format-bar button:hover{background:var(--vault-accent);color:#fff}
 .fmt-label{font-size:.7rem;color:rgba(255,255,255,.45);padding:0 .1rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em}
-:root:is([data-theme="light"],[data-theme="crystal"]) .format-bar{background:#fff;border-color:#e2e8f0;box-shadow:0 8px 28px rgba(0,0,0,.14)}
-:root:is([data-theme="light"],[data-theme="crystal"]) .format-bar button{background:rgba(0,0,0,.05);color:#1f2533}
-:root:is([data-theme="light"],[data-theme="crystal"]) .format-bar button:hover{background:var(--vault-accent);color:#fff}
-:root:is([data-theme="light"],[data-theme="crystal"]) .fmt-label{color:#64748b}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .format-bar{background:#fff;border-color:#e2e8f0;box-shadow:0 8px 28px rgba(0,0,0,.14)}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .format-bar button{background:rgba(0,0,0,.05);color:#1f2533}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .format-bar button:hover{background:var(--vault-accent);color:#fff}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .fmt-label{color:#64748b}
 .vault-title{flex:1;font-size:.95rem;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .vault-title .crumb{color:rgba(255,255,255,.4);font-weight:500}.vault-title .crumb-link{cursor:pointer;text-decoration:underline;text-underline-offset:2px;text-decoration-color:rgba(255,255,255,.25);transition:color .12s,text-decoration-color .12s}.vault-title .crumb-link:hover{color:rgba(255,255,255,.9);text-decoration-color:rgba(255,255,255,.7)}
 .vault-title .crumb-note{cursor:pointer;transition:color .12s}.vault-title .crumb-note:hover{color:var(--vault-accent)}
@@ -140,7 +140,7 @@
 .cm-content{padding:1.1rem max(1.6rem,calc((100% - 820px)/2)) max(40vh,280px) !important;max-width:none !important;margin:0 !important;line-height:1.7 !important;
   font-size:calc(var(--note-fs,1) * 1rem);caret-color:#22d3ee !important}
 .cm-content img{zoom:var(--note-fs,1)}
-:root:is([data-theme="light"],[data-theme="crystal"]) .cm-content{caret-color:#0e7490 !important}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .cm-content{caret-color:#0e7490 !important}
 /* Encabezados/código de los bloques renderizados en em para que escalen con el zoom */
 .cm-lp-block.markdown-body h1{font-size:1.8em}
 .cm-lp-block.markdown-body h2{font-size:1.4em}
@@ -199,7 +199,13 @@
 .markdown-body h3{font-size:1.15rem}
 .markdown-body h4{font-size:1rem}
 .markdown-body p{margin:.6em 0}
-.markdown-body a,.markdown-body .wikilink{color:var(--vault-accent);text-decoration:none}
+/* El color del enlace es suyo y no el del acento a secas.
+
+   El acento tambien se usa como FONDO con letra blanca (.tree-row.active,
+   .format-bar button:hover), asi que no se puede oscurecer solo para que el
+   enlace se lea. Esta variable separa los dos usos; donde no se declara vale
+   el acento, que es lo que valia antes. */
+.markdown-body a,.markdown-body .wikilink{color:var(--vault-enlace,var(--vault-accent));text-decoration:none}
 .markdown-body a:hover{text-decoration:underline}
 .markdown-body code{background:rgba(255,255,255,.09);padding:.15em .4em;border-radius:5px;font-size:.88em;font-family:ui-monospace,monospace}
 .markdown-body pre{position:relative;background:#0d1117;padding:.9rem 1rem;border-radius:10px;overflow-x:auto;border:1px solid var(--vault-line)}
@@ -213,8 +219,8 @@
 .code-copy svg{width:16px;height:16px}
 .code-copy.copied{color:#22c55e;border-color:rgba(34,197,94,.5);opacity:1}
 @media(hover:none){.code-copy{opacity:.85}}   /* siempre visible en táctil */
-:root:is([data-theme="light"],[data-theme="crystal"]) .code-copy{background:rgba(255,255,255,.75);border-color:#d6dae4;color:#57606a}
-:root:is([data-theme="light"],[data-theme="crystal"]) .code-copy:hover{background:#fff;color:#24292e}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .code-copy{background:rgba(255,255,255,.75);border-color:#d6dae4;color:#57606a}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .code-copy:hover{background:#fff;color:#24292e}
 .markdown-body pre code{background:none;padding:0;font-size:.86rem}
 .markdown-body blockquote{border-left:3px solid var(--vault-accent);margin:.7em 0;padding:.1em .9em;color:rgba(255,255,255,.72)}
 .markdown-body ul,.markdown-body ol{padding-left:1.5em;margin:.5em 0}
@@ -254,6 +260,14 @@
 .share-switch.on{background:var(--vault-accent)}
 .share-switch.on::after{transform:translateX(18px)}
 .share-pw-field{display:none;margin-bottom:1rem}
+/* Enviar el enlace por correo. Separado por una linea: es otra accion, no un
+   ajuste mas del enlace, y sin separacion se lee como parte de la contrasena. */
+.share-mail{margin-top:.2rem;padding-top:.9rem;border-top:1px solid var(--vault-line)}
+.share-mail label{display:block;margin-bottom:.4rem;color:#9aa3b2;font-size:.8rem}
+.share-mail-row{display:flex;gap:.5rem;margin-bottom:.4rem}
+.share-mail-row input{flex:1;min-width:0}
+#share-mail-note{width:100%}
+.share-mail-state{min-height:1.1em;margin:.45rem 0 0;color:#9aa3b2;font-size:.76rem}
 .share-pw-field.show{display:block}
 .share-status-row{display:flex;align-items:center;gap:.4rem;font-size:.8rem;color:rgba(255,255,255,.5);margin:-.3rem 0 1rem}
 .share-status-dot{width:7px;height:7px;border-radius:50%;background:#16a34a;flex-shrink:0}
@@ -378,113 +392,130 @@
    que no respondían al tema. Aquí los adaptamos cuando data-theme="light".
    Los bloques de código (pre) se dejan oscuros a propósito: el resaltado de
    sintaxis cargado es «github-dark» (texto claro), así siguen siendo legibles. */
-:root:is([data-theme="light"],[data-theme="crystal"]){
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]){
   --vault-bg:#f7f8fb; --vault-side:#ffffff; --vault-line:#e3e7ef;
   --vault-accent:var(--cyan,#0891b2);
 }
-:root:is([data-theme="light"],[data-theme="crystal"]) .vault-side-head{color:#7a8294}
-:root:is([data-theme="light"],[data-theme="crystal"]) .vault-side-head button{color:#5b6373}
-:root:is([data-theme="light"],[data-theme="crystal"]) .vault-side-head button:hover{background:rgba(0,0,0,.06);color:#111}
-:root:is([data-theme="light"],[data-theme="crystal"]) .vault-side-top button{background:rgba(0,0,0,.05);color:#374151}
-:root:is([data-theme="light"],[data-theme="crystal"]) .vault-side-top button:hover{background:rgba(0,0,0,.09)}
-:root:is([data-theme="light"],[data-theme="crystal"]) .vault-search input{background:#fff;color:#1a1f2e}
-:root:is([data-theme="light"],[data-theme="crystal"]) .vault-search input::placeholder{color:#9aa2b4}
-:root:is([data-theme="light"],[data-theme="crystal"]) .vault-search-clear{color:#9aa2b4}
-:root:is([data-theme="light"],[data-theme="crystal"]) .vault-search-clear:hover{color:#1a1f2e;background:rgba(0,0,0,.08)}
-:root:is([data-theme="light"],[data-theme="crystal"]) .search-section,
-:root:is([data-theme="light"],[data-theme="crystal"]) .search-spin,
-:root:is([data-theme="light"],[data-theme="crystal"]) .tree-row.search-hit .hit-path,
-:root:is([data-theme="light"],[data-theme="crystal"]) .tree-row.search-hit .hit-snippet{color:#8a92a6}
-:root:is([data-theme="light"],[data-theme="crystal"]) .tree-row{color:#374151}
-:root:is([data-theme="light"],[data-theme="crystal"]) .tree-row:hover{background:rgba(0,0,0,.05)}
-:root:is([data-theme="light"],[data-theme="crystal"]) .tree-row.is-file{color:#6b7280}
-:root:is([data-theme="light"],[data-theme="crystal"]) .tree-row.active{color:#fff}
-:root:is([data-theme="light"],[data-theme="crystal"]) .tree-row .row-menu:hover{background:rgba(0,0,0,.1)}
-:root:is([data-theme="light"],[data-theme="crystal"]) .tree-empty{color:#9aa2b4}
-:root:is([data-theme="light"],[data-theme="crystal"]) .vault-title{color:#1a1f2e}
-:root:is([data-theme="light"],[data-theme="crystal"]) .vault-title .crumb{color:#8a92a6}:root:is([data-theme="light"],[data-theme="crystal"]) .vault-title .crumb-link{text-decoration-color:rgba(0,0,0,.2)}
-:root:is([data-theme="light"],[data-theme="crystal"]) .vault-status{color:#8a92a6}
-:root:is([data-theme="light"],[data-theme="crystal"]) .vault-tool-btn{background:rgba(0,0,0,.05);color:#4d5566}
-:root:is([data-theme="light"],[data-theme="crystal"]) .vault-tool-btn:hover{background:rgba(0,0,0,.1);color:#111}
-:root:is([data-theme="light"],[data-theme="crystal"]) .seg{background:rgba(0,0,0,.05)}
-:root:is([data-theme="light"],[data-theme="crystal"]) .seg button{color:#5b6373}
-:root:is([data-theme="light"],[data-theme="crystal"]) .seg button.active{color:#fff}
-:root:is([data-theme="light"],[data-theme="crystal"]) .cm-editor,
-:root:is([data-theme="light"],[data-theme="crystal"]) #md-editor{color:#1f2533}
-:root:is([data-theme="light"],[data-theme="crystal"]) .vault-hdr-btn{color:#4d5566}
-:root:is([data-theme="light"],[data-theme="crystal"]) .vault-hdr-btn:hover{background:rgba(0,0,0,.08)}
-:root:is([data-theme="light"],[data-theme="crystal"]) .vault-empty{color:#9aa2b4}
-:root:is([data-theme="light"],[data-theme="crystal"]) .vault-empty .empty-actions button{background:rgba(0,0,0,.06);color:#1f2533}
+
+/* Rosa se lleva las superficies del tema claro pero en calido, con la misma
+   relacion que alli: el lienzo es el --bg del tema, el lateral es el --bg2 y
+   la linea va un pelin mas clara que su --border, para que separe sin cortar.
+
+   El acento no hace falta ponerlo: la regla de arriba lo saca de --cyan, y en
+   rosa app.css le da el valor #ec4899. Sale solo. */
+:root[data-theme="pink"]{
+  --vault-bg:#fff5f8; --vault-side:#ffffff; --vault-line:#f9d7e4;
+}
+
+/* Los dos unicos turquesas que quedaban sueltos en las reglas del tema claro.
+   Se usa el rosa oscuro (#be185d) y no el del acento (#ec4899): sobre blanco,
+   el acento se queda en 3:1 de contraste, que para un cursor fino o un texto
+   pequeno es poco. El oscuro llega a 5,9:1 y sigue siendo el mismo color. */
+:root[data-theme="pink"] .cm-content{caret-color:#be185d !important}
+:root[data-theme="pink"] .tag-pill{background:rgba(236,72,153,.12);color:#be185d}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .vault-side-head{color:#7a8294}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .vault-side-head button{color:#5b6373}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .vault-side-head button:hover{background:rgba(0,0,0,.06);color:#111}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .vault-side-top button{background:rgba(0,0,0,.05);color:#374151}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .vault-side-top button:hover{background:rgba(0,0,0,.09)}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .vault-search input{background:#fff;color:#1a1f2e}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .vault-search input::placeholder{color:#9aa2b4}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .vault-search-clear{color:#9aa2b4}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .vault-search-clear:hover{color:#1a1f2e;background:rgba(0,0,0,.08)}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .search-section,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .search-spin,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .tree-row.search-hit .hit-path,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .tree-row.search-hit .hit-snippet{color:#8a92a6}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .tree-row{color:#374151}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .tree-row:hover{background:rgba(0,0,0,.05)}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .tree-row.is-file{color:#6b7280}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .tree-row.active{color:#fff}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .tree-row .row-menu:hover{background:rgba(0,0,0,.1)}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .tree-empty{color:#9aa2b4}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .vault-title{color:#1a1f2e}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .vault-title .crumb{color:#8a92a6}:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .vault-title .crumb-link{text-decoration-color:rgba(0,0,0,.2)}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .vault-status{color:#8a92a6}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .vault-tool-btn{background:rgba(0,0,0,.05);color:#4d5566}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .vault-tool-btn:hover{background:rgba(0,0,0,.1);color:#111}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .seg{background:rgba(0,0,0,.05)}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .seg button{color:#5b6373}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .seg button.active{color:#fff}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .cm-editor,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) #md-editor{color:#1f2533}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .vault-hdr-btn{color:#4d5566}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .vault-hdr-btn:hover{background:rgba(0,0,0,.08)}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .vault-empty{color:#9aa2b4}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .vault-empty .empty-actions button{background:rgba(0,0,0,.06);color:#1f2533}
 /* Vista renderizada (markdown) */
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body{color:#1f2533}
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body h1,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body h2,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body h3,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body h4{color:#0f1320}
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body code{background:rgba(0,0,0,.06);color:#1f2533}
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body blockquote{color:#4d5566}
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body th{background:rgba(0,0,0,.04)}
-:root:is([data-theme="light"],[data-theme="crystal"]) .note-props th{color:#6b7280}
-:root:is([data-theme="light"],[data-theme="crystal"]) .callout{background:rgba(0,0,0,.03)}
-:root:is([data-theme="light"],[data-theme="crystal"]) .tag-pill{background:rgba(8,145,178,.12);color:#0e7490}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body{color:#1f2533}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body h1,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body h2,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body h3,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body h4{color:#0f1320}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body code{background:rgba(0,0,0,.06);color:#1f2533}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body blockquote{color:#4d5566}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body th{background:rgba(0,0,0,.04)}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .note-props th{color:#6b7280}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .callout{background:rgba(0,0,0,.03)}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .tag-pill{background:rgba(8,145,178,.12);color:#0e7490}
 /* Menú contextual y modales */
-:root:is([data-theme="light"],[data-theme="crystal"]) .ctx-menu{background:#ffffff;box-shadow:0 10px 30px rgba(20,30,60,.18)}
-:root:is([data-theme="light"],[data-theme="crystal"]) .ctx-menu button{color:#1f2533}
-:root:is([data-theme="light"],[data-theme="crystal"]) .ctx-menu button:hover{background:rgba(0,0,0,.06)}
-:root:is([data-theme="light"],[data-theme="crystal"]) .modal{background:#ffffff}
-:root:is([data-theme="light"],[data-theme="crystal"]) .modal h3{color:#0f1320}
-:root:is([data-theme="light"],[data-theme="crystal"]) .modal p,
-:root:is([data-theme="light"],[data-theme="crystal"]) .modal label small,
-:root:is([data-theme="light"],[data-theme="crystal"]) .modal-drop,
-:root:is([data-theme="light"],[data-theme="crystal"]) .imgdir-opt small{color:#6b7280}
-:root:is([data-theme="light"],[data-theme="crystal"]) .imgdir-opt{background:rgba(0,0,0,.04);color:#1f2533}
-:root:is([data-theme="light"],[data-theme="crystal"]) .imgdir-opt:hover{background:rgba(0,0,0,.08)}
-:root:is([data-theme="light"],[data-theme="crystal"]) .btn-cancel{background:rgba(0,0,0,.07);color:#1f2533}
-:root:is([data-theme="light"],[data-theme="crystal"]) .modal-progress{background:rgba(0,0,0,.1)}
-:root:is([data-theme="light"],[data-theme="crystal"]) .modal::before{background:rgba(0,0,0,.18)}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .ctx-menu{background:#ffffff;box-shadow:0 10px 30px rgba(20,30,60,.18)}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .ctx-menu button{color:#1f2533}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .ctx-menu button:hover{background:rgba(0,0,0,.06)}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .modal{background:#ffffff}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .modal h3{color:#0f1320}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .modal p,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .modal label small,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .modal-drop,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .imgdir-opt small{color:#6b7280}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .imgdir-opt{background:rgba(0,0,0,.04);color:#1f2533}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .imgdir-opt:hover{background:rgba(0,0,0,.08)}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .btn-cancel{background:rgba(0,0,0,.07);color:#1f2533}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .modal-progress{background:rgba(0,0,0,.1)}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .modal::before{background:rgba(0,0,0,.18)}
 /* Bloques de código en tema claro: fondo claro + resaltado «github-light».
    El CSS vendido es github-dark (texto claro), así que aquí reescribimos la
    base .hljs y cada grupo de tokens con la paleta clara de GitHub. */
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body pre{background:#f6f8fa;border-color:#e3e7ef}
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs{color:#24292e;background:transparent}
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-doctag,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-keyword,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-meta .hljs-keyword,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-template-tag,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-template-variable,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-type,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-variable.language_{color:#d73a49}
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-title,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-title.class_,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-title.class_.inherited__,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-title.function_{color:#6f42c1}
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-attr,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-attribute,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-literal,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-meta,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-number,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-operator,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-selector-attr,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-selector-class,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-selector-id,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-variable{color:#005cc5}
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-meta .hljs-string,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-regexp,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-string{color:#032f62}
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-built_in,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-symbol{color:#e36209}
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-code,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-comment,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-formula{color:#6a737d}
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-name,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-quote,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-selector-pseudo,
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-selector-tag{color:#22863a}
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-subst{color:#24292e}
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-section{color:#005cc5}
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-bullet{color:#735c0f}
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-addition{color:#22863a;background-color:#f0fff4}
-:root:is([data-theme="light"],[data-theme="crystal"]) .markdown-body .hljs-deletion{color:#b31d28;background-color:#ffeef0}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body pre{background:#f6f8fa;border-color:#e3e7ef}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs{color:#24292e;background:transparent}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-doctag,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-keyword,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-meta .hljs-keyword,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-template-tag,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-template-variable,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-type,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-variable.language_{color:#d73a49}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-title,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-title.class_,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-title.class_.inherited__,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-title.function_{color:#6f42c1}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-attr,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-attribute,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-literal,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-meta,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-number,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-operator,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-selector-attr,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-selector-class,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-selector-id,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-variable{color:#005cc5}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-meta .hljs-string,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-regexp,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-string{color:#032f62}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-built_in,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-symbol{color:#e36209}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-code,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-comment,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-formula{color:#6a737d}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-name,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-quote,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-selector-pseudo,
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-selector-tag{color:#22863a}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-subst{color:#24292e}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-section{color:#005cc5}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-bullet{color:#735c0f}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-addition{color:#22863a;background-color:#f0fff4}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .markdown-body .hljs-deletion{color:#b31d28;background-color:#ffeef0}
 /* ── Accesibilidad: filas árbol enfocables con teclado ── */
 .tree-row:focus-visible{outline:2px solid var(--vault-accent);outline-offset:-1px}
 .tree-row.active:focus-visible{outline-color:rgba(255,255,255,.55)}
@@ -494,8 +525,8 @@
 .lightbox-close{position:absolute;top:.8rem;right:.8rem;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:1.5rem;width:38px;height:38px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;z-index:1}
 .lightbox-close:hover,.lightbox-close:focus-visible{background:rgba(255,255,255,.3);outline:2px solid rgba(255,255,255,.5);outline-offset:2px}
 .btn-danger{background:#ef4444}.btn-danger:hover{background:#dc2626}
-:root:is([data-theme="light"],[data-theme="crystal"]) .vault-input-field{background:#fff;color:#1a1f2e;border-color:#d1d5db}
-:root:is([data-theme="light"],[data-theme="crystal"]) .vault-input-field::placeholder{color:#9aa2b4}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .vault-input-field{background:#fff;color:#1a1f2e;border-color:#d1d5db}
+:root:is([data-theme="light"],[data-theme="crystal"],[data-theme="pink"]) .vault-input-field::placeholder{color:#9aa2b4}
 
 /* ─────────────── Tema Dorado (oscuro + amarillo claro) ───────────────
    El acento es amarillo, así que los elementos con RELLENO de acento llevan
@@ -770,3 +801,15 @@
 :root[data-theme="cafe"] .tree-row.active{ background:#c3a077; color:#2b2118 }
 :root[data-theme="cafe"] .tree-row.active .row-menu{ color:#2b2118 }
 :root[data-theme="cafe"] .tree-row.active:focus-visible{ outline-color:rgba(43,33,24,.55) }
+
+/* ── Enlaces legibles en los temas de fondo claro ──────────────────────────
+   El texto de un enlace pide 4,5:1 contra su fondo. Estos tres no llegaban:
+   cafe se quedaba en 1,0:1 —el enlace y el papel eran el mismo tono— y light
+   y pink rondaban el 3,4:1. Los valores de aqui abajo estan calculados contra
+   el fondo real de cada boveda.
+
+   crystal no aparece porque ya daba 4,7:1, y los temas oscuros van de 5,1:1
+   para arriba. */
+:root[data-theme="cafe"]  { --vault-enlace:#6b3a10; }   /* 4,9:1 sobre #cbb9a3 */
+:root[data-theme="light"] { --vault-enlace:#0e7490; }   /* 5,0:1 sobre #f7f8fb */
+:root[data-theme="pink"]  { --vault-enlace:#be185d; }   /* 5,7:1 sobre #fff5f8 */

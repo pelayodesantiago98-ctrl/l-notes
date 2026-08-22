@@ -13,6 +13,12 @@
 <link rel="icon" type="image/png" sizes="192x192" href="/static/icons/icon-192.png?v={{ ASSET_VERSION }}">
 <script>(function(){var m=document.cookie.match(/(?:^|; )bh_theme=([^;]+)/);var t=(m&&m[1])||"dark";/* Cookies anteriores al renombrado: sin esto el atributo se quedaba en el nombre viejo y no casaba ninguna regla. */if(t==="cristal")t="crystal";else if(t==="dark-cristal")t="dark-crystal";document.documentElement.dataset.theme=t;})();</script>
 <link rel="stylesheet" href="/static/css/app.css?v={{ ASSET_VERSION }}">
+{% comment %}
+  Capa de acabado compartida con el resto de lepayimio. Se repite aqui
+  porque esta plantilla no extiende base.html: tiene su propio <head>.
+{% endcomment %}
+<link rel="stylesheet" href="/static/notes/mejoras-l-notes.css?v={{ ASSET_VERSION }}">
+<script src="/static/notes/mejoras.js?v={{ ASSET_VERSION }}" defer></script>
 </head>
 <body class="auth-body">
 <div class="auth-container">

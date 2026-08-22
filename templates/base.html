@@ -34,6 +34,16 @@
 };</script>
 <script src="/static/js/csrf.js?v={{ ASSET_VERSION }}"></script>
 {% block extra_head %}{% endblock %}
+{% comment %}
+  Capa de acabado compartida con el resto de lepayimio.
+
+  Va aqui, detras de extra_head, y no arriba junto a app.css: solo anade
+  cosas encima de lo que cada hoja ya decidio, y para eso tiene que llegar
+  la ultima. notes.css se carga desde extra_head, asi que cualquier sitio
+  por encima de esta linea llegaria antes que ella.
+{% endcomment %}
+<link rel="stylesheet" href="/static/notes/mejoras-l-notes.css?v={{ ASSET_VERSION }}">
+<script src="/static/notes/mejoras.js?v={{ ASSET_VERSION }}" defer></script>
 </head>
 <body class="{% block body_class %}subapp-body{% endblock %}{% if user_id and not can_write %} role-readonly{% endif %}">
 {% block header %}

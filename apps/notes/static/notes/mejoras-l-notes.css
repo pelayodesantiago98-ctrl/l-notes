@@ -1,0 +1,1157 @@
+/*
+ * L-notes · capa de acabado.
+ *
+ * Va SIEMPRE después de las hojas de la casa —app.css y notes.css— y no
+ * redefine nada de lo que allí se decidió: solo añade lo que no existía y lo
+ * hace a través del puente de variables de aquí abajo, que es lo ÚNICO que
+ * cambia entre los servicios. El resto del fichero, de "NÚCLEO" para abajo, es
+ * idéntico en todos.
+ *
+ * Se engancha en templates/base.html, al final del <head> y detrás de
+ * {% block extra_head %}. Eso importa por dos motivos: es la única posición
+ * que garantiza llegar después de notes.css —que se carga desde ese bloque— y
+ * es la que hace que la capa cubra también acceso, perfil y notas compartidas,
+ * que cuelgan de la misma base.
+ *
+ * ── Dos rarezas de esta casa ──────────────────────────────────────────────
+ *
+ * 1. El atributo del tema se llama `data-theme`, en inglés, y no `data-tema`
+ *    como en los demás; y son OCHO temas, no tres: el oscuro por defecto,
+ *    light, crystal, dark-crystal, dracula, pink, gold y cafe. No se cambia
+ *    nada de eso —es su convención y funciona—, simplemente el puente se
+ *    engancha donde toca.
+ *
+ * 2. Los colores viven en dos capas. app.css define los generales —--bg,
+ *    --text, --border, --cyan— y los redefine tema a tema; notes.css añade
+ *    encima los de la bóveda —--vault-bg, --vault-side, --vault-line,
+ *    --vault-accent— solo para la vista de notas.
+ *
+ *    El puente cuelga de los de app.css, que es la capa que existe en TODAS
+ *    las páginas y en LOS OCHO temas. Así no hay ni un color escrito a mano
+ *    aquí: si mañana aparece un tema nuevo, esta capa lo hereda sola.
+ */
+
+/* ── Puente ──────────────────────────────────────────────────────────────── */
+:root {
+  /* El acento: el de la bóveda si estamos en ella, el general si no. */
+  --m-acento: var(--vault-accent, var(--cyan, #06b6d4));
+  --m-acento-tinta: #ffffff;
+  --m-tinta: var(--text, #e8f0fe);
+  --m-linea: var(--border, rgba(255, 255, 255, 0.07));
+  --m-panel-solido: var(--bg2, #0d1117);
+  --m-sombra-tono: #000000;
+}
+
+/*
+ * Los temas claros: la sombra deja de ser negra.
+ *
+ * La tinta no hay que tocarla —app.css ya le da la vuelta en cada tema, que es
+ * la ventaja de colgar de --text en vez de escribir colores aquí—, pero el
+ * tono de la sombra sí, porque no sale de ninguna variable suya. Una sombra
+ * negra sobre un fondo claro se ve como suciedad: en el mundo real la sombra
+ * tiene el color de la luz que la rodea.
+ */
+:root:is([data-theme="light"], [data-theme="crystal"]) { --m-sombra-tono: #1d3a5c; }
+:root[data-theme="gold"]  { --m-sombra-tono: #3d3115; }
+:root[data-theme="cafe"]  { --m-sombra-tono: #4a3a24; }   /* sombra de madera */
+
+/*
+ * Café es el único tema con dos superficies de signo contrario.
+ *
+ * Su cáscara —cabecera, fondo de la página— es cuero tostado, #33281e, y por
+ * eso app.css le pone al texto un color pergamino, #f6ebda. Pero la bóveda que
+ * hay dentro es café con leche, #cbb9a3, que es clara: notes.css se lo pinta
+ * aparte, y ahí el texto de verdad es oscuro.
+ *
+ * Como --m-tinta alimenta sombras y velos por color-mix, heredar el pergamino
+ * dentro de la bóveda daría sombras CLARAS sobre una superficie clara: no se
+ * verían, y los relieves se quedarían planos justo en el tema que más los
+ * luce. Así que dentro de la bóveda se le da la vuelta.
+ *
+ * En light y crystal no hace falta: las dos superficies son claras. Ni en el
+ * oscuro por defecto, dark-crystal, dracula y gold: las dos son oscuras.
+ */
+:root[data-theme="cafe"] :is(.vault, .vault-side, .vault-main) {
+  --m-tinta: #201a12;
+}
+
+/*
+ * Rosa tuvo aquí una excepción y ya no la necesita.
+ *
+ * Durante un tiempo su cáscara era clara y su bóveda oscura, porque notes.css
+ * no mencionaba el tema rosa ni una vez: solo lo trataba app.css. Con las dos
+ * superficies de signo contrario había que forzarle la tinta clara aquí dentro
+ * para que las sombras no salieran invisibles.
+ *
+ * Eso se arregló en el sitio que tocaba —metiendo rosa en la lista de temas
+ * claros de notes.css, junto a light y crystal— así que ahora su bóveda es
+ * clara como el resto de su tema y la tinta ciruela que hereda de --text es
+ * justo la correcta. Dejar la excepción sería volver a romperlo, esta vez al
+ * revés.
+ */
+
+/* ── Lo que aquí no entra ────────────────────────────────────────────────── */
+
+/*
+ * El núcleo hace entrar la página con un `m-entra` de 300 ms. En los demás
+ * servicios eso está bien: se abre l-games, se mira y se sale. Aquí no. Aquí
+ * se entra a escribir, y cada nota que se abre volvería a pagar el peaje. Lo
+ * que se ve cien veces al día no se anima.
+ *
+ * `.vault` no está en la lista del núcleo (main/.wrap/.envoltorio/.principal/
+ * .vista), así que hoy no hay nada encendido. Queda escrito por si mañana
+ * alguien renombra el contenedor a `main` pensando que es más semántico y se
+ * encuentra el editor animándose.
+ */
+:is(.vault, .vault-main, .note-view) { animation: none; }
+
+/*
+ * La barra de desplazamiento fina del núcleo tampoco entra en el editor.
+ *
+ * `scrollbar-width: thin` se aplica con `*`, y CodeMirror calcula cuántas
+ * líneas caben contando con el ancho real de la barra. Cambiárselo le descuadra
+ * la cuenta. En el resto de la página sí se queda.
+ */
+.cm-scroller { scrollbar-width: auto; }
+
+/* ── CodeMirror ──────────────────────────────────────────────────────────── */
+
+/*
+ * `scroll-behavior: smooth` en <html> lo hereda todo, y el editor lo sufre:
+ * cuando el cursor se sale por abajo, CodeMirror hace scroll para traerlo a la
+ * vista, y con desplazamiento suave el texto persigue al cursor con retraso.
+ * Escribiendo rápido se ve como si la ventana fuera detrás de uno.
+ */
+:is(.cm-editor, .cm-scroller, .cm-content) { scroll-behavior: auto; }
+
+/*
+ * Y el fundido de imágenes tampoco: el núcleo pone `.m-cargando` (opacidad 0)
+ * a las imágenes y se la quita al cargar. Dentro del editor las imágenes se
+ * repintan a cada pulsación mientras se escribe alrededor, así que el fundido
+ * se dispararía una y otra vez. En la vista de lectura sí se queda, que es
+ * donde la imagen se carga una sola vez.
+ */
+.cm-editor img { opacity: 1 !important; transition: none; }
+
+/* ── Lo que sí se añade ──────────────────────────────────────────────────── */
+
+/* El árbol de la bóveda y las pestañas: responden al ratón en vez de cambiar
+   de fondo de golpe. Es un cambio de color, no de posición: por eso 120 ms.
+
+   La fila del árbol es `.tree-row`. Parece un detalle, pero es el nombre que
+   usa notes.css y el único que existe: `.tree-item` —que es como se llamaría
+   en cualquier otra parte— no aparece en toda la hoja. */
+:is(.tree-row, .tab-item) {
+  transition: background-color var(--m-corto) var(--m-curva),
+              color var(--m-corto) var(--m-curva);
+}
+
+/* La barra de formato: sus botones se hunden al pulsar como los del resto del
+   dominio. Sin esto es la única barra de herramientas de lepayimio que no
+   acusa el clic. */
+:is(.format-bar, .fmt-group) button {
+  transition: background-color var(--m-corto) var(--m-curva),
+              color var(--m-corto) var(--m-curva),
+              transform var(--m-corto) var(--m-curva);
+}
+:is(.format-bar, .fmt-group) button:not(:disabled):active { transform: scale(.94); }
+
+/*
+ * El menú contextual solo necesita el origen.
+ *
+ * Su animación —`ctx-fade`, en app.css: opacidad de 0 a 1 y escala de 0,96 a 1
+ * en 0,12 s con ease-out— ya está bien hecha y no se toca. Lo único que le
+ * falta es de dónde nace: por defecto crece desde su centro, y este menú
+ * aparece bajo el puntero, así que tiene que crecer desde la esquina que toca
+ * el ratón. Es la diferencia entre que parezca que sale del clic o que sale
+ * del aire.
+ */
+.ctx-menu { transform-origin: top left; }
+
+/*
+ * La ventana modal.
+ *
+ * El núcleo tiene `.modal` en su lista de VELOS —porque en las otras casas ese
+ * nombre es el del fondo oscuro— y aquí `.modal` es la caja de dentro; el velo
+ * se llama `.modal-back`. Sin esto la caja recibiría el fundido plano del velo
+ * y aparecería sin más, que es justo lo que la casa lleva evitando en todas
+ * las demás pantallas.
+ *
+ * `.modal-back.show` da la especificidad necesaria para ganarle al núcleo sin
+ * recurrir a !important.
+ */
+.modal-back.show .modal {
+  animation: m-ventana var(--m-medio) var(--m-rebote) backwards;
+}
+
+/*
+ * La barra de progreso de subida se queda como está, animando `width`.
+ *
+ * Por el libro debería animar `transform: scaleX()`, que va por tarjeta
+ * gráfica en vez de obligar a recalcular la disposición en cada fotograma.
+ * Pero quien mueve esa barra es notes.js escribiéndole `style.width`, así que
+ * cambiar el CSS sin cambiar el guion la dejaría clavada en cero: rota, no
+ * lenta.
+ *
+ * Y no compensa: es una barra que se ve al subir un adjunto —unos segundos, un
+ * par de veces al mes— y arreglarla de verdad es entrar en un notes.js de
+ * 113 KB. Anotado aquí para que se sepa que está visto y descartado, y no
+ * parezca un despiste.
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ *  NÚCLEO
+ *
+ *  A partir de aquí el fichero es LITERALMENTE EL MISMO en los seis servicios.
+ *  Lo único que cambia es el puente de arriba. Si algo hay que arreglar, se
+ *  arregla una vez y se copia: en cuanto empiecen a divergir dejan de ser un
+ *  acabado común y pasan a ser seis decoraciones parecidas, que es justo lo
+ *  que los temas Crystal evitaron en su día.
+ *
+ *  Nada de aquí usa !important salvo el bloque de "sin movimiento" del final,
+ *  donde es obligatorio para poder anular animaciones ajenas.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Tiempos, curvas y colores derivados ──────────────────────────────────
+ *
+ * Tres duraciones y no más. Lo que responde al dedo va en --m-corto (por
+ * debajo de ~150 ms el cerebro lo lee como "instantáneo, pero acusó recibo");
+ * lo que se mueve mientras miras, en --m-medio; y solo lo que aparece una vez
+ * al abrir la página se permite --m-largo.
+ *
+ * Los colores se derivan con color-mix del acento y de la tinta de cada casa,
+ * así que siguen al tema solos: cambiar a Crystal recalcula estos ocho valores
+ * sin que haya que declararlos tres veces.
+ */
+:root {
+  --m-corto: 120ms;
+  --m-medio: 240ms;
+  /* 300 ms es el techo de una animación de interfaz. Esto estaba en 520 y se
+     notaba: al entrar en una pantalla había medio segundo en el que la página
+     ya estaba ahí pero todavía llegando. */
+  --m-largo: 300ms;
+
+  /*
+   * Las curvas.
+   *
+   * Arrancan rápido y llegan despacio, que es lo que hace que algo parezca que
+   * se posa en su sitio en vez de frenar en seco contra él.
+   *
+   * Los valores no son inventados: son los que recomienda Emil Kowalski, y son
+   * DELIBERADAMENTE más fuertes que los `ease-out` y `ease-in-out` que trae el
+   * navegador. Los de serie son tan suaves que el movimiento no se lee como
+   * una decisión, se lee como un retardo.
+   *
+   * Aquí había cuatro curvas casi iguales —.2/.7/.3/1 en dos grafías distintas,
+   * .22/1/.36/1 y .22/1.18/.36/1— escritas a mano en sitios distintos. Cuatro
+   * curvas que casi coinciden no son cuatro decisiones: son una decisión y tres
+   * erratas. Ahora son tres tokens con un trabajo cada uno.
+   */
+  /* Entrar y salir. Es el que se usa por defecto. */
+  --m-curva: cubic-bezier(0.23, 1, 0.32, 1);
+  /* Moverse por la pantalla sin entrar ni salir. */
+  --m-curva-vaiven: cubic-bezier(0.77, 0, 0.175, 1);
+  /* Con un pelín de pasada al final. Solo para lo que APARECE —un menú, una
+     ventana—, nunca para lo que se mueve mientras se está leyendo. */
+  --m-rebote: cubic-bezier(0.22, 1.18, 0.36, 1);
+
+  --m-velo-acento: color-mix(in srgb, var(--m-acento) 30%, transparent);
+  --m-halo-acento: color-mix(in srgb, var(--m-acento) 16%, transparent);
+  --m-linea-viva: color-mix(in srgb, var(--m-tinta) 26%, transparent);
+  --m-tenue: color-mix(in srgb, var(--m-tinta) 7%, transparent);
+  --m-tenue-mas: color-mix(in srgb, var(--m-tinta) 12%, transparent);
+
+  /* Dos alturas, no cinco. Una para "esto está por encima del fondo" y otra
+     para "esto lo tienes cogido". Las sombras llevan dos capas porque una
+     sola no distingue entre estar apoyado y estar levantado: la corta pega el
+     objeto al plano y la larga es la que se abre al subir. */
+  --m-sombra: 0 1px 2px color-mix(in srgb, var(--m-sombra-tono) 22%, transparent),
+              0 6px 18px -10px color-mix(in srgb, var(--m-sombra-tono) 40%, transparent);
+  --m-sombra-alta: 0 2px 4px color-mix(in srgb, var(--m-sombra-tono) 20%, transparent),
+                   0 18px 40px -16px color-mix(in srgb, var(--m-sombra-tono) 55%, transparent);
+}
+
+/* ── Lo básico ───────────────────────────────────────────────────────────── */
+
+/* El recuadro gris que iOS pinta encima de todo lo que se toca. Sobra desde
+   que cada botón tiene su propia respuesta al pulsar, y además llega tarde:
+   aparece cuando el dedo ya se ha ido. */
+* { -webkit-tap-highlight-color: transparent; }
+
+html { scroll-behavior: smooth; }
+
+::selection {
+  background: var(--m-acento);
+  color: var(--m-acento-tinta);
+}
+
+/* La barra de desplazamiento era lo último que seguía siendo gris de sistema
+   en una página que ya es entera de la casa. El borde transparente del pulgar
+   no es un adorno: lo adelgaza sin reducir el ancho que reserva el navegador,
+   que es lo que evita que el contenido baile al aparecer y desaparecer. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--m-linea-viva) transparent;
+}
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--m-linea-viva);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--m-acento);
+  background-clip: padding-box;
+}
+
+/*
+ * Un solo anillo de foco para todo el sitio.
+ *
+ * Va dentro de :where() a propósito: eso le deja especificidad cero, así que
+ * cualquier regla de foco que ya tuviera la hoja de la casa sigue ganando.
+ * Esto es el suelo, no el techo.
+ */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--m-acento);
+  outline-offset: 2px;
+}
+
+/* ── Entrada de la página ────────────────────────────────────────────────
+ *
+ * `backwards` y no `both`: con `both` la transformada se queda pegada al
+ * elemento cuando acaba, y un `transform` distinto de `none` convierte a ese
+ * elemento en el bloque contenedor de todo lo que lleve position:fixed dentro
+ * —un modal, un velo— que a partir de entonces se coloca respecto a él y no
+ * respecto a la ventana. Con `backwards` la propiedad solo existe mientras
+ * dura la animación.
+ */
+@keyframes m-entra {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+:is(main, .wrap, .envoltorio, .principal, .vista:not(.oculta)) {
+  animation: m-entra var(--m-largo) var(--m-curva) backwards;
+}
+
+/*
+ * Revelado en cascada de las rejillas y las listas.
+ *
+ * El retraso se reparte con nth-child y no con JS porque el orden ya lo da el
+ * documento: pedírselo a un guion sería recorrer el DOM para averiguar algo
+ * que el propio selector sabe.
+ *
+ * Solo entran los dos primeros docenas de elementos. En l-archivos una carpeta
+ * puede traer trescientos ficheros, y animar trescientas cajas a la vez no se
+ * ve como una cascada: se ve como que el móvil va lento. Del vigésimo cuarto
+ * en adelante aparecen ya puestos, que es lo que hacían antes todos.
+ */
+@keyframes m-sube {
+  from { opacity: 0; transform: translateY(14px) scale(.985); }
+  to   { opacity: 1; transform: none; }
+}
+
+:is(.grid, .grid-juegos, .rejilla, .rejilla-docs, .tarjetas, .hojas, .rom-list,
+    .lista, .galeria, .minis, .espacio-lista, .estados-rejilla, .podio,
+    .pestanas, .marcas) > *:nth-child(-n+24) {
+  animation: m-sube var(--m-medio) var(--m-curva) backwards;
+}
+:is(.grid, .grid-juegos, .rejilla, .rejilla-docs, .tarjetas, .hojas, .rom-list,
+    .lista, .galeria, .minis, .espacio-lista, .estados-rejilla, .podio,
+    .pestanas, .marcas) > *:nth-child(1)  { animation-delay: 0ms; }
+:is(.grid, .grid-juegos, .rejilla, .rejilla-docs, .tarjetas, .hojas, .rom-list,
+    .lista, .galeria, .minis, .espacio-lista, .estados-rejilla, .podio,
+    .pestanas, .marcas) > *:nth-child(2)  { animation-delay: 40ms; }
+:is(.grid, .grid-juegos, .rejilla, .rejilla-docs, .tarjetas, .hojas, .rom-list,
+    .lista, .galeria, .minis, .espacio-lista, .estados-rejilla, .podio,
+    .pestanas, .marcas) > *:nth-child(3)  { animation-delay: 80ms; }
+:is(.grid, .grid-juegos, .rejilla, .rejilla-docs, .tarjetas, .hojas, .rom-list,
+    .lista, .galeria, .minis, .espacio-lista, .estados-rejilla, .podio,
+    .pestanas, .marcas) > *:nth-child(4)  { animation-delay: 120ms; }
+:is(.grid, .grid-juegos, .rejilla, .rejilla-docs, .tarjetas, .hojas, .rom-list,
+    .lista, .galeria, .minis, .espacio-lista, .estados-rejilla, .podio,
+    .pestanas, .marcas) > *:nth-child(5)  { animation-delay: 160ms; }
+:is(.grid, .grid-juegos, .rejilla, .rejilla-docs, .tarjetas, .hojas, .rom-list,
+    .lista, .galeria, .minis, .espacio-lista, .estados-rejilla, .podio,
+    .pestanas, .marcas) > *:nth-child(6)  { animation-delay: 320ms; }
+:is(.grid, .grid-juegos, .rejilla, .rejilla-docs, .tarjetas, .hojas, .rom-list,
+    .lista, .galeria, .minis, .espacio-lista, .estados-rejilla, .podio,
+    .pestanas, .marcas) > *:nth-child(7)  { animation-delay: 240ms; }
+:is(.grid, .grid-juegos, .rejilla, .rejilla-docs, .tarjetas, .hojas, .rom-list,
+    .lista, .galeria, .minis, .espacio-lista, .estados-rejilla, .podio,
+    .pestanas, .marcas) > *:nth-child(8)  { animation-delay: 280ms; }
+/* De la novena en adelante el retraso se congela. El paso subió de 25 a 40 ms
+   —por debajo de 30 el escalonado no se percibe como ritmo, solo emborrona la
+   entrada— y con 40 la novena ya espera 320 ms, que es donde una cascada deja
+   de leerse como ritmo y empieza a leerse como demora. */
+:is(.grid, .grid-juegos, .rejilla, .rejilla-docs, .tarjetas, .hojas, .rom-list,
+    .lista, .galeria, .minis, .espacio-lista, .estados-rejilla, .podio,
+    .pestanas, .marcas) > *:nth-child(n+9) { animation-delay: 320ms; }
+
+/* ── Superficies ─────────────────────────────────────────────────────────
+ *
+ * ATENCIÓN AL :where(), que es la regla de convivencia de todo este fichero.
+ *
+ * l-games ya agranda su .card un 5% al pasar por encima y l-tcg ya levanta su
+ * .carta dos píxeles. Eso está pensado y no se toca. Dentro de :where() estos
+ * selectores valen CERO de especificidad, así que cualquier regla que la casa
+ * ya tuviera gana sin discusión, y lo de aquí solo entra donde no había nada.
+ *
+ * Y como el cascade decide propiedad a propiedad, el resultado es el que
+ * interesa: en l-games manda su `transform: scale(1.05)` y encima se le suma
+ * la sombra de aquí, que allí no existía. Suelo, no techo.
+ *
+ * La transición sí va con :is() —especificidad normal— porque ahí lo que se
+ * hace es AMPLIAR la lista de propiedades que se animan: si se dejase la suya,
+ * la sombra nueva aparecería de golpe al no estar en su enumeración.
+ *
+ * Todo detrás de @media (hover: hover) porque en el móvil el hover se queda
+ * pegado después de tocar: la ficha se levanta y ahí se queda hasta que se
+ * toque otra cosa, y eso se lee como un fallo de pintado.
+ */
+:is(.card, .card-juego, .carta, .tarjeta, .panel, .bloque, .ficha, .rom,
+    .doc, .podio-item, .hoja, .existente, .mov, .reg-dia, .fila-usuario) {
+  transition: transform var(--m-corto) var(--m-curva),
+              box-shadow var(--m-medio) var(--m-curva),
+              border-color var(--m-corto) var(--m-curva);
+}
+
+@media (hover: hover) {
+  :where(.card, .card-juego, .carta, .tarjeta, .ficha, .rom, .doc, .podio-item,
+         .hoja, .existente, .mov, .reg-dia, .fila-usuario):where(:not(.arrastrando)):where(:hover) {
+    transform: translateY(-3px);
+    box-shadow: var(--m-sombra-alta);
+    border-color: var(--m-linea-viva);
+  }
+}
+
+/* Mientras se arrastra manda el arrastre, no el ratón: la ficha ya lleva su
+   propia transformada puesta desde el guion y una transición encima la haría
+   perseguir al dedo con retraso. */
+.arrastrando { transition: none; }
+
+/* ── Lo que se pulsa ─────────────────────────────────────────────────────
+ *
+ * El mando virtual de EmulatorJS queda fuera de todo esto (`.ejs_*`): son
+ * botones que se tocan cincuenta veces por minuto mientras corre un
+ * emulador, y cualquier transición ahí es latencia entre el dedo y el juego.
+ */
+:is(.boton, .btn, .boton-lino, .boton-grande, .boton-peligro, .btn-suave,
+    .btn-pequeno, .pestana, .link-btn, .chapa, .chip, .sel-boton,
+    .espacio-boton, .menu-opcion, .menu-tema, .accion-juego, .btn-jugar,
+    .file-btn, .fichero-btn, .ajustes-btn, .quitar-carta,
+    button:not([class*="ejs_"])) {
+  transition: transform var(--m-corto) var(--m-curva),
+              filter var(--m-corto) var(--m-curva),
+              box-shadow var(--m-medio) var(--m-curva),
+              background-color var(--m-corto) var(--m-curva),
+              border-color var(--m-corto) var(--m-curva),
+              color var(--m-corto) var(--m-curva);
+}
+
+/* El hover, otra vez con :where() para no pisar el que ya tuviera cada casa. */
+@media (hover: hover) {
+  :where(.boton, .btn, .boton-grande, .btn-jugar, .accion-juego):where(:not(:disabled)):where(:hover) {
+    transform: translateY(-1px);
+    filter: brightness(1.07) saturate(1.05);
+    box-shadow: 0 0 0 1px var(--m-halo-acento), var(--m-sombra);
+  }
+  :where(.boton-lino, .btn-suave, .btn-pequeno, .pestana, .link-btn, .menu-opcion,
+         .menu-tema, .sel-boton, .espacio-boton):where(:not(:disabled)):where(:hover) {
+    filter: brightness(1.1);
+  }
+}
+
+/*
+ * Hundirse al pulsar. Es la mitad de la respuesta táctil que le faltaba a todo
+ * esto: con el dedo encima el botón no se ve, así que lo que confirma que se
+ * ha pulsado no es el color sino cuánto borde asoma alrededor del dedo.
+ *
+ * Este sí va con :is() y no con :where(), al revés que el hover, y es a
+ * propósito: pulsar es también estar encima, así que un :active de
+ * especificidad cero perdería contra el propio :hover de la casa y el botón no
+ * se hundiría nunca. Aquí sí queremos ganar, y solo dura mientras el dedo está
+ * apoyado.
+ */
+:is(.boton, .btn, .boton-lino, .boton-grande, .boton-peligro, .btn-suave,
+    .btn-pequeno, .pestana, .link-btn, .sel-boton, .espacio-boton,
+    .menu-opcion, .menu-tema, .accion-juego, .btn-jugar,
+    button:not([class*="ejs_"])):not(:disabled):active {
+  transform: scale(.97);
+  /* 140 ms, no 60. Por debajo de 100 el hundido va tan rápido que el ojo no
+     llega a verlo y el botón parece que no ha respondido; la banda que se
+     siente como un clic de verdad va de 100 a 160. */
+  transition-duration: 140ms;
+}
+
+:is(.boton, .btn, .boton-lino, .boton-grande, button):disabled {
+  filter: saturate(.4);
+  cursor: not-allowed;
+}
+
+/*
+ * La onda al pulsar.
+ *
+ * El círculo lo mete el guion como un <span> de verdad y no como ::after,
+ * porque muchos de estos botones ya gastan sus dos pseudoelementos en el
+ * icono o en la flecha. Las coordenadas llegan en --m-x/--m-y por CSSOM, que
+ * es lo único que puede escribir un guion en un sitio como l-gym, cuya CSP no
+ * admite `style-src unsafe-inline`.
+ */
+:is(.boton, .btn, .boton-lino, .boton-grande, .boton-peligro, .btn-suave,
+    .btn-pequeno, .pestana, .menu-opcion, .menu-tema, .sel-boton,
+    .espacio-boton, .accion-juego, .btn-jugar):has(> .m-onda) {
+  position: relative;
+  overflow: hidden;
+}
+
+.m-onda {
+  position: absolute;
+  left: var(--m-x, 50%);
+  top: var(--m-y, 50%);
+  width: var(--m-r, 3rem);
+  height: var(--m-r, 3rem);
+  margin: calc(var(--m-r, 3rem) / -2) 0 0 calc(var(--m-r, 3rem) / -2);
+  border-radius: 50%;
+  background: currentColor;
+  opacity: .22;
+  pointer-events: none;
+  animation: m-onda 480ms var(--m-curva) forwards;
+}
+@keyframes m-onda {
+  from { transform: scale(0);   opacity: .22; }
+  to   { transform: scale(2.4); opacity: 0; }
+}
+
+/* ── Enlaces ─────────────────────────────────────────────────────────────
+ *
+ * El subrayado crece desde la izquierda en vez de encenderse entero. Se pinta
+ * con background y no con border-bottom para no cambiar la altura de la línea
+ * al pasar por encima, que descolocaba el párrafo entero.
+ *
+ * Quedan fuera los enlaces que en realidad son botones o fichas: ahí el
+ * subrayado no aporta y compite con la elevación. */
+:where(p, li, .nota, .aviso, .entradilla, .sub, .subtitle) a:not([class]) {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition: background-size var(--m-medio) var(--m-curva);
+  text-decoration: none;
+}
+:where(p, li, .nota, .aviso, .entradilla, .sub, .subtitle) a:not([class]):hover {
+  background-size: 100% 1px;
+}
+
+/* ── Campos ──────────────────────────────────────────────────────────────
+ *
+ * El halo al enfocar sustituye al salto de color del borde: sobre cristal un
+ * borde de 1 px que cambia de tono casi no se ve, y tres píxeles de acento
+ * difuminado alrededor sí.
+ */
+:is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),
+    select, textarea) {
+  transition: border-color var(--m-medio) var(--m-curva),
+              box-shadow var(--m-medio) var(--m-curva),
+              background-color var(--m-medio) var(--m-curva);
+}
+:is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),
+    select, textarea):focus {
+  border-color: var(--m-acento);
+  box-shadow: 0 0 0 3px var(--m-velo-acento);
+}
+/* El halo sustituye al contorno solo cuando se ha llegado al campo con el
+   ratón. Con el teclado se quedan los dos: quien navega tabulando necesita
+   ver dónde está desde el otro lado de la habitación, y un `outline: none`
+   a secas aquí se llevaría por delante el anillo de foco de todo el sitio. */
+:is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),
+    select, textarea):focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Las casillas y los interruptores crecen un pelo al marcarse. En l-gym se
+   marcan con el pulgar entre serie y serie y es la única confirmación que se
+   ve con el dedo encima. */
+:is(input[type=checkbox], input[type=radio]) {
+  transition: transform var(--m-corto) var(--m-rebote);
+}
+:is(input[type=checkbox], input[type=radio]):checked { transform: scale(1.14); }
+
+/* ── Menús, ventanas y velos ─────────────────────────────────────────────
+ *
+ * Todos estos se enseñan y se esconden quitando y poniendo `hidden`, así que
+ * basta con animar el estado "visible": al quitarle el hidden el elemento
+ * empieza a casar con el selector y la animación arranca sola.
+ *
+ * La ventana se anima colgada del velo y no por su cuenta. Suelta, la
+ * animación se gastaría en la carga de la página —mientras el velo aún está
+ * oculto, sin que se vea— y para cuando el velo se abriera ya habría acabado.
+ */
+/* m-brota vivía aquí. Lo sustituyó la transición de arriba, que sí se puede
+   interrumpir a media apertura. */
+@keyframes m-vela {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes m-ventana {
+  from { opacity: 0; transform: translateY(14px) scale(.96); }
+  to   { opacity: 1; transform: none; }
+}
+
+/*
+ * Los menús: TRANSICIÓN, no fotogramas clave.
+ *
+ * Antes esto era `animation: m-brota`, y eso tiene un problema que solo se nota
+ * usándolo: una animación por fotogramas siempre empieza por el principio. Si
+ * abres el menú y lo cierras deprisa —o lo abres, lo cierras y lo vuelves a
+ * abrir, que es lo que uno hace mirando dónde estaba una opción— cada vez
+ * arranca desde cero en vez de retomar por donde iba. Se ve como un tirón.
+ *
+ * Una transición sí retoma: si la interrumpes a medias, sale del valor en el
+ * que esté. Para cualquier cosa que se abra y se cierre rápido —menús,
+ * desplegables, sugerencias— es la única opción correcta.
+ *
+ * @starting-style es lo que permite hacerlo sin JavaScript: define desde dónde
+ * transita un elemento la primera vez que se pinta. Donde no esté implementado,
+ * el menú aparece sin animación, que es exactamente como estaba antes de todo
+ * esto.
+ *
+ * El CIERRE sigue siendo instantáneo, y es a propósito: todas las hojas de la
+ * casa declaran `[hidden] { display: none !important }`, y ese !important gana
+ * a cualquier transición de `display`. Quitarlo sería tocar siete hojas ajenas
+ * para ganar 240 ms de desvanecido al cerrar un menú. No compensa — y cerrar
+ * de golpe no molesta, porque cuando cierras un menú ya has dejado de mirarlo.
+ */
+:is(.menu, .desplegable, .submenu, .sugerencias, .menu-acciones,
+    .panel-existentes, .reg-opciones, .picker) {
+  transform-origin: top right;
+  transition: opacity var(--m-medio) var(--m-curva),
+              transform var(--m-medio) var(--m-rebote),
+              overlay var(--m-medio) allow-discrete,
+              display var(--m-medio) allow-discrete;
+}
+:is(.menu, .desplegable, .submenu, .sugerencias, .menu-acciones,
+    .panel-existentes, .reg-opciones, .picker):not([hidden]) {
+  opacity: 1;
+  transform: none;
+}
+:is(.menu, .desplegable, .submenu, .sugerencias, .menu-acciones,
+    .panel-existentes, .reg-opciones, .picker)[hidden] {
+  opacity: 0;
+  transform: translateY(-6px) scale(.97);
+}
+@starting-style {
+  :is(.menu, .desplegable, .submenu, .sugerencias, .menu-acciones,
+      .panel-existentes, .reg-opciones, .picker):not([hidden]) {
+    opacity: 0;
+    transform: translateY(-6px) scale(.97);
+  }
+}
+
+:is(.tema-velo, .velo, .modal-fondo, .modal, .capa, .qr-fondo):not([hidden]) {
+  animation: m-vela var(--m-medio) var(--m-curva) backwards;
+}
+
+:is(.tema-velo, .velo, .modal-fondo, .modal, .capa, .qr-fondo):not([hidden])
+  :is(.tema-ventana, .ventana, .modal-caja, .caja-entrada, .qr-caja, .modal-cuerpo) {
+  animation: m-ventana var(--m-medio) var(--m-rebote) backwards;
+}
+
+/* ── Tablas ──────────────────────────────────────────────────────────────
+ *
+ * La fila se ilumina al pasar por encima. En una tabla ancha es lo que evita
+ * perder el renglón a medio camino, que es el motivo de que existieran las
+ * tablas a rayas: esto hace lo mismo pero solo donde miras. */
+:is(.tabla, table) tbody tr {
+  transition: background-color var(--m-corto) var(--m-curva);
+}
+@media (hover: hover) {
+  :is(.tabla, table) tbody tr:hover { background: var(--m-tenue); }
+}
+
+/* La cabecera se queda arriba al desplazar la tabla dentro de su envoltura.
+   Sin fondo propio el contenido se le vería por debajo, y el fondo tiene que
+   ser opaco: sobre cristal, un blanco al 8% no tapa nada. */
+:is(.tabla-envoltura, .tabla-scroll) { position: relative; }
+:is(.tabla-envoltura, .tabla-scroll) thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--m-panel-solido);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* ── Imágenes ────────────────────────────────────────────────────────────
+ *
+ * Aparecen desvanecidas en vez de aterrizar de golpe cuando acaba la
+ * descarga. La clase la pone y la quita el guion, así que si el guion no
+ * llega a cargarse las imágenes se ven como siempre: el estado por defecto es
+ * "visible", nunca "escondida a la espera de un JS". */
+img { transition: opacity var(--m-medio) var(--m-curva); }
+img.m-cargando { opacity: 0; }
+
+/* ── El girador ──────────────────────────────────────────────────────────
+ *
+ * Un cono de degradado en vez de un borde con un lado de otro color: el aro
+ * se desvanece hacia el final en vez de cortarse en seco, que es lo que
+ * distingue un girador de un donut con una muesca. La máscara recorta el
+ * centro, porque un cono es un disco lleno.
+ */
+:is(.girando, .cargando .girando) {
+  border: 0;
+  background: conic-gradient(from 0turn, transparent 0deg,
+              var(--m-acento) 300deg, var(--m-acento) 360deg);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+          mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+  animation: m-gira 800ms linear infinite;
+}
+@keyframes m-gira { to { transform: rotate(1turn); } }
+
+/* Y la caja que lo rodea respira, para que una espera larga no parezca una
+   pantalla colgada. */
+.cargando { animation: m-respira 2.4s ease-in-out infinite; }
+@keyframes m-respira { 50% { opacity: .55; } }
+
+/* ── Avisos ──────────────────────────────────────────────────────────────
+ *
+ * Los avisos se rellenan por JS con role=status y hasta ahora aparecían sin
+ * más. Al llevar texto, entran; vacíos, no hay nada que animar. */
+:is(.aviso, .estado, .save-status, .qr-correo-estado):not(:empty) {
+  animation: m-entra var(--m-medio) var(--m-curva) backwards;
+}
+
+/* ── Sin movimiento ──────────────────────────────────────────────────────
+ *
+ * Quien lo pide en su sistema lo pide de verdad: hay gente a la que el
+ * movimiento en pantalla le da mareo. Aquí sí hace falta !important, porque
+ * lo que hay que anular son animaciones declaradas en otras hojas sobre las
+ * que este fichero no tiene ninguna autoridad.
+ *
+ * No se pone `animation: none`: eso descartaría también el estado final de
+ * las que van con `backwards`, y algún elemento se quedaría con el opacity 0
+ * del fotograma inicial. Acortarlas a nada las deja terminadas al instante.
+ */
+@media (prefers-reduced-motion: reduce) {
+  /*
+   * Lo que se quita es el DESPLAZAMIENTO, no la respuesta.
+   *
+   * Aquí antes había un `.01ms !important` sobre `*` que mataba absolutamente
+   * todo, y eso está mal entendido: quien pide menos movimiento pide que las
+   * cosas no se muevan por la pantalla, no quedarse sin saber si el botón le
+   * ha hecho caso. Apagándolo todo se perdían cosas que solo informan —el
+   * color de la vida al bajar, la barra de progreso llenándose, el aviso que
+   * aparece— y que no mueven nada.
+   *
+   * Así que: fuera las transformadas, se quedan opacidad y color.
+   */
+  *, *::before, *::after {
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Nada se desplaza, ni al entrar ni al pasar por encima. */
+  :is(.card, .carta, .tarjeta, .boton, .btn, .ico, .ico *, button):hover,
+  :is(.card, .carta, .tarjeta, .boton, .btn, button):active {
+    transform: none !important;
+  }
+
+  /* Las entradas dejan de venir de fuera y solo se funden. Se conserva el
+     `backwards` para que no se queden en el opacity 0 del primer fotograma. */
+  :is(main, .wrap, .envoltorio, .principal, .marco, .vista:not(.oculta)),
+  :is(.grid, .grid-juegos, .rejilla, .rejilla-docs, .tarjetas, .hojas, .rom-list,
+      .lista, .galeria, .minis, .espacio-lista, .estados-rejilla, .podio,
+      .pestanas, .marcas) > *,
+  .tareas > li, .recado, .redaccion:not([hidden]) {
+    animation-name: m-aparece !important;
+    animation-duration: 160ms !important;
+    animation-delay: 0ms !important;
+  }
+  @keyframes m-aparece { from { opacity: 0; } to { opacity: 1; } }
+
+  /* Los iconos se quedan quietos, pero visibles y en su sitio. */
+  .ico > *, .ico * { animation: none !important; transform: none !important; }
+  .ico-inicio .ico-puerta { transform: none !important; }
+  .ico-inicio .ico-tejado { opacity: 1 !important; }
+  .ico .ico-marca, .ico .ico-renglon, .ico .ico-curva, .ico .ico-trazo,
+  .ico .ico-tachon { stroke-dashoffset: 0 !important; }
+
+  /* Y la onda del pulsar sobra entera: es puro adorno. */
+  .m-onda { display: none !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ *  ICONOS ANIMADOS
+ *
+ *  Los dibujos vienen de Its Hover (https://itshover.com), de Abhijit Roy,
+ *  publicado bajo Apache 2.0 — que permite usarlos conservando la atribución.
+ *  Son a su vez del estilo de Tabler Icons: lienzo de 24×24, sin relleno,
+ *  trazo de 2 y puntas redondeadas.
+ *
+ *  ── Por qué el movimiento está aquí y no viene con ellos ─────────────────
+ *
+ *  Porque allí cada icono es un componente de React que anima con
+ *  `motion/react`, y aquí no hay React ni compilación: son páginas de HTML
+ *  servidas tal cual. Así que se ha traído el DIBUJO y se ha rehecho el
+ *  MOVIMIENTO en CSS, gesto por gesto y con los mismos tiempos que trae el
+ *  original. No es una imitación aproximada: los valores están copiados de su
+ *  código —el sobre de la casa sube 2 px, la luna gira −15° y crece un 10%, la
+ *  flecha de salir avanza 6 px— y lo único que cambia es quién los ejecuta.
+ *
+ *  ── Y por qué se disparan desde la FILA y no desde el icono ──────────────
+ *
+ *  En itshover el icono se anima al pasarle el ratón por encima, porque allí
+ *  el icono es la pieza. Aquí casi siempre vive dentro de una entrada de menú
+ *  de doscientos píxeles de ancho, y apuntar a los dieciséis del icono para
+ *  ver el gesto sería un juego de puntería. Se dispara con la fila entera, que
+ *  es lo que la gente señala de verdad.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/*
+ * La base común. Los iconos pasan de relleno a trazo, y eso cambia qué
+ * propiedad los colorea: antes `fill`, ahora `stroke`. El fill se fuerza a
+ * none porque varias hojas de la casa lo declaran a currentColor y, sobre un
+ * icono de trazo, eso lo convierte en un manchurrón.
+ */
+.ico {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* Los gestos se salen del lienzo (la flecha avanza 6 px): sin esto, el
+     navegador los recorta justo cuando se están viendo. */
+  overflow: visible;
+}
+.ico * { vector-effect: non-scaling-stroke; }
+
+/* Lo que se mueve, se mueve con la misma curva que en el original. */
+.ico > * {
+  transition: transform var(--m-medio) var(--m-curva),
+              opacity var(--m-medio) var(--m-curva);
+}
+
+/*
+ * La FILA que dispara. La lista es larga porque cada casa llama de otra forma
+ * a lo mismo: una entrada de menú es .menu-opcion en l-gym y l-list, .carpeta
+ * en pombomail, y un <a> suelto en el desplegable de l-games.
+ */
+:is(.menu-opcion, .menu-tema, .carpeta, .lista-enlace, .desplegable a,
+    .desplegable button, .menu a, .menu button, .boton, .btn, .icono-boton,
+    .volver, .marca, .pestana):hover .ico > * {
+  /* El estado de reposo se reafirma aquí para que cada icono solo tenga que
+     declarar lo suyo abajo. */
+  transform: none;
+}
+
+/* ── Inicio ────────────────────────────────────────────────────────────────
+ * El tejado cae sobre la casa, la casa se asienta y la puerta se abre hacia
+ * arriba. Tres piezas con tres tiempos, como en el original. */
+.ico-inicio .ico-tejado  { transform: translateY(-2px); opacity: .6; }
+.ico-inicio .ico-casa    { transform: scale(.95); transform-origin: center; }
+/* La puerta parte de 0,6 y no de 0. Nada en el mundo real aparece de la nada:
+   escalar desde cero se lee como un fallo de pintado, no como algo que se abre.
+   Con 0,6 y algo de transparencia ya estaba ahí, solo que más pequeña. */
+.ico-inicio .ico-puerta  { transform: scaleY(.6); opacity: .5; transform-origin: center bottom; }
+
+:is(.menu-opcion, .menu a, .desplegable a, .volver, .marca):hover .ico-inicio .ico-tejado { transform: none; opacity: 1; }
+:is(.menu-opcion, .menu a, .desplegable a, .volver, .marca):hover .ico-inicio .ico-casa   { transform: none; }
+:is(.menu-opcion, .menu a, .desplegable a, .volver, .marca):hover .ico-inicio .ico-puerta { transform: scaleY(1); opacity: 1; }
+
+/* ── Desconectarse ─────────────────────────────────────────────────────────
+ * La flecha sale por la puerta y la puerta se aparta un poco. Ida y vuelta:
+ * es un gesto que se cuenta solo, no un estado. */
+@keyframes m-ico-salir-flecha { 50% { transform: translateX(6px); } }
+@keyframes m-ico-salir-puerta { 50% { transform: translateX(-2px); } }
+
+:is(.menu-opcion, .menu button, .desplegable button, .menu-forma button):hover .ico-salir .ico-flecha {
+  animation: m-ico-salir-flecha 300ms var(--m-curva);
+}
+:is(.menu-opcion, .menu button, .desplegable button, .menu-forma button):hover .ico-salir .ico-puerta {
+  animation: m-ico-salir-puerta 250ms var(--m-curva);
+}
+
+/* ── Luna (tema oscuro) ────────────────────────────────────────────────────
+ * Gira un poco y crece, como si la mirases de lado. */
+@keyframes m-ico-luna { 50% { transform: rotate(-15deg) scale(1.1); } }
+.ico-luna > * { transform-origin: center; }
+:is(.menu-tema, .menu-opcion, .menu-desplegar, .tema-muestra):hover .ico-luna > * {
+  animation: m-ico-luna 500ms var(--m-curva);
+}
+
+/* ── Capas (temas Crystal) ─────────────────────────────────────────────────
+ * La lámina de arriba se despega y la de abajo se queda atrás. Es exactamente
+ * lo que son los temas Crystal: cristal sobre cristal. */
+.ico-capas .ico-capa-alta { transform-origin: center; }
+:is(.menu-tema, .menu-opcion, .menu-desplegar, .tema-muestra):hover .ico-capas .ico-capa-alta {
+  transform: translateY(-2px) scale(1.05);
+}
+:is(.menu-tema, .menu-opcion, .menu-desplegar, .tema-muestra):hover .ico-capas .ico-capa-baja {
+  transform: translateY(1px);
+  opacity: .7;
+}
+
+/* ── El tic ────────────────────────────────────────────────────────────────
+ *
+ * Se DIBUJA solo, de izquierda a derecha, en vez de aparecer entero. En el
+ * original eso es `pathLength: 0 → 1`; aquí es la vieja treta del guion
+ * discontinuo: se pinta una raya tan larga como el trazo y se desplaza hasta
+ * descubrirlo.
+ *
+ * El 22 es la longitud del camino "M5 12l5 5l10 -10": √50 + √200 ≈ 21,2, y se
+ * redondea hacia arriba para que no se quede un pelo sin dibujar.
+ *
+ * Y se dispara al APARECER, no al pasar el ratón: este tic marca qué tema está
+ * puesto, así que el momento en que tiene algo que contar es cuando acabas de
+ * elegirlo.
+ */
+.ico-tic .ico-marca {
+  stroke-dasharray: 22;
+  stroke-dashoffset: 0;
+}
+.menu-tema[aria-checked=true] .ico-tic .ico-marca,
+.tema-tic .ico-marca {
+  animation: m-ico-tic 400ms var(--m-curva);
+}
+@keyframes m-ico-tic { from { stroke-dashoffset: 22; } to { stroke-dashoffset: 0; } }
+
+/* ── Flecha de desplegar ───────────────────────────────────────────────────
+ * Avanza y vuelve, para invitar a abrir. El giro de 90° cuando el desplegable
+ * está abierto lo sigue haciendo la hoja de cada casa: eso es estado, no
+ * gesto, y no se toca desde aquí. */
+@keyframes m-ico-flecha { 50% { transform: translateX(4px); } }
+:is(.menu-desplegar, .hechas-plegar, .carpeta):hover .ico-flecha-der:not([data-quieta]) > * {
+  animation: m-ico-flecha 800ms var(--m-curva);
+}
+
+/* Sin movimiento: quien lo pide, lo pide también para esto. */
+@media (prefers-reduced-motion: reduce) {
+  .ico > *, .ico *, .ico-tic .ico-marca { animation: none !important; transform: none !important; }
+  .ico-inicio .ico-puerta { transform: scaleY(1) !important; }
+  .ico-inicio .ico-tejado { opacity: 1 !important; }
+}
+
+/* ── El color, que cambia de propiedad ─────────────────────────────────────
+ *
+ * Las hojas de la casa pintan los iconos con `fill`, porque hasta ahora eran
+ * siluetas rellenas. Un icono de trazo no tiene relleno que pintar: su color
+ * es el del trazo. Como .ico ya fuerza `stroke: currentColor`, la mayoría
+ * heredan el color del texto de su fila y quedan bien sin tocar nada.
+ *
+ * Las excepciones son las que iban DELIBERADAMENTE más apagadas que su texto
+ * —la flecha del desplegable, los iconos de las entradas de menú—, y esas hay
+ * que volver a apagarlas aquí. Se hace con la tinta del puente y no con la
+ * variable de cada casa, que se llama distinto en cada una (--muted en l-tcg,
+ * --tinta-3 en l-gym, --texto-suave en l-archivos).
+ */
+.ico.menu-flecha,
+.ico.menu-icono,
+.ico.carpeta-icono {
+  stroke: color-mix(in srgb, var(--m-tinta) 62%, transparent);
+}
+
+/* Y el tic del tema va en el color de acento, que es lo que decía su fill. */
+.tema-tic .ico-tic,
+.ico-tic.tema-tic { stroke: var(--m-acento); }
+
+/* ── Perfil ────────────────────────────────────────────────────────────────
+ * La figura se yergue un poco: crece un 5% y sube un píxel. */
+.ico-perfil .ico-figura { transform-origin: 50% 50%; }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-perfil .ico-figura {
+  transform: translateY(-1px) scale(1.05);
+}
+
+/* ── Colección (libro) ─────────────────────────────────────────────────────
+ * Los tres renglones se escriben solos, uno detrás de otro. Es el mismo truco
+ * del guion discontinuo que el tic, con un retraso distinto por renglón. */
+.ico-libro .ico-renglon { stroke-dasharray: 12; stroke-dashoffset: 0; }
+@keyframes m-ico-renglon { from { stroke-dashoffset: 12; opacity: 0; } to { stroke-dashoffset: 0; opacity: 1; } }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-libro .ico-renglon-1 { animation: m-ico-renglon 300ms var(--m-curva) 100ms backwards; }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-libro .ico-renglon-2 { animation: m-ico-renglon 300ms var(--m-curva) 150ms backwards; }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-libro .ico-renglon-3 { animation: m-ico-renglon 300ms var(--m-curva) 200ms backwards; }
+
+/* ── Álbum ─────────────────────────────────────────────────────────────────
+ * Las cuatro ranuras giran de sitio, como si barajaras el álbum. */
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-album .ico-hueco-1 { transform: translateX(10px); }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-album .ico-hueco-2 { transform: translate(-1px, 12px); }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-album .ico-hueco-3 { transform: translateX(-10px); }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-album .ico-hueco-4 { transform: translate(1px, -12px); }
+
+/* ── Enciclopedia ──────────────────────────────────────────────────────────
+ * Los tomos se abren en abanico, como cuando sacas uno del estante. */
+.ico-estante > * { transform-origin: 50% 100%; }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-estante .ico-tomo-1 { transform: rotate(12deg); }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-estante .ico-tomo-2 { transform: translateY(-3px) rotate(-8deg); }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-estante .ico-tomo-3 { transform: rotate(-12deg); }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-estante .ico-tomo-4 { transform: rotate(-5deg); }
+
+/* ── Deseadas (estrella) ───────────────────────────────────────────────────
+ * Se rellena. Es el gesto exacto de "esta la quiero": la estrella vacía se
+ * pinta. El relleno es la única pieza de todo esto que SÍ lleva fill. */
+.ico-estrella .ico-relleno { fill: currentColor; opacity: 0; transform: scale(.8); transform-origin: center; }
+.ico-estrella .ico-borde { transform-origin: center; }
+@keyframes m-ico-estrella { 50% { transform: scale(1.1) rotate(-5deg); } }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-estrella .ico-relleno { opacity: 1; transform: none; }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-estrella .ico-borde { animation: m-ico-estrella 500ms var(--m-curva); }
+
+/* ── Gestión (engranaje) ───────────────────────────────────────────────────
+ * Da una vuelta entera. Nada dice "ajustes" como un engranaje girando. */
+.ico-engranaje .ico-gira { transform-origin: 50% 50%; }
+@keyframes m-ico-gira { to { transform: rotate(360deg); } }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-engranaje .ico-gira {
+  animation: m-ico-gira 900ms var(--m-curva);
+}
+
+/* ══ Segunda tanda: los iconos propios de cada aplicación ══════════════════ */
+
+/* La fila que dispara, ampliada con las de estas pantallas. */
+:is(.icono-boton, .tarea-quitar, .casilla, .hechas-plegar, .redactar,
+    .boton-lino, .tarea:hover .tarea-quitar):hover .ico > * { transform: none; }
+
+/* ── Rutinas (lista) ───────────────────────────────────────────────────────
+ * Los tres renglones se escriben de izquierda a derecha, escalonados, y los
+ * puntos dan un saltito. */
+.ico-lista .ico-renglon { transform-origin: 9px center; }
+@keyframes m-ico-renglon-crece { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes m-ico-puntos { 50% { transform: scale(1.3); } }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-lista .ico-renglon-1 { animation: m-ico-renglon-crece 250ms var(--m-curva); }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-lista .ico-renglon-2 { animation: m-ico-renglon-crece 250ms var(--m-curva) 100ms backwards; }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-lista .ico-renglon-3 { animation: m-ico-renglon-crece 250ms var(--m-curva) 200ms backwards; }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-lista .ico-puntos { animation: m-ico-puntos 400ms var(--m-curva); transform-origin: center; }
+
+/* ── Progreso (gráfica) ────────────────────────────────────────────────────
+ * La curva se traza sola sobre el eje, que crece antes. Es el gesto de "esto
+ * está subiendo", que es de lo que va la pantalla. */
+.ico-grafica .ico-eje { transform-origin: 4px 19px; }
+.ico-grafica .ico-curva { stroke-dasharray: 26; stroke-dashoffset: 0; }
+@keyframes m-ico-curva { from { stroke-dashoffset: 26; } to { stroke-dashoffset: 0; } }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-grafica .ico-eje { animation: m-ico-renglon-crece 400ms var(--m-curva); }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-grafica .ico-curva { animation: m-ico-curva 600ms var(--m-curva); }
+
+/* ── Registro (calendario) ─────────────────────────────────────────────────
+ * Las dos clavijas de arriba dan un tirón, como al colgarlo de la pared. */
+@keyframes m-ico-clavija { 50% { transform: translateY(-2px); } }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-calendario .ico-clavija { animation: m-ico-clavija 350ms var(--m-curva); }
+
+/* ── Subir ─────────────────────────────────────────────────────────────────
+ * La flecha sale por arriba y vuelve a entrar por abajo, en bucle mientras el
+ * ratón esté encima. Es literalmente lo que hace el fichero. */
+@keyframes m-ico-subir {
+  0%   { transform: translateY(0); opacity: 1; }
+  40%  { transform: translateY(-12px); opacity: 0; }
+  41%  { transform: translateY(12px); opacity: 0; }
+  85%  { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+:is(.menu-opcion, .menu a, .desplegable a, .boton, .btn):hover .ico-subir .ico-flecha-arriba {
+  animation: m-ico-subir 1s var(--m-curva) infinite;
+}
+
+/* ── Papelera ──────────────────────────────────────────────────────────────
+ * La tapa se levanta. Y se pone roja, que es el único icono de todo el juego
+ * al que le conviene avisar antes de que lo pulses. */
+.ico-papelera .ico-tapa, .ico-papelera .ico-asa { transform-origin: 50% 100%; }
+.ico-papelera { transition: stroke var(--m-corto) var(--m-curva); }
+:is(.icono-boton, .boton, .btn):hover .ico-papelera { stroke: var(--m-peligro, #e05050); }
+:is(.icono-boton, .boton, .btn):hover .ico-papelera .ico-tapa { transform: translateY(-4px) rotate(-25deg); }
+:is(.icono-boton, .boton, .btn):hover .ico-papelera .ico-asa { transform: translate(-2px, -6px) rotate(-35deg); }
+
+/* ── Buscar (lupa) ─────────────────────────────────────────────────────────
+ * Rebusca: se mueve en pequeño, como quien pasa la lupa por encima. */
+@keyframes m-ico-lupa {
+  0%,100% { transform: translate(0,0) rotate(0); }
+  25%     { transform: translate(1px,-1px) rotate(-5deg); }
+  50%     { transform: translate(0,-2px) rotate(5deg); }
+  75%     { transform: translate(-1px,-1px) rotate(-5deg); }
+}
+.ico-lupa .ico-lente { transform-origin: 13px 13px; }
+:is(.buscador, .icono-boton, .boton, .btn):hover .ico-lupa .ico-lente { animation: m-ico-lupa 1s var(--m-curva); }
+
+/* ── Enviar ────────────────────────────────────────────────────────────────
+ * El avión sale volando por arriba y vuelve a entrar por abajo. */
+@keyframes m-ico-enviar {
+  0%   { transform: translate(0,0); opacity: 1; }
+  45%  { transform: translate(24px,-24px); opacity: 0; }
+  46%  { transform: translate(-24px,24px); opacity: 0; }
+  100% { transform: translate(0,0); opacity: 1; }
+}
+.ico-enviar .ico-avion { transform-origin: center; }
+:is(.boton, .btn, .principal, .icono-boton):hover .ico-enviar .ico-avion {
+  animation: m-ico-enviar 500ms var(--m-curva);
+}
+
+/* ── Carpeta ───────────────────────────────────────────────────────────────
+ * Un empujón hacia arriba, como al abrirla. */
+@keyframes m-ico-carpeta { 50% { transform: translateY(-2px); } }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-carpeta .ico-solapa { animation: m-ico-carpeta 350ms var(--m-curva); }
+
+/* ── Más ───────────────────────────────────────────────────────────────────
+ * Gira un cuarto de vuelta. Sencillo y reconocible. */
+.ico-mas > * { transform-origin: center; }
+:is(.icono-boton, .boton, .btn, .redactar):hover .ico-mas > * { transform: rotate(90deg); }
+
+/* ── Aspa ──────────────────────────────────────────────────────────────────
+ * Gira noventa grados: la cruz se convierte en cruz otra vez, pero se nota. */
+.ico-aspa .ico-cruz { transform-origin: center; }
+:is(.icono-boton, .boton, .btn, .tarea-quitar, .buscador-limpiar):hover .ico-aspa .ico-cruz {
+  transform: rotate(90deg);
+}
+
+/* ── Hamburguesa ───────────────────────────────────────────────────────────
+ * Las tres barras se separan un poco al acercarse. */
+:is(.icono-boton, .boton):hover .ico-hamburguesa .ico-barra-1 { transform: translateY(-1.5px); }
+:is(.icono-boton, .boton):hover .ico-hamburguesa .ico-barra-3 { transform: translateY(1.5px); }
+
+/* ── Flecha izquierda (volver) ─────────────────────────────────────────────
+ * Retrocede, que es lo que va a hacer la pantalla. */
+@keyframes m-ico-atras { 50% { transform: translateX(-4px); } }
+:is(.icono-boton, .boton, .btn):hover .ico-flecha-izq > * { animation: m-ico-atras 500ms var(--m-curva); }
+
+/* ── Entreno (mancuerna) ───────────────────────────────────────────────────
+ * Los discos se separan de la barra, como si la levantaras. */
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-pesa .ico-disco-izq { transform: translateX(-1.5px); }
+:is(.menu-opcion, .menu a, .desplegable a):hover .ico-pesa .ico-disco-der { transform: translateX(1.5px); }
+
+/* ── Redactar (lápiz) ──────────────────────────────────────────────────────
+ * Sube escribiendo, temblando un poco, y deja un trazo detrás. */
+@keyframes m-ico-pluma {
+  0%   { transform: translate(0,0) rotate(0); }
+  20%  { transform: translate(1px,-2px) rotate(-6deg); }
+  40%  { transform: translate(-1px,-4px) rotate(-4deg); }
+  60%  { transform: translate(1px,-6px) rotate(-6deg); }
+  80%  { transform: translate(-1px,-8px) rotate(-4deg); }
+  100% { transform: translate(0,-10px) rotate(0); }
+}
+@keyframes m-ico-trazo { from { stroke-dashoffset: 9; } to { stroke-dashoffset: 0; } }
+.ico-lapiz .ico-pluma { transform-origin: 50% 50%; }
+.ico-lapiz .ico-trazo { stroke-dasharray: 9; stroke-dashoffset: 9; }
+:is(.redactar, .boton, .btn, .icono-boton):hover .ico-lapiz .ico-pluma { animation: m-ico-pluma 800ms var(--m-curva); }
+:is(.redactar, .boton, .btn, .icono-boton):hover .ico-lapiz .ico-trazo { animation: m-ico-trazo 300ms var(--m-curva) 500ms forwards; }
+
+/* ── Recargar ──────────────────────────────────────────────────────────────
+ * Media vuelta. Ida y vuelta, no giro completo: media vuelta se lee como
+ * "otra vez" y la vuelta entera como "cargando". */
+@keyframes m-ico-recarga { 50% { transform: rotate(180deg); } }
+.ico-recargar { transform-origin: 50% 50%; }
+:is(.icono-boton, .boton, .btn):hover .ico-recargar { animation: m-ico-recarga 400ms var(--m-curva); }
+
+/* ── La marca de l-list (casilla) ──────────────────────────────────────────
+ * El tic se dibuja. Es el logotipo del sitio: que se escriba solo al entrar
+ * dice de qué va la aplicación antes de leer el nombre. */
+.ico-casilla .ico-marca { stroke-dasharray: 9; stroke-dashoffset: 0; }
+@keyframes m-ico-casilla { from { stroke-dashoffset: 9; } to { stroke-dashoffset: 0; } }
+.marca .ico-casilla .ico-marca { animation: m-ico-casilla 500ms var(--m-curva) 200ms backwards; }
+:is(.marca, .vacio):hover .ico-casilla .ico-marca { animation: m-ico-casilla 400ms var(--m-curva); }
+
+/* ── Sobre ─────────────────────────────────────────────────────────────────
+ * La solapa se abre un poco. */
+.ico-sobre .ico-solapa { transform-origin: 50% 30%; }
+:is(.marca, .boton, .btn, .icono-boton):hover .ico-sobre .ico-solapa { transform: translateY(-1px) scaleY(1.15); }
+
+/* ── Vetadas ───────────────────────────────────────────────────────────────
+ * El tachón se traza. Aparece la prohibición, no estaba y ahora está. */
+.ico-veto .ico-tachon { stroke-dasharray: 18; stroke-dashoffset: 0; }
+@keyframes m-ico-tachon { from { stroke-dashoffset: 18; } to { stroke-dashoffset: 0; } }
+:is(.carpeta, .menu-opcion):hover .ico-veto .ico-tachon { animation: m-ico-tachon 350ms var(--m-curva); }
