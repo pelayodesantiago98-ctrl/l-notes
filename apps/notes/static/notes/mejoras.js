@@ -110,6 +110,22 @@
         img.dataset.mVista = '1';
         if (img.complete || quieto.matches) return;
 
+        /*
+         * Si la página ya ha decidido la opacidad de esta imagen, no se toca.
+         *
+         * Esto atenúa y devuelve a 1, y eso es correcto para una imagen normal
+         * —cuyo estado natural es «visible del todo»— pero no para una que
+         * forma parte de una coreografía ajena. En la portada de
+         * samuelarmastatto las fotos van al 58% y se turnan fundiendo entre
+         * ellas; al meter aquí la mano, la que entraba subía hasta el 100% y
+         * luego caía al 58, y ese bajón se ve como si la foto cambiara sola.
+         *
+         * La comprobación es de una línea y vale para cualquier caso parecido
+         * sin tener que ir marcándolos uno a uno: quien tenga una opacidad
+         * distinta de 1 es porque alguien la ha puesto ahí a propósito.
+         */
+        if (getComputedStyle(img).opacity !== '1') return;
+
         img.classList.add('m-cargando');
         var listo = function () { img.classList.remove('m-cargando'); };
         img.addEventListener('load', listo, { once: true });
