@@ -64,7 +64,7 @@
    */
   var CON_ONDA = '.boton, .btn, .boton-lino, .boton-grande, .boton-peligro,' +
     '.btn-suave, .btn-pequeno, .pestana, .menu-opcion, .menu-tema, .sel-boton,' +
-    '.espacio-boton, .accion-juego, .btn-jugar';
+    '.espacio-boton, .accion-juego, .btn-jugar, .boton-neon';
 
   document.addEventListener('pointerdown', function (ev) {
     if (quieto.matches) return;
