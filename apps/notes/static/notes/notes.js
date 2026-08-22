@@ -1286,6 +1286,9 @@ async function openShareModal(it){
   sharePwOn = false;
   $('share-pw-switch').classList.remove('on'); $('share-pw-switch').setAttribute('aria-checked','false');
   $('share-pw-field').classList.remove('show'); $('share-pw-input').value='';
+  /* Se limpia lo tecleado: si no, al abrir el modal para OTRA nota seguiria ahi
+     la direccion anterior y es facil darle a enviar sin mirar. */
+  $('share-mail-to').value=''; $('share-mail-note').value=''; $('share-mail-state').textContent='';
   try{
     let res = await fetch('/api/notes/share/status?path='+encodeURIComponent(it.path)).then(r=>r.json());
     if(!res.shared){
@@ -1309,6 +1312,30 @@ async function openShareModal(it){
   $('share-loading').style.display='none'; $('share-body').style.display='';
   $('share-save').disabled = false;
 }
+
+/* Enviar el enlace por correo. El remitente NO lo elige el navegador: lo decide
+   la lista blanca del servidor, para que una pantalla comprometida no pueda
+   mandar correo como cualquiera del dominio. */
+$('share-mail-send').addEventListener('click', async ()=>{
+  if(!shareItem) return;
+  const to = ($('share-mail-to').value||'').trim();
+  const state = $('share-mail-state');
+  if(!to){ state.textContent='Escribe una dirección.'; return; }
+  const btn = $('share-mail-send');
+  btn.disabled = true; state.textContent = 'Enviando…';
+  try{
+    const res = await api('/api/notes/share/send', {
+      path: shareItem.path, para: to, nota: ($('share-mail-note').value||'').trim(),
+    });
+    if(res.error){ state.textContent = res.error; return; }
+    state.textContent = 'Enviado a ' + to;
+    $('share-mail-to').value=''; $('share-mail-note').value='';
+  }catch(e){
+    state.textContent = 'No se pudo enviar.';
+  }finally{
+    btn.disabled = false;
+  }
+});
 
 $('share-pw-toggle-row').addEventListener('click', ()=>{
   sharePwOn = !sharePwOn;

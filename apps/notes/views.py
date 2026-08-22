@@ -26,6 +26,10 @@ from apps.accounts.permissions import require_write
 from apps.core import boveda
 from apps.core.api import as_text, error_response as _err, json_body
 
+# Envio de correo. Vive fuera del proyecto, en /usr/local/lib/lepayimio,
+# porque lo comparten varios servicios; el venv lo encuentra por un .pth.
+import correo
+
 from . import pdf, vault
 from .models import SharedNote
 from .vault import VaultError
@@ -519,6 +523,59 @@ def share_revoke(request):
         return err
     SharedNote.objects.filter(path=vault.rel_of(vault.root(), target)).delete()
     return JsonResponse({"success": True})
+
+
+@login_required
+@require_write
+@require_POST
+@json_body
+def share_send(request):
+    """Manda por correo el enlace público de una nota.
+
+    El enlace se construye AQUÍ a partir de la nota, no se acepta una URL del
+    cliente: si se aceptara, esta ruta sería una forma de enviar correo con
+    cualquier contenido desde el dominio, bastaría con llamarla con otra
+    dirección.
+
+    Se manda el ENLACE y no el texto de la nota a propósito. Una nota puede
+    llevar imágenes y adjuntos que no viajan en el cuerpo, puede tener
+    contraseña, y sobre todo un enlace se puede retirar después: lo que ya está
+    en el buzón de otro, no.
+    """
+    root = boveda.raiz(request)
+    para = as_text(request.data.get("para")).strip()
+    nota_extra = as_text(request.data.get("nota")).strip()[:500]
+
+    target, err = _resolve(root, as_text(request.data.get("path")).strip())
+    if err:
+        return err
+    if not target.exists() or target.suffix.lower() != ".md":
+        return _err("Nota no encontrada", 404)
+    if not correo.valida(para):
+        return _err("Esa dirección no es válida")
+
+    rel = vault.rel_of(vault.root(), target)
+    try:
+        compartida = SharedNote.objects.get(path=rel)
+    except SharedNote.DoesNotExist:
+        return _err("Esa nota no está compartida todavía. Crea el enlace antes de enviarlo.")
+
+    url = request.build_absolute_uri(f"/s/{compartida.token}/")
+    titulo = target.stem
+
+    lineas = [f"Te comparto la nota «{titulo}»:", "", url, ""]
+    if nota_extra:
+        lineas += [nota_extra, ""]
+    if compartida.password_hash:
+        lineas.append("El enlace pide contraseña: te la paso por otro medio.")
+    lineas.append("Quien tenga el enlace puede leerla sin necesidad de cuenta.")
+
+    try:
+        envio = correo.enviar(para, f"Te comparto la nota «{titulo}»", texto="\n".join(lineas))
+    except correo.ErrorCorreo as e:
+        return _err(str(e), 502)
+
+    return JsonResponse({"success": True, "id": envio})
 
 
 # ── Vista pública (sin login) de una nota compartida ─────────────────────────

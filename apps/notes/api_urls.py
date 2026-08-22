@@ -28,4 +28,5 @@ urlpatterns = [
     path("share/status", views.share_status, name="share_status"),
     path("share/list", views.share_list, name="share_list"),
     path("share/revoke", views.share_revoke, name="share_revoke"),
+    path("share/send", views.share_send, name="share_send"),
 ]

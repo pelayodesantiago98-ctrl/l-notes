@@ -363,6 +363,17 @@
       <div class="share-pw-field" id="share-pw-field">
         <input type="text" class="vault-input-field" id="share-pw-input" placeholder="Contraseña" autocomplete="off" maxlength="120">
       </div>
+      <!-- Enviar el enlace por correo. Se manda el ENLACE y no el texto de la
+           nota: así se puede retirar después, y viajan también sus imágenes. -->
+      <div class="share-mail">
+        <label for="share-mail-to">Enviarlo por correo</label>
+        <div class="share-mail-row">
+          <input type="email" class="vault-input-field" id="share-mail-to" placeholder="direccion@ejemplo.com" autocomplete="off">
+          <button type="button" class="share-copy-btn" id="share-mail-send">Enviar</button>
+        </div>
+        <input type="text" class="vault-input-field" id="share-mail-note" placeholder="Nota para quien lo recibe (opcional)" maxlength="500">
+        <p class="share-mail-state" id="share-mail-state"></p>
+      </div>
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" id="share-stop" style="margin-right:auto;color:#f87171;display:none">Dejar de compartir</button>
