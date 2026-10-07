@@ -16,6 +16,11 @@ urlpatterns = [
     path("s/<str:token>/", notes_views.shared_note_view, name="shared_note"),
     path("s/<str:token>/asset", notes_views.shared_note_asset, name="shared_note_asset"),
 
+    # Carpeta compartida públicamente: el índice y las notas de dentro.
+    path("c/<str:token>/", notes_views.carpeta_compartida_view, name="carpeta_compartida"),
+    path("c/<str:token>/asset", notes_views.carpeta_compartida_asset,
+         name="carpeta_compartida_asset"),
+
     # APIs JSON internas (sesión + CSRF) — las consume el frontend.
     # El enlace que se reparte para dar acceso a una bóveda.
     path("b/<str:token>", notes_views.boveda_aceptar, name="boveda_aceptar"),

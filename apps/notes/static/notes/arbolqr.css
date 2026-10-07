@@ -1,0 +1,350 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Árbol-QR: el botón de la esquina, el diálogo y la animación de crecer.
+
+   Los colores del SVG los pone el JS (son aleatorios por estación). Aquí sólo
+   está el movimiento y el chrome del diálogo, que sí sigue los temas de la
+   app: --vault-accent, --vault-line y compañía.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ── El botón de la esquina ─────────────────────────────────────────────── */
+
+.aq-boton {
+  position: fixed;
+  right: 1.15rem;
+  bottom: 1.15rem;
+  z-index: 40;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--vault-line);
+  border-radius: 50%;
+  background: var(--vault-accent);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .28);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.aq-boton svg { width: 25px; height: 25px; }
+.aq-boton:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 10px 26px rgba(0,0,0,.34); }
+.aq-boton:active { transform: translateY(0) scale(.97); }
+.aq-boton:focus-visible { outline: 2px solid var(--vault-accent); outline-offset: 3px; }
+
+/* El tema dorado usa un acento claro: ahí el icono va oscuro o no se ve. */
+:root[data-theme="gold"] .aq-boton { color: #17150c; }
+
+/* Con WebGL el botón crece y se queda el árbol 3D girando dentro. Deja de
+   ser una pastilla de acento: el fondo se apaga para que el árbol se vea
+   sobre la página y no sobre un círculo de color. */
+.aq-boton.con3d {
+  width: 116px;
+  height: 132px;
+  border-radius: 18px;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+.aq-boton.con3d:hover { transform: translateY(-3px); box-shadow: none; }
+.aq-boton.con3d svg { display: none; }   /* el icono plano era el respaldo */
+
+.aq-lienzo3d {
+  width: 100%;
+  height: 100%;
+  display: block;
+  /* El canvas no debe comerse el clic: manda el botón que lo envuelve. */
+  pointer-events: none;
+  transition: opacity .2s ease;
+}
+
+/* Mientras el servidor devuelve el enlace. Es un parpadeo corto, pero sin él
+   no hay ninguna señal de que el clic haya hecho algo. */
+.aq-boton.pidiendo .aq-lienzo3d { opacity: .45; }
+.aq-boton.pidiendo { cursor: progress; }
+
+/* ── El jardín ampliado ─────────────────────────────────────────────────── */
+
+/* La posición final del salto FLIP. El movimiento lo anima el JS sobre
+   `transform`; aquí sólo está el destino.
+
+   Se centra con `right`/`bottom` y NO con `translate(50%,50%)`: el transform
+   está reservado para la animación, y si se usara también para centrar, el
+   JS lo pisaría y el jardín se iría media pantalla al empezar el salto. */
+.aq-boton.con3d.centrado {
+  right: calc(50% - min(39vmin, 280px));
+  bottom: calc(50% - min(39vmin, 280px));
+  width: min(78vmin, 560px);
+  height: min(78vmin, 560px);
+  z-index: 55;
+}
+/* Y quieto una vez centrado: el empujón del hover ahí sobra. */
+.aq-boton.con3d.centrado:hover { transform: none; }
+
+.aq-velo-jardin {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  opacity: 0;
+  pointer-events: none;
+  background: rgba(0, 0, 0, .45);
+  backdrop-filter: blur(2px);
+  transition: opacity .45s ease;
+}
+.aq-velo-jardin.visible { opacity: 1; pointer-events: auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  .aq-boton.con3d.centrado { transition: none !important; }
+  .aq-velo-jardin { transition: none; }
+}
+
+@media (max-width: 720px) {
+  .aq-boton.con3d { width: 88px; height: 100px; }
+}
+
+/* En móvil, pegado a la esquina de abajo a la derecha.
+
+   Antes iba subido a 4,6rem para esquivar la barra de Safari. Ese motivo no ha
+   desaparecido —con la barra de direcciones desplegada, la franja de abajo
+   queda tapada y el botón con ella—, pero se pidió la esquina y en la esquina
+   va: la barra se repliega en cuanto se desplaza.
+
+   Los `env(safe-area-inset-*)` son por el indicador de inicio del iPhone. Hoy
+   valen CERO, porque el `<meta viewport>` de base.html no lleva
+   `viewport-fit=cover` y sin eso el navegador ya recorta él la ventana. Van
+   puestos por lo mismo que en `.modal` de notes.css: si algún día se pone esa
+   opción, el margen se ajusta solo en vez de quedarse corto. */
+@media (max-width: 720px) {
+  .aq-boton {
+    right: calc(.9rem + env(safe-area-inset-right));
+    bottom: calc(.9rem + env(safe-area-inset-bottom));
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* ── El diálogo ─────────────────────────────────────────────────────────── */
+
+.aq-velo {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, .5);
+  backdrop-filter: blur(2px);
+}
+.aq-velo.abierto { display: flex; }
+
+.aq-panel {
+  position: relative;
+  width: min(430px, 100%);
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 1.4rem 1.3rem 1.2rem;
+  border: 1px solid var(--vault-line);
+  border-radius: 16px;
+  background: var(--vault-panel, #14161f);
+  color: inherit;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .45);
+}
+
+.aq-cerrar {
+  position: absolute;
+  top: .55rem;
+  right: .7rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  opacity: .55;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.aq-cerrar:hover { opacity: 1; }
+
+.aq-titulo { margin: 0 0 1rem; font-size: 1.08rem; }
+
+.aq-grupo { margin-bottom: 1rem; }
+.aq-et {
+  margin-bottom: .45rem;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  opacity: .55;
+}
+
+.aq-ops { display: flex; gap: .4rem; }
+.aq-ops-col { flex-direction: column; }
+
+.aq-op {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: .12rem;
+  padding: .55rem .7rem;
+  border: 1px solid var(--vault-line);
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  font-size: .88rem;
+  text-align: left;
+  cursor: pointer;
+}
+.aq-op small { font-size: .74rem; opacity: .6; }
+.aq-op:hover:not(:disabled) { background: rgba(127, 127, 127, .12); }
+.aq-op.activa {
+  border-color: var(--vault-accent);
+  background: color-mix(in srgb, var(--vault-accent) 18%, transparent);
+}
+.aq-op.vetada { opacity: .35; cursor: not-allowed; }
+
+.aq-nota { margin: .45rem 0 0; font-size: .76rem; opacity: .62; line-height: 1.4; }
+
+.aq-acciones { margin-top: 1.1rem; }
+.aq-generar {
+  width: 100%;
+  padding: .65rem;
+  border: 0;
+  border-radius: 10px;
+  background: var(--vault-accent);
+  color: #fff;
+  font-size: .92rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.aq-generar:disabled { opacity: .6; cursor: default; }
+:root[data-theme="gold"] .aq-generar { color: #17150c; }
+
+.aq-error {
+  margin: .8rem 0 0;
+  padding: .55rem .7rem;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, .14);
+  color: #fca5a5;
+  font-size: .82rem;
+}
+
+/* ── La salida ──────────────────────────────────────────────────────────── */
+
+.aq-salida { margin-top: 1.1rem; }
+
+.aq-escena {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  aspect-ratio: 1 / 1;
+}
+.aq-escena > canvas {
+  width: 100%; height: 100%; display: block;
+  border-radius: 12px;
+  cursor: pointer;   /* se toca el árbol para subir a ver el QR */
+}
+.aq-escena > canvas[hidden] { display: none; }
+.aq-plano svg { display: block; width: 100%; height: auto; }
+
+.aq-vistas { display: flex; gap: .3rem; justify-content: center; margin-top: .6rem; }
+.aq-vistas[hidden] { display: none; }
+.aq-vista {
+  padding: .3rem .7rem;
+  border: 1px solid var(--vault-line);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font-size: .78rem;
+  cursor: pointer;
+}
+.aq-vista.activa {
+  border-color: var(--vault-accent);
+  background: color-mix(in srgb, var(--vault-accent) 20%, transparent);
+}
+
+.aq-aviso { margin: .45rem 0 0; text-align: center; font-size: .74rem; opacity: .58; }
+.aq-cargando { margin: .9rem 0 .2rem; text-align: center; font-size: .85rem; opacity: .6; }
+.aq-pista { margin: .7rem 0 0; text-align: center; font-size: .74rem; opacity: .5; line-height: 1.45; }
+
+/* Camino rápido: se entra desde el árbol de la esquina y el enlace ya está
+   hecho, así que los selectores sobran. La pista de abajo dice dónde están
+   si alguien quiere otra cosa. */
+.aq-velo.solo-resultado .aq-grupo,
+.aq-velo.solo-resultado .aq-acciones { display: none; }
+.aq-velo:not(.solo-resultado) .aq-pista { display: none; }
+.aq-estacion { margin-top: .35rem; text-align: center; font-size: .78rem; opacity: .6; }
+
+.aq-url { display: flex; gap: .4rem; margin-top: .8rem; }
+.aq-url input {
+  flex: 1;
+  min-width: 0;
+  padding: .5rem .6rem;
+  border: 1px solid var(--vault-line);
+  border-radius: 8px;
+  background: rgba(127, 127, 127, .1);
+  color: inherit;
+  font-size: .8rem;
+}
+.aq-url button, .aq-descargar {
+  padding: .5rem .75rem;
+  border: 1px solid var(--vault-line);
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font-size: .82rem;
+  cursor: pointer;
+}
+.aq-url button:hover, .aq-descargar:hover { background: rgba(127, 127, 127, .14); }
+.aq-descargar { width: 100%; margin-top: .5rem; }
+
+/* ── Crecer ─────────────────────────────────────────────────────────────── */
+
+/* Las ramas se dibujan solas de abajo arriba. 460 es más largo que
+   cualquiera de los tres trazos, así que vale de guarismo para todos. */
+.aq-rama {
+  stroke-dasharray: 460;
+  stroke-dashoffset: 460;
+  animation: aq-crecer .75s cubic-bezier(.32, .72, .3, 1) forwards;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes aq-crecer { to { stroke-dashoffset: 0; } }
+
+.aq-fronda, .aq-papel, .aq-ojo {
+  opacity: 0;
+  animation: aq-aparecer .5s ease forwards;
+  animation-delay: 320ms;
+}
+.aq-ojo { animation-delay: 420ms; }
+@keyframes aq-aparecer { to { opacity: 1; } }
+
+/* Cada hoja brota a su tiempo: el retardo lo calcula el JS según lo lejos
+   que esté del tronco, así que el follaje sube en vez de encenderse de golpe. */
+.aq-hoja {
+  opacity: 0;
+  transform: scale(0);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: aq-brotar .42s cubic-bezier(.34, 1.56, .64, 1) forwards;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes aq-brotar { to { opacity: 1; transform: scale(1); } }
+
+.aq-sombra { opacity: 0; animation: aq-aparecer .6s ease forwards; animation-delay: 200ms; }
+
+/* Sin animación: el árbol sale ya crecido. El QR es el mismo. */
+.aq-svg.aq-quieto .aq-rama,
+.aq-svg.aq-quieto .aq-hoja,
+.aq-svg.aq-quieto .aq-fronda,
+.aq-svg.aq-quieto .aq-papel,
+.aq-svg.aq-quieto .aq-ojo,
+.aq-svg.aq-quieto .aq-sombra {
+  animation: none;
+  opacity: 1;
+  stroke-dashoffset: 0;
+  transform: none;
+}
+.aq-svg.aq-quieto .aq-sombra { opacity: .16; }
+
+@media (prefers-reduced-motion: reduce) {
+  .aq-boton { transition: none; }
+}

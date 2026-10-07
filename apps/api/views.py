@@ -14,6 +14,7 @@ import mimetypes
 import re
 import secrets
 import shutil
+import tempfile
 from pathlib import Path
 
 from django.conf import settings
@@ -26,7 +27,7 @@ from apps.accounts import services as accounts
 from apps.accounts.models import ApiKey, User
 from apps.core.api import as_int, as_optional_text, as_text
 from apps.core import boveda
-from apps.notes import vault
+from apps.notes import cherrytree, vault
 from apps.notes.models import SharedNote
 from apps.notes.vault import VaultError
 
@@ -680,6 +681,57 @@ def vault_import(request):
     except VaultError as exc:
         return json_error(str(exc), exc.status)
     return JsonResponse({"success": True})
+
+
+@api_view(methods=("POST",))
+def vault_import_cherrytree(request):
+    """Importa un .ctb de CherryTree al vault del usuario autenticado.
+
+    Multipart/form-data:
+        file:   el .ctb (obligatorio)
+        target: ruta destino dentro del vault, p.ej. "Importado" (opcional)
+
+    Devuelve `{success, summary: {notes, images, codeboxes, grids, folders,
+    root_names}}` con el conteo de lo importado. Los nombres que colisionan
+    con lo que ya hay se numeran (` 2`, ` 3`...) en vez de sobrescribirse.
+    """
+    f = request.FILES.get("file")
+    if not f:
+        return json_error("Sube el .ctb como fichero multipart en el campo 'file'")
+    if not (f.name or "").lower().endswith(".ctb"):
+        return json_error("El archivo debe ser un .ctb de CherryTree")
+
+    target_rel = (request.POST.get("target") or "").strip().strip("/")
+    root = boveda.raiz(request)
+    target_dir = root
+    if target_rel:
+        try:
+            target_dir = vault.safe_path(root, target_rel)
+        except VaultError as exc:
+            return json_error(str(exc), exc.status)
+        if target_dir.exists() and not target_dir.is_dir():
+            return json_error("La ruta destino no es una carpeta")
+        target_dir.mkdir(parents=True, exist_ok=True)
+
+    try:
+        with tempfile.NamedTemporaryFile(
+            prefix="lnotes-ctb-", suffix=".ctb", delete=False, dir="/tmp"
+        ) as tmp:
+            for chunk in f.chunks():
+                tmp.write(chunk)
+            tmp_path = Path(tmp.name)
+        try:
+            summary = cherrytree.import_ctb(target_dir, tmp_path)
+        finally:
+            tmp_path.unlink(missing_ok=True)
+    except cherrytree.CherryTreeError as exc:
+        return json_error(str(exc), 400)
+    except VaultError as exc:
+        return json_error(str(exc), exc.status)
+    except OSError as exc:
+        return json_error(f"No se pudo escribir la bóveda: {exc}", 500)
+
+    return JsonResponse({"success": True, "summary": summary})
 
 
 @api_view(methods=("POST",))

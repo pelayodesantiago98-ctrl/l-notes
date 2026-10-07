@@ -274,6 +274,102 @@
     });
   });
 
+  /* ---- Importar CherryTree (.ctb) ---- */
+  // Lee la cookie CSRF (`lnotes_csrftoken`). Django emite una por sesión
+  // httpOnly=false y la usa para validar el header X-CSRFToken en POST.
+  function getCsrfToken() {
+    const m = document.cookie.match(/(?:^|;\s*)lnotes_csrftoken=([^;]+)/);
+    return m ? decodeURIComponent(m[1]) : "";
+  }
+
+  function setCtStatus(kind, msg) {
+    const el = $('ctb-status'); if (!el) return;
+    el.hidden = !msg;
+    el.className = 'ctb-status' + (kind ? ' ctb-status-' + kind : '');
+    el.innerHTML = msg || '';
+  }
+
+  const ctBtn = $('ctb-import-btn');
+  const ctFile = $('ctb-file');
+  const ctName = $('ctb-file-name');
+  const ctTarget = $('ctb-target');
+
+  if (ctFile && ctName) {
+    ctFile.addEventListener('change', () => {
+      const f = ctFile.files && ctFile.files[0];
+      if (f) {
+        ctName.textContent = f.name + ' (' + Math.round(f.size / 1024) + ' KB)';
+        ctName.classList.add('ctb-pick-name--ok');
+        if (ctBtn) ctBtn.disabled = false;
+      } else {
+        ctName.textContent = 'Ningún archivo seleccionado';
+        ctName.classList.remove('ctb-pick-name--ok');
+        if (ctBtn) ctBtn.disabled = true;
+      }
+      setCtStatus(null, null);
+    });
+  }
+
+  if (ctBtn) {
+    ctBtn.addEventListener('click', async () => {
+      const f = ctFile && ctFile.files && ctFile.files[0];
+      if (!f) { setCtStatus('err', 'Selecciona un archivo .ctb primero'); return; }
+      if (!f.name.toLowerCase().endsWith('.ctb')) {
+        setCtStatus('err', 'El archivo debe terminar en .ctb');
+        return;
+      }
+
+      ctBtn.disabled = true;
+      setCtStatus('busy', '<span class="spinner"></span> Importando <code>' +
+                   f.name.replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])) + '</code>…');
+
+      const fd = new FormData();
+      fd.append('file', f);
+      if (ctTarget && ctTarget.value.trim()) fd.append('target', ctTarget.value.trim());
+
+      try {
+        const r = await fetch('/api/notes/import-cherrytree', {
+          method: 'POST',
+          headers: { 'X-CSRFToken': getCsrfToken() },
+          body: fd,
+          credentials: 'same-origin',
+        });
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok || !data.success) {
+          setCtStatus('err', 'Error: ' + (data.error || ('HTTP ' + r.status)));
+          return;
+        }
+        const s = data.summary || {};
+        const partes = [];
+        if (s.notes)    partes.push(s.notes + ' nota' + (s.notes === 1 ? '' : 's'));
+        if (s.images)    partes.push(s.images + ' imagen' + (s.images === 1 ? '' : 'es'));
+        if (s.folders)   partes.push(s.folders + ' carpeta' + (s.folders === 1 ? '' : 's'));
+        const resumen = partes.length ? partes.join(', ') : 'sin notas';
+        const nombres = (s.root_names || []).map(n =>
+          '<code>' + n.replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])) + '</code>'
+        ).join(', ');
+        setCtStatus('ok',
+          '<strong>Importación OK.</strong> ' + resumen + '.<br>' +
+          (nombres ? 'Raíces: ' + nombres + '.' : '')
+        );
+
+        // Refresca el árbol y las notas si la app expone esos hooks.
+        if (typeof window.cargarArbol === 'function') window.cargarArbol();
+        if (typeof window.cargarNotas === 'function') window.cargarNotas();
+        // Limpia el input para que se pueda volver a importar el mismo archivo.
+        if (ctFile) ctFile.value = '';
+        if (ctName) {
+          ctName.textContent = 'Ningún archivo seleccionado';
+          ctName.classList.remove('ctb-pick-name--ok');
+        }
+      } catch (err) {
+        setCtStatus('err', 'Error de red: ' + err.message);
+      } finally {
+        ctBtn.disabled = false;
+      }
+    });
+  }
+
   function openSettingsModal() {
     $('settings-modal').classList.add('show');
     loadSharedLinks();

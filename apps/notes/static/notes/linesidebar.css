@@ -1,0 +1,70 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   LineSidebar en el árbol de la bóveda (l-notes).
+
+   Todo cuelga de --ls-effect, que va de 0 a 1 y la pone el bucle rAF de
+   linesidebar.js en cada fila. Aquí no hay ni una transición: si las hubiera,
+   color, desplazamiento y escala llegarían cada uno a su ritmo y el efecto se
+   desharía. Esa es la idea del componente original y se mantiene.
+
+   El acento sale de --vault-accent, la variable que ya cambia con cada tema
+   (oscuro, claro, crystal, dark-crystal, café, rosa, dorado), así que el
+   carril se tiñe solo con el tema y no hay un morado fijo que desentone.
+   ───────────────────────────────────────────────────────────────────────── */
+
+.vault-tree {
+  --ls-linea: 16px;     /* largo de la línea de cada fila */
+  --ls-desvio: 11px;    /* cuánto se desplaza la etiqueta al acercarse */
+  --ls-reposo: .34;     /* opacidad de la línea en reposo */
+}
+
+/* La línea. Va como primer hijo de la fila, así que el gap que .tree-row ya
+   tenía (.35rem) hace de separación con el chevron. */
+.tree-row > .ls-marker {
+  flex: none;
+  width: var(--ls-linea);
+  height: 1px;
+  border-radius: 1px;
+  background: color-mix(in srgb,
+    var(--vault-accent) calc(var(--ls-effect, 0) * 100%),
+    currentColor);
+  opacity: calc(var(--ls-reposo) + var(--ls-effect, 0) * (1 - var(--ls-reposo)));
+  transform-origin: left center;
+  transform: scaleX(calc(.6 + var(--ls-effect, 0) * .4));
+}
+
+/* La etiqueta se desplaza y se tiñe con el mismo valor.
+
+   El margen derecho es el desplazamiento máximo: encoge la caja de antemano
+   justo lo que va a moverse, de forma que a pleno efecto acaba donde acababa
+   antes. Sin él, con 11px el nombre de una nota larga se cuela por debajo del
+   botón de tres puntos de la fila. */
+.tree-row > .label,
+.tree-row > .hit-text {
+  margin-right: var(--ls-desvio);
+  transform: translateX(calc(var(--ls-effect, 0) * var(--ls-desvio)));
+}
+.tree-row:not(.active) > .label {
+  color: color-mix(in srgb,
+    var(--vault-accent) calc(var(--ls-effect, 0) * 100%),
+    currentColor);
+}
+
+/* La fila activa ya va sobre un fondo de acento con letra blanca: teñir hacia
+   el acento la dejaría ilegible. Se queda con el color del texto y la línea
+   marcada al máximo, que es lo que la señala. */
+.tree-row.active {
+  --ls-effect: 1;
+}
+.tree-row.active > .ls-marker {
+  background: currentColor;
+  opacity: .8;
+}
+
+/* Sin animación, el carril sigue teniendo sus líneas: sólo se queda quieto. */
+@media (prefers-reduced-motion: reduce) {
+  .tree-row > .label,
+  .tree-row > .hit-text {
+    margin-right: 0;
+    transform: none;
+  }
+}

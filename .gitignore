@@ -79,3 +79,9 @@ __MACOSX/
 *.antes-*
 *.pre-*
 *.pre-*.bak
+
+*.bak
+*.bak-*
+*.pre-*.bak
+*.antes-*
+*.log

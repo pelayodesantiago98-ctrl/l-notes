@@ -228,6 +228,39 @@
     </div>
 
     <div class="settings-section">
+      <div class="settings-section-title">Importar CherryTree</div>
+      <p>Sube una bóveda <code>.ctb</code> (formato SQLite de CherryTree) y se
+         convertirá al esquema del vault: notas <code>.md</code> con su jerarquía
+         de carpetas e imágenes extraídas a <code>Adjuntos/</code>. Los nombres
+         que coincidan se numeran; no se sobrescribe nada.</p>
+
+      <div class="ctb-pick">
+        <input type="file" id="ctb-file" accept=".ctb" class="ctb-file-input">
+        <label for="ctb-file" class="btn-secondary ctb-pick-btn" tabindex="0">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
+          <span>Elegir .ctb…</span>
+        </label>
+        <span class="ctb-pick-name" id="ctb-file-name">Ningún archivo seleccionado</span>
+      </div>
+
+      <div class="ctb-row">
+        <label class="ctb-label" for="ctb-target">Carpeta destino <span class="ctb-hint">(opcional, vacío = raíz)</span></label>
+        <input type="text" id="ctb-target" class="ctb-target-input"
+               placeholder="p.ej. Importado CherryTree">
+      </div>
+
+      <div class="ctb-actions">
+        <button type="button" class="btn-primary" id="ctb-import-btn" disabled>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          <span>Importar a mi bóveda</span>
+        </button>
+      </div>
+
+      <p id="ctb-status" class="ctb-status" hidden></p>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">Enlaces compartidos</div><div class="settings-section">
       <div class="settings-section-title">Enlaces compartidos</div>
       <p>Notas que tienes publicadas ahora mismo con un enlace público.</p>
       <div id="shared-links-loading" style="text-align:center;padding:1.2rem 0">

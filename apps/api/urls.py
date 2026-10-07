@@ -38,6 +38,7 @@ urlpatterns = [
     path("v1/vault/stats", views.vault_stats, name="vault_stats"),
     path("v1/vault/export", views.vault_export, name="vault_export"),
     path("v1/vault/import", views.vault_import, name="vault_import"),
+    path("v1/vault/import-cherrytree", views.vault_import_cherrytree, name="vault_import_cherrytree"),
     path("v1/vault/optimize-images", views.vault_optimize_images, name="vault_optimize_images"),
 
     # Perfil

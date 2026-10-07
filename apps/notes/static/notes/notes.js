@@ -282,6 +282,10 @@ function buildTreeDOM(items, container, depth, parentPath){
     const row=document.createElement('div');
     row.className='tree-row'+(it.type==='file'?' is-file':'');
     row.dataset.path=it.path; row.dataset.type=it.type;
+    // Nivel de profundidad del arbol, para poder pintar el icono por color
+    // segun cuantas carpetas hay por encima (0 = raiz). Se tapa en 5 para
+    // que una boveda muy anidada no se quede sin color definido.
+    row.dataset.depth=Math.min(depth,5);
     // La carpeta de adjuntos concentra cientos de imágenes subidas por el backend
     // (upload() la fuerza siempre en la raíz): no se puede arrastrar ni recibir
     // sueltas "dentro" o se rompería esa ruta fija y el propósito de la carpeta.

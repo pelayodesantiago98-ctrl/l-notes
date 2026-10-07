@@ -171,6 +171,15 @@ class AccesoBoveda(models.Model):
                                  related_name="accesos_recibidos",
                                  null=True, blank=True)
     permiso = models.CharField(max_length=10, choices=PERMISOS, default=VIEWER)
+
+    # Vacío = la bóveda entera, que es lo que había antes y sigue siendo lo
+    # normal. Con valor, la ruta (relativa a la bóveda del dueño) de la carpeta
+    # a la que se limita el acceso: quien entra ve ESA carpeta como si fuera su
+    # bóveda. No hace falta comprobar la ruta en cada vista que escribe porque
+    # `boveda.raiz()` ya devuelve la carpeta acotada y `vault.safe_path()`
+    # impide salirse de la base que se le pase.
+    ambito = models.CharField(max_length=600, blank=True, default="")
+
     token = models.CharField(max_length=32, unique=True, db_index=True)
     creado = models.DateTimeField(auto_now_add=True)
     usado = models.DateTimeField(null=True, blank=True)

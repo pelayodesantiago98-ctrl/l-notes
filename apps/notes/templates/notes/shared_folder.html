@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ titulo }} — L-notes{% endblock %}
+{% block extra_head %}
+<meta name="robots" content="noindex,nofollow">
+<link rel="stylesheet" href="/static/notes/notes.css?v={{ ASSET_VERSION }}">
+<style>
+  /* El índice de una carpeta compartida. Vive aquí y no en notes.css porque
+     es la única página que lo usa y son cuatro reglas. */
+  .cc-wrap { max-width: 720px; margin: 0 auto; padding: 1.2rem 1rem 3rem; }
+  .cc-lista { list-style: none; margin: 1rem 0 0; padding: 0; }
+  .cc-fila { display: flex; align-items: center; gap: .5rem; padding: .4rem .5rem;
+             border-radius: 8px; font-size: .93rem; }
+  .cc-fila svg { width: 17px; height: 17px; flex: none; opacity: .8; }
+  a.cc-fila { color: inherit; text-decoration: none; }
+  a.cc-fila:hover { background: rgba(127,127,127,.12); }
+  .cc-carpeta { font-weight: 600; opacity: .75; }
+  .cc-vacia { opacity: .55; padding: 2rem .5rem; text-align: center; }
+</style>
+{% endblock %}
+{% block header_title %}{{ titulo }}{% endblock %}
+{% block header_actions %}{% endblock %}
+
+{% block content %}
+<div class="cc-wrap">
+  <div class="shared-note-banner">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+    Carpeta compartida · sólo lectura
+  </div>
+
+  <ul class="cc-lista">
+    {% for it in arbol %}
+      {% if it.tipo == "carpeta" %}
+        <li class="cc-fila cc-carpeta" style="padding-left:{{ it.nivel|add:1 }}rem">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+          {{ it.nombre }}
+        </li>
+      {% else %}
+        <li>
+          <a class="cc-fila" style="padding-left:{{ it.nivel|add:1 }}rem"
+             href="?n={{ it.ruta|urlencode:"" }}">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z"/></svg>
+            {{ it.nombre }}
+          </a>
+        </li>
+      {% endif %}
+    {% empty %}
+      <li class="cc-vacia">Esta carpeta no tiene notas.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

@@ -9,6 +9,7 @@ import json
 import re
 import secrets
 import shutil
+import tempfile
 from pathlib import Path
 from urllib.parse import quote
 
@@ -30,8 +31,8 @@ from apps.core.api import as_text, error_response as _err, json_body
 # porque lo comparten varios servicios; el venv lo encuentra por un .pth.
 import correo
 
-from . import pdf, vault
-from .models import SharedNote
+from . import cherrytree, pdf, vault
+from .models import CarpetaCompartida, SharedNote
 from .vault import VaultError
 
 
@@ -419,6 +420,60 @@ def import_vault(request):
     return JsonResponse({"success": True})
 
 
+@login_required
+@require_write
+@require_POST
+def import_cherrytree(request):
+    """Sube un .ctb y lo importa al vault del usuario autenticado.
+
+    Body (multipart/form-data):
+        file:   el .ctb (obligatorio)
+        target: ruta destino dentro del vault, p.ej. "Importado" (opcional)
+
+    Si `target` no existe, se crea. Si ya hay notas con el mismo nombre, los
+    nuevos se numeran al estilo del resto del vault (no se sobrescribe nada).
+    """
+    f = request.FILES.get("file")
+    if not f:
+        return _err("Falta archivo")
+    if not (f.name or "").lower().endswith(".ctb"):
+        return _err("El archivo debe ser un .ctb de CherryTree")
+
+    target_rel = (request.POST.get("target") or "").strip().strip("/")
+    root = boveda.raiz(request)
+    target_dir = root
+    if target_rel:
+        try:
+            target_dir = vault.safe_path(root, target_rel)
+        except VaultError as exc:
+            return _err(str(exc), exc.status)
+        if target_dir.exists() and not target_dir.is_dir():
+            return _err("La ruta destino no es una carpeta")
+        target_dir.mkdir(parents=True, exist_ok=True)
+
+    # Volcamos el upload a un tempfile en disco. El parser abre el .ctb con
+    # sqlite3 en modo ro y necesita una ruta real; pasarle el UploadedFile de
+    # Django obliga a drenarlo a memoria, que en bóvedas grandes se nota.
+    try:
+        with tempfile.NamedTemporaryFile(
+            prefix="lnotes-ctb-", suffix=".ctb", delete=False, dir="/tmp"
+        ) as tmp:
+            for chunk in f.chunks():
+                tmp.write(chunk)
+            tmp_path = Path(tmp.name)
+        try:
+            summary = cherrytree.import_ctb(target_dir, tmp_path)
+        finally:
+            tmp_path.unlink(missing_ok=True)
+    except cherrytree.CherryTreeError as exc:
+        return _err(str(exc), 400)
+    except VaultError as exc:
+        return _err(str(exc), exc.status)
+    except OSError as exc:
+        return _err(f"No se pudo escribir la bóveda: {exc}", 500)
+
+    return JsonResponse({"success": True, "summary": summary})
+
 # ════════════ Exportar nota a PDF ════════════
 
 @login_required
@@ -628,17 +683,44 @@ def _resolve_asset_ref(root: Path, ref: str):
     return None
 
 
-def _build_share_assets(root: Path, token: str, content: str) -> dict:
+def _build_share_assets(root: Path, token: str, content: str, prefijo: str = "s") -> dict:
     """`{ref_original: url_firmada}` sólo para las imágenes/PDFs referenciados
-    por ESTA nota — nunca la bóveda entera."""
+    por ESTA nota — nunca la bóveda entera.
+
+    `prefijo` es la rama de URL que sirve el adjunto: `s` para una nota suelta
+    y `c` para una nota dentro de una carpeta compartida. La firma es la misma
+    en los dos casos; lo único que cambia es quién valida el token.
+    """
     out = {}
     for ref in _extract_asset_refs(content):
         hit = _resolve_asset_ref(root, ref)
         if hit:
             rel = vault.rel_of(root, hit)
             sig = quote(signing.dumps({"t": token, "p": rel}, salt=_SHARE_ASSET_SALT), safe="")
-            out[ref] = f"/s/{token}/asset?p={sig}"
+            out[ref] = f"/{prefijo}/{token}/asset?p={sig}"
     return out
+
+
+def _asset_firmado(request, token: str):
+    """El fichero que pide una URL firmada de adjunto, o 404.
+
+    La firma lleva dentro el token, así que un enlace de una nota no sirve
+    para sacar adjuntos de otra aunque se copie el parámetro.
+    """
+    try:
+        data = signing.loads(request.GET.get("p", ""), salt=_SHARE_ASSET_SALT,
+                             max_age=60 * 60 * 24 * 90)
+    except signing.BadSignature:
+        raise Http404
+    if data.get("t") != token:
+        raise Http404
+    try:
+        target = vault.safe_path(settings.VAULT_ROOT.resolve(), data.get("p", ""))
+    except VaultError:
+        raise Http404
+    if not target.exists() or target.is_dir():
+        raise Http404
+    return FileResponse(open(target, "rb"))
 
 
 def _share_gate_key(token: str) -> str:
@@ -683,20 +765,193 @@ def shared_note_asset(request, token):
         raise Http404
     if share.password_hash and not request.session.get(_share_gate_key(token)):
         raise Http404
-    try:
-        data = signing.loads(request.GET.get("p", ""), salt=_SHARE_ASSET_SALT,
-                             max_age=60 * 60 * 24 * 90)
-    except signing.BadSignature:
+    return _asset_firmado(request, token)
+
+
+@require_GET
+def carpeta_compartida_asset(request, token):
+    """El mismo adjunto firmado, pero para una carpeta compartida."""
+    enlace = CarpetaCompartida.objects.filter(token=token).first()
+    if not enlace:
         raise Http404
-    if data.get("t") != token:
+    if enlace.password_hash and not request.session.get(_share_gate_key(token)):
+        raise Http404
+    return _asset_firmado(request, token)
+
+
+# ── Enlaces del QR ───────────────────────────────────────────────────────────
+
+ALCANCES = ("subnota", "nota", "carpeta", "boveda")
+PERMISOS_QR = ("lectura", "escritura")
+
+
+def _objetivo_del_alcance(root: Path, alcance: str, target: Path) -> Path:
+    """Qué se comparte de verdad según el alcance pedido.
+
+    Los cuatro alcances se reducen a dos formas: un .md suelto (subnota) o una
+    carpeta (el resto). Una nota con subnotas vive en `X/X.md`, así que "toda
+    la nota" es la carpeta `X/` — y una nota sin subnotas no tiene carpeta que
+    valga, así que "toda la nota" es la nota misma.
+    """
+    if alcance == "boveda":
+        return root
+    if alcance == "subnota":
+        return target
+    if alcance == "carpeta":
+        return target if target.is_dir() else target.parent
+    # "nota"
+    if target.is_dir():
+        return target
+    return _rama_de(root, target)
+
+
+@login_required
+@require_POST
+@json_body
+def qr_crear(request):
+    """El enlace que codifica el QR: alcance + permiso, en una sola llamada.
+
+    Sólo sobre la bóveda propia. Estando dentro de la de otra persona no se
+    reparten enlaces a sus notas, ni aunque se tenga permiso de escritura:
+    repartir es cosa del dueño.
+    """
+    dueno, propia, _ = boveda.activa(request)
+    if not propia:
+        return _err("Sólo puedes repartir enlaces de tu propia bóveda", 403)
+
+    alcance = as_text(request.data.get("alcance")).strip()
+    permiso = as_text(request.data.get("permiso")).strip()
+    if alcance not in ALCANCES:
+        return _err("El alcance es 'subnota', 'nota', 'carpeta' o 'boveda'")
+    if permiso not in PERMISOS_QR:
+        return _err("El permiso es 'lectura' o 'escritura'")
+
+    root = boveda.raiz(request)
+    ruta = as_text(request.data.get("path")).strip()
+    if alcance != "boveda" and not ruta:
+        return _err("Falta la nota o la carpeta que se comparte")
+
+    target, err = _resolve(root, ruta)
+    if err:
+        return err
+    if alcance != "boveda" and not target.exists():
+        return _err("No existe esa nota o carpeta", 404)
+
+    objetivo = _objetivo_del_alcance(root, alcance, target)
+
+    if permiso == "escritura":
+        # Escribir exige cuenta: el enlace es una invitación, y quien la abre
+        # se identifica antes de tocar nada. Y exige carpeta, porque el acceso
+        # acotado se define por la carpeta que hace de raíz — un .md suelto no
+        # puede ser la raíz de nada.
+        if not objetivo.is_dir():
+            return _err(
+                "Una nota suelta no se puede compartir con escritura: no hay "
+                "carpeta que acotar. Comparte 'toda la nota' o su carpeta.")
+        propia_raiz = vault.root(str(request.user.sso_id or request.user.pk))
+        ambito = "" if objetivo == propia_raiz else vault.rel_of(propia_raiz, objetivo)
+        invitacion, _c = AccesoBoveda.objects.get_or_create(
+            dueno=request.user, invitado=None,
+            permiso=AccesoBoveda.EDITOR, ambito=ambito,
+            defaults={"token": secrets.token_urlsafe(16)[:32]},
+        )
+        return JsonResponse({
+            "success": True, "alcance": alcance, "permiso": permiso,
+            "necesita_cuenta": True,
+            "url": request.build_absolute_uri("/b/%s" % invitacion.token),
+        })
+
+    # Lectura: enlace público, sin cuenta.
+    rel_global = vault.rel_of(vault.root(), objetivo)
+    if objetivo.is_dir():
+        enlace, _c = CarpetaCompartida.objects.get_or_create(
+            path=rel_global, defaults={"token": secrets.token_urlsafe(16)[:32]})
+        url = request.build_absolute_uri(f"/c/{enlace.token}/")
+    else:
+        if objetivo.suffix.lower() != ".md":
+            return _err("Sólo se comparten notas .md")
+        enlace, _c = SharedNote.objects.get_or_create(
+            path=rel_global, defaults={"token": secrets.token_urlsafe(16)})
+        url = request.build_absolute_uri(f"/s/{enlace.token}/")
+
+    return JsonResponse({
+        "success": True, "alcance": alcance, "permiso": permiso,
+        "necesita_cuenta": False, "url": url,
+    })
+
+
+def _arbol_publico(base: Path, directorio: Path, nivel: int = 0) -> list:
+    """El árbol de una carpeta compartida, aplanado y sólo con notas.
+
+    Plano y no anidado porque las plantillas de Django no recorren estructuras
+    recursivas sin pelearse; con el nivel en cada fila, sangrar en el HTML es
+    una multiplicación y se acabó. Se ocultan los ocultos y todo lo que no sea
+    `.md`: los adjuntos ya llegan por su URL firmada desde dentro de la nota.
+    """
+    items = []
+    for hijo in sorted(directorio.iterdir(), key=lambda p: (p.is_file(), p.name.lower())):
+        if hijo.name.startswith("."):
+            continue
+        if hijo.is_dir():
+            items.append({"nombre": hijo.name, "tipo": "carpeta",
+                          "nivel": nivel, "ruta": ""})
+            items.extend(_arbol_publico(base, hijo, nivel + 1))
+        elif hijo.suffix.lower() == ".md":
+            items.append({"nombre": hijo.stem, "tipo": "nota",
+                          "nivel": nivel, "ruta": vault.rel_of(base, hijo)})
+    return items
+
+
+def carpeta_compartida_view(request, token):
+    """Vista pública de una carpeta compartida en sólo lectura.
+
+    Sin `?n=` enseña el índice; con `?n=` abre una nota de dentro. La nota se
+    resuelve SIEMPRE contra la carpeta compartida, así que `?n=../../otra` no
+    llega a ningún sitio: `safe_path` lo rechaza antes.
+    """
+    enlace = CarpetaCompartida.objects.filter(token=token).first()
+    if not enlace:
         raise Http404
     try:
-        target = vault.safe_path(settings.VAULT_ROOT.resolve(), data.get("p", ""))
+        base = vault.safe_path(settings.VAULT_ROOT.resolve(), enlace.path)
     except VaultError:
         raise Http404
-    if not target.exists() or target.is_dir():
+    if not base.is_dir():
         raise Http404
-    return FileResponse(open(target, "rb"))
+
+    gate_key = _share_gate_key(token)
+    error = ""
+    if enlace.password_hash:
+        if request.method == "POST":
+            if check_password(request.POST.get("password", ""), enlace.password_hash):
+                request.session[gate_key] = True
+            else:
+                error = "Contraseña incorrecta"
+        if not request.session.get(gate_key):
+            return render(request, "notes/shared_gate.html", {"error": error})
+
+    pedida = request.GET.get("n", "").strip()
+    if pedida:
+        try:
+            nota = vault.safe_path(base, pedida)
+        except VaultError:
+            raise Http404
+        if not nota.is_file() or nota.suffix.lower() != ".md":
+            raise Http404
+        contenido = nota.read_text(encoding="utf-8")
+        return render(request, "notes/shared.html", {
+            "note_name": nota.stem,
+            "content": contenido,
+            "assets": _build_share_assets(settings.VAULT_ROOT.resolve(),
+                                          token, contenido, prefijo="c"),
+            "volver": f"/c/{token}/",
+        })
+
+    return render(request, "notes/shared_folder.html", {
+        "titulo": base.name,
+        "token": token,
+        "arbol": _arbol_publico(base, base),
+    })
 
 
 # ── Bóvedas compartidas ──────────────────────────────────────────────────────
@@ -739,19 +994,36 @@ def boveda_estado(request):
 @require_POST
 @json_body
 def boveda_invitar(request):
-    """Un enlace que da acceso a mi bóveda. Sirve para quien lo abra."""
+    """Un enlace que da acceso a mi bóveda. Sirve para quien lo abra.
+
+    Con `ambito` el acceso queda acotado a esa carpeta: quien entra la ve como
+    si fuera su bóveda y no puede salirse de ella. Sin `ambito`, la entera,
+    que es como funcionaba antes.
+    """
     permiso = (request.data.get("permiso") or "").strip()
     if permiso not in (AccesoBoveda.EDITOR, AccesoBoveda.VIEWER):
         return _err("El permiso es 'editor' o 'viewer'")
 
-    # Una invitación abierta por permiso: repartir dos enlaces del mismo tipo
-    # no aporta nada y luego no se sabe cuál revocar.
+    ambito = as_text(request.data.get("ambito")).strip()
+    if ambito:
+        propia = vault.root(str(request.user.sso_id or request.user.pk))
+        carpeta, err = _resolve(propia, ambito)
+        if err:
+            return err
+        if not carpeta.is_dir():
+            return _err("El ámbito tiene que ser una carpeta", 404)
+        # Se guarda normalizado: lo que llegó puede traer barras de más y
+        # luego no casaría con lo que compruebe `boveda.raiz()`.
+        ambito = vault.rel_of(propia, carpeta)
+
+    # Una invitación abierta por permiso y ámbito: repartir dos enlaces
+    # iguales no aporta nada y luego no se sabe cuál revocar.
     invitacion, _ = AccesoBoveda.objects.get_or_create(
-        dueno=request.user, invitado=None, permiso=permiso,
+        dueno=request.user, invitado=None, permiso=permiso, ambito=ambito,
         defaults={"token": secrets.token_urlsafe(16)[:32]},
     )
     return JsonResponse({
-        "success": True, "permiso": permiso,
+        "success": True, "permiso": permiso, "ambito": ambito,
         "url": request.build_absolute_uri("/b/%s" % invitacion.token),
     })
 
@@ -807,12 +1079,18 @@ def boveda_aceptar(request, token):
     acceso, creado = AccesoBoveda.objects.get_or_create(
         dueno=invitacion.dueno, invitado=request.user,
         defaults={"permiso": invitacion.permiso,
+                  "ambito": invitacion.ambito,
                   "token": secrets.token_urlsafe(16)[:32]},
     )
-    if not creado and acceso.permiso != invitacion.permiso:
-        # Si el dueño reparte ahora un enlace con más permiso, manda el nuevo.
+    if not creado and (acceso.permiso != invitacion.permiso
+                       or acceso.ambito != invitacion.ambito):
+        # Si el dueño reparte ahora un enlace distinto, manda el nuevo: tanto
+        # para dar más (de lectura a escritura, de una carpeta a la bóveda)
+        # como para dar menos, que es la única forma de recortar un acceso ya
+        # concedido sin quitarlo del todo.
         acceso.permiso = invitacion.permiso
-        acceso.save(update_fields=["permiso"])
+        acceso.ambito = invitacion.ambito
+        acceso.save(update_fields=["permiso", "ambito"])
 
     invitacion.usado = timezone.now()
     invitacion.save(update_fields=["usado"])

@@ -685,6 +685,41 @@ def _paths() -> dict:
                 "responses": {"200": _resp("Importada", ref="Ok"), **_ERRORS},
             },
         },
+        "/api/v1/vault/import-cherrytree": {
+            "post": {
+                "tags": ["Bóveda"],
+                "summary": "Importar una bóveda CherryTree (.ctb)",
+                "description": "Sube un archivo `.ctb` (formato SQLite moderno de "
+                               "CherryTree ≥1.0) y lo convierte al esquema del vault: "
+                               "notas `.md` con su jerarquía de carpetas, imágenes "
+                               "extraídas a `Adjuntos/`, codeboxes y tablas. Los nombres "
+                               "que colisionan se numeran (` 2`, ` 3`...) sin "
+                               "sobrescribir nada.",
+                "requestBody": {"required": True, "content": {"multipart/form-data": {
+                    "schema": {"type": "object", "properties": {
+                        "file": {"type": "string", "format": "binary",
+                                 "description": "El archivo .ctb (obligatorio)."},
+                        "target": {"type": "string",
+                                   "description": "Carpeta destino dentro del vault "
+                                                  "(vacío = raíz). Se crea si no existe.",
+                                   "default": ""},
+                    }, "required": ["file"]}}}},
+                "responses": {
+                    "200": _resp("Resumen", {"type": "object", "properties": {
+                        "success": {"type": "boolean"},
+                        "summary": {"type": "object", "properties": {
+                            "notes": {"type": "integer"},
+                            "images": {"type": "integer"},
+                            "codeboxes": {"type": "integer"},
+                            "grids": {"type": "integer"},
+                            "folders": {"type": "integer"},
+                            "root_names": {"type": "array",
+                                           "items": {"type": "string"}},
+                        }}}}),
+                    **_ERRORS,
+                },
+            },
+        },
         "/api/v1/vault/optimize-images": {
             "post": {
                 "tags": ["Bóveda"],
